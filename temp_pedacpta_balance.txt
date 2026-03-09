@@ -1,0 +1,25 @@
+Imprimez une balance ....................................................130
+Balance âgée .................................................................132
+Balance des tiers............................................................135
+Balance
+grand-livre des comptes et des tiers, balance,…).
+Impression de la balance,
+Imprimez une balance
+La balance, avec le grand-livre qui sera vu plus loin, est l’un des états classiques de la comptabilité.
+Commande Etat / Balance des comptes
+Bouton [Balance]
+Avec les journaux et la balance, le document classique de la comptabilité est le grand-livre.  Pour imprimer
+Impression de la balance âgée.
+Impression de la balance tiers.
+Tout comme vous pouvez imprimer le Grand-livre ou la balance des comptes généraux, il est possible d’édi-
+Balance âgée
+La balance âgée vous permet d’imprimer un état prévisionnel des échéances clients et fournisseurs à venir,
+Lancez la commande Etat / Balance âgée. Une fenêtre de sélection simplifiée s’ouvre.
+La balance âgée est plus particulièrement destinée à constater les clients en retard de règlement. L’échéan-
+Balance âgée et paramétrez Fournisseurs pour obtenir un échéancier sous forme de tableau.
+Balance des tiers
+Dans ce menu, sélectionnez la commande Balance des tiers. Un format de sélection simplifié s’ouvre.
+du menu Etat / Etats analytiques. Ouvrez ce menu et sélectionnez la commande Balance....
+Balance
+Balance âgée ..................................................................133
+Balance des tiers ..........................................................135

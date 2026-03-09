@@ -1,0 +1,293 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* Custom theme using Tailwind v4 @theme directive */
+@theme {
+  /* Neobrutalist colors */
+  --color-neo-black: #0a0a0a;
+  --color-neo-white: #ffffff;
+  --color-neo-cream: #fffef5;
+  --color-neo-yellow: #fef08a;
+  --color-neo-lime: #bef264;
+  --color-neo-pink: #f9a8d4;
+  --color-neo-blue: #93c5fd;
+  --color-neo-orange: #fdba74;
+  --color-neo-purple: #c4b5fd;
+  --color-neo-red: #fca5a5;
+
+  /* Fonts */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Custom shadows */
+  --shadow-neo: 4px 4px 0px 0px #0a0a0a;
+  --shadow-neo-lg: 8px 8px 0px 0px #0a0a0a;
+  --shadow-neo-xl: 12px 12px 0px 0px #0a0a0a;
+  --shadow-neo-hover: 6px 6px 0px 0px #0a0a0a;
+  --shadow-neo-active: 2px 2px 0px 0px #0a0a0a;
+
+  /* Animations */
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-wiggle: wiggle 1s ease-in-out infinite;
+  --animate-slide-up: slideUp 0.6s ease-out;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes wiggle {
+
+    0%,
+    100% {
+      transform: rotate(-3deg);
+    }
+
+    50% {
+      transform: rotate(3deg);
+    }
+  }
+
+  @keyframes slideUp {
+    0% {
+      transform: translateY(30px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-neo-cream);
+  color: var(--color-neo-black);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background-color: var(--color-neo-yellow);
+  color: var(--color-neo-black);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--color-neo-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-neo-black);
+  border: 3px solid var(--color-neo-cream);
+}
+
+/* Neobrutalist Button */
+.btn-neo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-neo-black);
+  background-color: var(--color-neo-yellow);
+  border: 3px solid var(--color-neo-black);
+  box-shadow: var(--shadow-neo);
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btn-neo:hover {
+  box-shadow: var(--shadow-neo-hover);
+  transform: translate(-2px, -2px);
+}
+
+.btn-neo:active {
+  box-shadow: var(--shadow-neo-active);
+  transform: translate(2px, 2px);
+}
+
+.btn-neo-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-neo-black);
+  background-color: var(--color-neo-white);
+  border: 3px solid var(--color-neo-black);
+  box-shadow: var(--shadow-neo);
+  transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.btn-neo-secondary:hover {
+  box-shadow: var(--shadow-neo-hover);
+  transform: translate(-2px, -2px);
+}
+
+.btn-neo-secondary:active {
+  box-shadow: var(--shadow-neo-active);
+  transform: translate(2px, 2px);
+}
+
+/* Neobrutalist Card */
+.card-neo {
+  background-color: var(--color-neo-white);
+  border: 3px solid var(--color-neo-black);
+  box-shadow: var(--shadow-neo);
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.card-neo:hover {
+  box-shadow: var(--shadow-neo-lg);
+  transform: translate(-4px, -4px);
+}
+
+/* Input styles */
+.input-neo {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-family: var(--font-body);
+  color: var(--color-neo-black);
+  background-color: var(--color-neo-white);
+  border: 3px solid var(--color-neo-black);
+  box-shadow: var(--shadow-neo);
+  transition: all 0.2s ease;
+}
+
+.input-neo:focus {
+  outline: none;
+  box-shadow: var(--shadow-neo-lg);
+  transform: translate(-4px, -4px);
+}
+
+.input-neo::placeholder {
+  color: #9ca3af;
+}
+
+/* Section container */
+.section-container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .section-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .section-container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Floating animation */
+.floating {
+  animation: var(--animate-float);
+}
+
+/* Sticker effect */
+.sticker {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  background-color: var(--color-neo-yellow);
+  border: 2px solid var(--color-neo-black);
+  transform: rotate(-3deg);
+  box-shadow: 2px 2px 0px 0px #0a0a0a;
+}
+
+/* Text stroke effect */
+.text-stroke {
+  -webkit-text-stroke: 2px var(--color-neo-black);
+  color: transparent;
+}
+
+/* Animation utility classes */
+.animate-float {
+  animation: var(--animate-float);
+}
+
+.animate-wiggle {
+  animation: var(--animate-wiggle);
+}
+
+.animate-slide-up {
+  animation: var(--animate-slide-up);
+}
+
+/* Stagger delays */
+.stagger-1 {
+  animation-delay: 0.1s;
+}
+
+.stagger-2 {
+  animation-delay: 0.2s;
+}
+
+.stagger-3 {
+  animation-delay: 0.3s;
+}
+
+.stagger-4 {
+  animation-delay: 0.4s;
+}
+
+.stagger-5 {
+  animation-delay: 0.5s;
+}
+
+/* Cursor magic easter egg */
+.cursor-magic:hover {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 24 24' fill='%23fef08a' stroke='%230a0a0a' stroke-width='2'%3E%3Cpath d='M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z'/%3E%3C/svg%3E"), auto;
+}
+
+/* Grain texture overlay */
+.grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+
+/* Utility for flex center */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
