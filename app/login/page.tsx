@@ -74,7 +74,7 @@ export default function LoginPage() {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="vous@example.com"
+                                    placeholder=""
                                     required
                                     className="input-neo pl-12"
                                 />
@@ -96,7 +96,7 @@ export default function LoginPage() {
                                     type="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    placeholder="••••••••"
+                                    placeholder=""
                                     required
                                     className="input-neo pl-12"
                                 />
@@ -137,12 +137,14 @@ export default function LoginPage() {
                 <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-neo-lime border-3 border-neo-white rotate-45" />
 
                 <div className="relative z-10 text-center text-neo-white max-w-md">
-                    <div className="text-6xl mb-6">🏨</div>
-                    <h2 className="font-display text-3xl font-bold mb-4">
-                        +200 hôtels marocains nous font confiance
+                    <div className="w-20 h-20 bg-neo-yellow border-3 border-neo-white shadow-neo mx-auto mb-8 flex items-center justify-center -rotate-6">
+                        <Sparkles className="w-10 h-10 text-neo-black" />
+                    </div>
+                    <h2 className="font-display text-4xl font-bold mb-4">
+                        Passez à la comptabilité intelligente
                     </h2>
-                    <p className="text-gray-400">
-                        Rejoignez la révolution de la comptabilité hôtelière automatisée.
+                    <p className="text-gray-400 text-lg">
+                        Gagnez du temps et évitez les erreurs grâce à l'automatisation par IA.
                     </p>
                 </div>
             </div>
