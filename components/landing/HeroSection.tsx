@@ -170,7 +170,7 @@ export default function HeroSection() {
                                                     <FileText className="w-3.5 h-3.5 text-white" />
                                                 </div>
                                             </div>
-                                            <p className="text-3xl font-display font-black">1</p>
+                                            <p className="text-3xl font-display font-black">53</p>
                                             <p className="text-[10px] text-gray-500 font-bold mt-1 flex items-center gap-1">
                                                 <span className="text-neo-blue">↗</span> Mois courant
                                             </p>
