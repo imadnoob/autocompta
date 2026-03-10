@@ -96,7 +96,7 @@ export default function HeroSection() {
                                 </div>
                                 <div className="flex-1 mx-4">
                                     <div className="bg-gray-800 rounded px-3 py-1 text-gray-400 text-sm font-mono">
-                                        app.autocompta.ma
+                                        autocompta.online
                                     </div>
                                 </div>
                             </div>
