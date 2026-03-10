@@ -24,7 +24,7 @@ interface DocumentListProps {
 }
 
 const statusConfig: Record<string, { icon: any; label: string; bg: string; text: string }> = {
-    completed: { icon: CheckCircle, label: 'Archevé', bg: 'bg-neo-lime', text: 'text-green-800' },
+    completed: { icon: CheckCircle, label: 'Archivé', bg: 'bg-neo-lime', text: 'text-green-800' },
     pending: { icon: Clock, label: 'En attente', bg: 'bg-neo-yellow', text: 'text-yellow-800' },
     processing: { icon: Clock, label: 'En cours', bg: 'bg-neo-blue', text: 'text-blue-800' },
     error: { icon: AlertTriangle, label: 'Erreur', bg: 'bg-neo-red', text: 'text-red-800' },

@@ -79,7 +79,7 @@ const steps = [
                                 </div>
                                 <div className="flex gap-2 shrink-0">
                                     <span className="text-xs font-bold px-3 py-1.5 bg-blue-100 text-blue-700 border-2 border-blue-300">Réglé</span>
-                                    <span className="text-xs font-bold px-3 py-1.5 bg-green-100 text-green-700 border-2 border-green-300">Archevé</span>
+                                    <span className="text-xs font-bold px-3 py-1.5 bg-green-100 text-green-700 border-2 border-green-300">Archivé</span>
                                 </div>
                             </div>
                             {/* Document row 2 */}
