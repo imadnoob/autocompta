@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'motion/react';
 import { Upload, Brain, FileCheck, Download, FileText, Search, Sparkles, BarChart3, Scale, Bot, Send, Paperclip, ExternalLink, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const steps = [
