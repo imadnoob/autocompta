@@ -24,10 +24,10 @@ interface DocumentListProps {
 }
 
 const statusConfig: Record<string, { icon: any; label: string; bg: string; text: string }> = {
-    completed: { icon: CheckCircle, label: 'Archivé', bg: 'bg-neo-lime', text: 'text-green-800' },
-    pending: { icon: Clock, label: 'En attente', bg: 'bg-neo-yellow', text: 'text-yellow-800' },
-    processing: { icon: Clock, label: 'En cours', bg: 'bg-neo-blue', text: 'text-blue-800' },
-    error: { icon: AlertTriangle, label: 'Erreur', bg: 'bg-neo-red', text: 'text-red-800' },
+    completed: { icon: CheckCircle, label: 'Archivé', bg: 'bg-sky-50', text: 'text-green-800' },
+    pending: { icon: Clock, label: 'En attente', bg: 'bg-teal-50', text: 'text-yellow-800' },
+    processing: { icon: Clock, label: 'En cours', bg: 'bg-indigo-50', text: 'text-blue-800' },
+    error: { icon: AlertTriangle, label: 'Erreur', bg: 'bg-rose-50', text: 'text-red-800' },
 };
 
 const accountingStatusConfig: Record<string, { label: string; bg: string; text: string }> = {
@@ -263,35 +263,37 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
 
     if (loading) {
         return (
-            <div className="bg-neo-white border-3 border-neo-black shadow-neo p-8 text-center">
-                <div className="w-10 h-10 bg-neo-yellow border-2 border-neo-black mx-auto mb-3 flex items-center justify-center animate-pulse">
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-8 text-center">
+                <div className="w-10 h-10 bg-teal-50 border border-slate-200 rounded-xl mx-auto mb-3 flex items-center justify-center animate-pulse">
                     <Clock className="w-5 h-5" />
                 </div>
-                <p className="font-display font-semibold">Chargement des documents...</p>
+                <p className="font-semibold">Chargement des documents...</p>
             </div>
         );
     }
 
     return (
-        <div className="bg-neo-white border-3 border-neo-black shadow-neo">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl">
             {/* Header */}
-            <div className="px-6 py-4 border-b-3 border-neo-black flex items-center justify-between">
-                <h3 className="font-display font-bold text-lg flex items-center gap-2">
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+                <h3 className="font-bold text-lg flex items-center gap-2">
                     <FileText className="w-5 h-5" />
                     Documents
                 </h3>
-                <span className="bg-neo-black text-white text-xs font-mono px-3 py-1">
-                    {sortedDocs.length}/{documents.length}
-                </span>
+                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 border border-slate-200">
+                    <span className="text-xs font-bold text-indigo-600 font-mono">{sortedDocs.length}</span>
+                    <span className="text-xs text-slate-400 font-mono">/</span>
+                    <span className="text-xs font-mono text-slate-500">{documents.length}</span>
+                </div>
             </div>
 
             {/* List */}
             {sortedDocs.length === 0 ? (
                 <div className="p-12 text-center">
-                    <div className="w-16 h-16 bg-neo-cream border-3 border-neo-black mx-auto mb-4 flex items-center justify-center">
+                    <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-xl mx-auto mb-4 flex items-center justify-center">
                         <Inbox className="w-8 h-8 text-gray-400" />
                     </div>
-                    <p className="font-display font-semibold text-lg mb-1">Aucun document trouvé</p>
+                    <p className="font-semibold text-lg mb-1">Aucun document trouvé</p>
                     <p className="text-sm text-gray-500">
                         {documents.length > 0 ? 'Essayez de modifier vos filtres' : 'Téléchargez votre première facture'}
                     </p>
@@ -308,14 +310,14 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                         return (
                             <div
                                 key={doc.id}
-                                className={`flex items-center justify-between px-6 py-4 transition-all group ${isProcessing ? 'animate-pulse bg-neo-yellow/5' : 'hover:bg-neo-yellow/10'}`}
+                                className={`flex items-center justify-between px-6 py-4 transition-all group ${isProcessing ? 'animate-pulse bg-teal-50/5' : 'hover:bg-teal-50/10'}`}
                             >
                                 {/* Document info — clickable */}
                                 <div
                                     onClick={() => router.push(`/dashboard/documents/${doc.id}`)}
                                     className="flex items-center gap-4 min-w-0 flex-1 cursor-pointer"
                                 >
-                                    <div className="w-10 h-10 bg-neo-cream border-2 border-neo-black flex items-center justify-center shrink-0 group-hover:bg-neo-yellow transition-colors">
+                                    <div className="w-10 h-10 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-teal-50 transition-colors">
                                         <FileText className="w-5 h-5" />
                                     </div>
                                     <div className="min-w-0 flex-1">
@@ -324,7 +326,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                                 <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
                                                 <div className="flex items-center gap-2 mt-1">
                                                     <div className="h-3 bg-gray-100 rounded w-24"></div>
-                                                    <span className="text-[10px] font-display font-semibold text-yellow-600 flex items-center gap-1">
+                                                    <span className="text-[10px] font-semibold text-yellow-600 flex items-center gap-1">
                                                         <Clock className="w-3 h-3 animate-spin" />
                                                         Traitement IA en cours...
                                                     </span>
@@ -332,7 +334,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                             </>
                                         ) : (
                                             <>
-                                                <p className="font-display font-semibold group-hover:underline underline-offset-2 truncate">
+                                                <p className="font-semibold group-hover:underline underline-offset-2 truncate">
                                                     {getDisplayName(doc)}
                                                 </p>
                                                 <div className="flex items-center gap-2 text-xs text-gray-500 mt-1 font-mono flex-wrap">
@@ -352,7 +354,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                                     {data.total_amount != null && (
                                                         <>
                                                             <span>•</span>
-                                                            <span className="font-semibold text-neo-black">{data.total_amount.toLocaleString()} {data.currency || 'MAD'}</span>
+                                                            <span className="font-semibold text-slate-800">{data.total_amount.toLocaleString()} {data.currency || 'MAD'}</span>
                                                         </>
                                                     )}
                                                 </div>
@@ -372,7 +374,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                         const isDupe = documents.some(o => o.id !== doc.id && o.extracted_data?.supplier?.toLowerCase() === sup && ((o.extracted_data?.invoice_number || o.extracted_data?.number || '').toLowerCase() === ref));
                                         if (!isDupe) return null;
                                         return (
-                                            <div className="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-display font-bold border border-red-400 bg-red-100 text-red-700">
+                                            <div className="hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-bold border border-red-400 bg-red-100 text-red-700 rounded-lg">
                                                 ⚠ Doublon
                                             </div>
                                         );
@@ -386,14 +388,14 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                         const sup = ext.supplier.toLowerCase();
                                         return documents.some(o => o.id !== doc.id && o.extracted_data?.supplier?.toLowerCase() === sup && ((o.extracted_data?.invoice_number || o.extracted_data?.number || '').toLowerCase() === ref));
                                     })() && (
-                                            <div className={`hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-display font-semibold border ${accStatus.bg} ${accStatus.text} border-current/20`}>
+                                            <div className={`hidden sm:flex items-center gap-1 px-2 py-1 text-[10px] font-semibold rounded-lg border border-current/20 ${accStatus.bg} ${accStatus.text}`}>
                                                 <BookOpen className="w-3 h-3" />
                                                 {accStatus.label}
                                             </div>
                                         )}
 
                                     {/* Processing status badge */}
-                                    <div className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-display font-semibold border-2 border-neo-black ${status.bg} ${status.text}`}>
+                                    <div className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-slate-200 rounded-xl ${status.bg} ${status.text}`}>
                                         <StatusIcon className="w-3.5 h-3.5" />
                                         {status.label}
                                     </div>
@@ -404,13 +406,13 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                             <button
                                                 onClick={() => handleDelete(doc.id, doc.file_path)}
                                                 disabled={deleting === doc.id}
-                                                className="px-2 py-1.5 text-xs font-display font-bold bg-red-500 text-white border-2 border-neo-black hover:bg-red-600 transition-colors"
+                                                className="px-2 py-1.5 text-xs font-bold bg-red-500 text-white border border-slate-200 rounded-xl hover:bg-red-600 transition-colors"
                                             >
                                                 {deleting === doc.id ? '...' : 'Oui'}
                                             </button>
                                             <button
                                                 onClick={() => setConfirmDelete(null)}
-                                                className="px-2 py-1.5 text-xs font-display bg-neo-white border-2 border-neo-black hover:bg-gray-100"
+                                                className="px-2 py-1.5 text-xs font-semibold bg-white border border-slate-200 rounded-xl hover:bg-gray-100"
                                             >
                                                 Non
                                             </button>
@@ -418,7 +420,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                     ) : (
                                         <button
                                             onClick={(e) => { e.stopPropagation(); setConfirmDelete(doc.id); }}
-                                            className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 border-2 border-transparent hover:border-red-300 transition-all opacity-0 group-hover:opacity-100"
+                                            className="p-1.5 text-gray-300 hover:text-red-500 hover:bg-red-50 border border-transparent hover:border-red-300 transition-all opacity-0 group-hover:opacity-100"
                                             title="Supprimer"
                                         >
                                             <Trash2 className="w-4 h-4" />
@@ -427,7 +429,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
 
                                     <ArrowRight
                                         onClick={() => router.push(`/dashboard/documents/${doc.id}`)}
-                                        className="w-4 h-4 text-gray-300 group-hover:text-neo-black group-hover:translate-x-1 transition-all cursor-pointer"
+                                        className="w-4 h-4 text-gray-300 group-hover:text-slate-800 group-hover:translate-x-1 transition-all cursor-pointer"
                                     />
                                 </div>
                             </div>

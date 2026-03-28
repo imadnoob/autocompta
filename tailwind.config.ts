@@ -9,45 +9,21 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Neobrutalist palette
-                'neo': {
-                    'black': '#0a0a0a',
-                    'white': '#ffffff',
-                    'cream': '#fffef5',
-                    'yellow': '#fef08a',
-                    'lime': '#bef264',
-                    'pink': '#f9a8d4',
-                    'blue': '#93c5fd',
-                    'orange': '#fdba74',
-                    'purple': '#c4b5fd',
-                    'red': '#fca5a5',
-                },
-                'accent': '#fef08a',
+                'accent': '#10b981',       // emerald-500
                 'bg': {
-                    'primary': '#fffef5',
-                    'dark': '#0a0a0a',
+                    'primary': '#f8fafc',  // slate-50
+                    'dark': '#0f172a',     // slate-900
                 }
             },
             fontFamily: {
-                'display': ['Space Grotesk', 'system-ui', 'sans-serif'],
+                'display': ['Inter', 'system-ui', 'sans-serif'],
                 'body': ['Inter', 'system-ui', 'sans-serif'],
                 'mono': ['JetBrains Mono', 'monospace'],
-            },
-            boxShadow: {
-                'neo': '4px 4px 0px 0px #0a0a0a',
-                'neo-lg': '8px 8px 0px 0px #0a0a0a',
-                'neo-xl': '12px 12px 0px 0px #0a0a0a',
-                'neo-hover': '6px 6px 0px 0px #0a0a0a',
-                'neo-active': '2px 2px 0px 0px #0a0a0a',
-            },
-            borderWidth: {
-                '3': '3px',
             },
             animation: {
                 'float': 'float 6s ease-in-out infinite',
                 'bounce-slow': 'bounce 3s ease-in-out infinite',
                 'pulse-slow': 'pulse 4s ease-in-out infinite',
-                'wiggle': 'wiggle 1s ease-in-out infinite',
                 'slide-up': 'slideUp 0.6s ease-out',
                 'slide-in-left': 'slideInLeft 0.6s ease-out',
                 'slide-in-right': 'slideInRight 0.6s ease-out',
@@ -59,10 +35,6 @@ export default {
                 float: {
                     '0%, 100%': { transform: 'translateY(0px)' },
                     '50%': { transform: 'translateY(-20px)' },
-                },
-                wiggle: {
-                    '0%, 100%': { transform: 'rotate(-3deg)' },
-                    '50%': { transform: 'rotate(3deg)' },
                 },
                 slideUp: {
                     '0%': { transform: 'translateY(30px)', opacity: '0' },

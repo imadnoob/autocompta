@@ -74,47 +74,47 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
     });
 
     return (
-        <div className="bg-neo-white border-3 border-neo-black shadow-neo p-6">
-            <h3 className="font-display font-bold text-lg mb-4 flex items-center gap-2">
+        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-6">
+            <h3 className="font-semibold text-lg mb-4 flex items-center gap-2 text-slate-800">
                 <Upload className="w-5 h-5" />
                 Télécharger
             </h3>
 
             <div
                 {...getRootProps()}
-                className={`border-3 border-dashed p-8 text-center cursor-pointer transition-all duration-200 ${isDragActive
-                    ? 'border-neo-black bg-neo-yellow/20 -translate-x-1 -translate-y-1 shadow-neo'
-                    : 'border-gray-300 hover:border-neo-black hover:bg-neo-yellow/5'
+                className={`border-2 border-dashed p-8 text-center cursor-pointer rounded-xl transition-all duration-200 ${isDragActive
+                    ? 'border-slate-200 bg-teal-50/20 -translate-x-1 -translate-y-1 shadow-md'
+                    : 'border-gray-300 hover:border-slate-200 hover:bg-teal-50/5'
                     }`}
             >
                 <input {...getInputProps()} />
 
                 {uploading ? (
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-14 h-14 bg-neo-yellow border-3 border-neo-black flex items-center justify-center animate-pulse">
-                            <Loader2 className="w-6 h-6 animate-spin" />
+                        <div className="w-14 h-14 bg-teal-50 border border-slate-200 rounded-xl flex items-center justify-center animate-pulse">
+                            <Loader2 className="w-6 h-6 animate-spin text-teal-600" />
                         </div>
-                        <p className="font-display font-semibold">Envoi en cours...</p>
-                        <p className="text-sm text-gray-500">Veuillez patienter</p>
+                        <p className="font-semibold text-slate-800">Envoi en cours...</p>
+                        <p className="text-sm text-slate-500">Veuillez patienter</p>
                     </div>
                 ) : success ? (
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-14 h-14 bg-neo-lime border-3 border-neo-black flex items-center justify-center">
-                            <CheckCircle className="w-6 h-6" />
+                        <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center">
+                            <CheckCircle className="w-6 h-6 text-emerald-600" />
                         </div>
-                        <p className="font-display font-semibold text-green-700">Document envoyé !</p>
-                        <p className="text-sm text-gray-500">Glissez un autre fichier pour continuer</p>
+                        <p className="font-semibold text-emerald-700">Document envoyé !</p>
+                        <p className="text-sm text-slate-500">Glissez un autre fichier pour continuer</p>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-3">
-                        <div className="w-14 h-14 bg-neo-cream border-3 border-neo-black flex items-center justify-center">
-                            <FileText className="w-6 h-6" />
+                        <div className="w-14 h-14 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center">
+                            <FileText className="w-6 h-6 text-slate-600" />
                         </div>
                         <div>
-                            <p className="font-display font-semibold text-lg">
+                            <p className="font-semibold text-lg text-slate-800">
                                 {isDragActive ? 'Déposez le fichier ici' : 'Cliquez ou glissez un fichier'}
                             </p>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="text-sm text-slate-500 mt-1">
                                 PDF, PNG, JPG — Max 10 Mo
                             </p>
                         </div>
@@ -123,7 +123,7 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
             </div>
 
             {error && (
-                <div className="mt-4 p-3 bg-red-50 border-3 border-red-400 flex items-center gap-2 text-red-700 text-sm">
+                <div className="mt-4 p-3 bg-red-50 border border-red-400 flex items-center gap-2 text-red-700 text-sm">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     {error}
                 </div>

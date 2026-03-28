@@ -74,22 +74,22 @@ export default function TestimonialsSection() {
     };
 
     return (
-        <section id="temoignages" className="py-24 bg-neo-black text-neo-white relative overflow-hidden">
+        <section id="temoignages" className="py-24 bg-slate-900 text-neo-white relative overflow-hidden">
             {/* Decorative elements */}
-            <div className="absolute top-20 left-10 text-[200px] font-display font-bold text-white/5 select-none">
+            <div className="absolute top-20 left-10 text-[200px] font-bold text-white/5 select-none">
                 "
             </div>
-            <div className="absolute bottom-20 right-10 text-[200px] font-display font-bold text-white/5 select-none rotate-180">
+            <div className="absolute bottom-20 right-10 text-[200px] font-bold text-white/5 select-none rotate-180">
                 "
             </div>
 
             <div className="section-container relative z-10">
                 {/* Section Header */}
                 <div className="text-center mb-16">
-                    <div className="inline-block bg-neo-white text-neo-black px-4 py-2 font-display font-bold text-sm uppercase mb-6 border-3 border-neo-white -rotate-1">
+                    <div className="inline-block bg-white text-slate-800 px-4 py-2 font-bold text-sm uppercase mb-6 border border-slate-100 -rotate-1">
                         Témoignages
                     </div>
-                    <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
+                    <h2 className="font-semibold text-4xl sm:text-5xl md:text-6xl font-bold mb-6">
                         Ils nous font
                         <br />
                         <span className="text-stroke">confiance</span>
@@ -104,19 +104,19 @@ export default function TestimonialsSection() {
                     <div className="relative">
                         {/* Main testimonial */}
                         <div
-                            className="bg-neo-white text-neo-black p-8 md:p-12 border-3 border-neo-black shadow-neo-xl transition-all duration-500"
+                            className="bg-white text-slate-800 p-8 md:p-12 border border-slate-200 rounded-xl shadow-md-xl transition-all duration-500"
                             onMouseEnter={() => setIsAutoPlaying(false)}
                             onMouseLeave={() => setIsAutoPlaying(true)}
                         >
                             {/* Quote icon */}
-                            <div className="absolute -top-6 -left-6 w-12 h-12 bg-neo-yellow border-3 border-neo-black flex items-center justify-center">
+                            <div className="absolute -top-6 -left-6 w-12 h-12 bg-teal-50 border border-slate-200 rounded-xl flex items-center justify-center">
                                 <Quote className="w-6 h-6" />
                             </div>
 
                             {/* Rating */}
                             <div className="flex gap-1 mb-6">
                                 {Array.from({ length: testimonials[currentIndex].rating }).map((_, i) => (
-                                    <Star key={i} className="w-5 h-5 fill-neo-yellow text-neo-yellow" />
+                                    <Star key={i} className="w-5 h-5 fill-neo-yellow text-teal-600" />
                                 ))}
                             </div>
 
@@ -126,20 +126,20 @@ export default function TestimonialsSection() {
                             </blockquote>
 
                             {/* Highlight badge */}
-                            <div className="inline-block bg-neo-lime px-4 py-2 border-2 border-neo-black font-display font-bold text-sm mb-8">
+                            <div className="inline-block bg-sky-50 px-4 py-2 border border-slate-200 rounded-xl font-bold text-sm mb-8">
                                 {testimonials[currentIndex].highlight}
                             </div>
 
                             {/* Author */}
                             <div className="flex items-center gap-4">
-                                <div className="w-16 h-16 bg-neo-cream border-3 border-neo-black overflow-hidden">
+                                <div className="w-16 h-16 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
                                     {/* Placeholder avatar with initials */}
-                                    <div className="w-full h-full bg-gradient-to-br from-neo-yellow to-neo-orange flex items-center justify-center font-display font-bold text-xl">
+                                    <div className="w-full h-full bg-gradient-to-br from-neo-yellow to-neo-orange flex items-center justify-center font-bold text-xl">
                                         {testimonials[currentIndex].name.split(' ').map(n => n[0]).join('')}
                                     </div>
                                 </div>
                                 <div>
-                                    <p className="font-display font-bold text-lg">{testimonials[currentIndex].name}</p>
+                                    <p className="font-bold text-lg">{testimonials[currentIndex].name}</p>
                                     <p className="text-gray-600">{testimonials[currentIndex].role}</p>
                                     <p className="text-gray-500 text-sm">{testimonials[currentIndex].company}</p>
                                 </div>
@@ -150,10 +150,10 @@ export default function TestimonialsSection() {
                         <div className="flex items-center justify-between mt-8">
                             <button
                                 onClick={goToPrevious}
-                                className="w-12 h-12 bg-neo-white border-3 border-neo-white flex items-center justify-center
-                         hover:bg-neo-yellow hover:border-neo-black transition-all"
+                                className="w-12 h-12 bg-white border border-slate-100 flex items-center justify-center
+                         hover:bg-teal-50 hover:border-slate-200 transition-all"
                             >
-                                <ChevronLeft className="w-6 h-6 text-neo-black" />
+                                <ChevronLeft className="w-6 h-6 text-slate-800" />
                             </button>
 
                             {/* Dots */}
@@ -165,7 +165,7 @@ export default function TestimonialsSection() {
                                             setIsAutoPlaying(false);
                                             setCurrentIndex(i);
                                         }}
-                                        className={`w-3 h-3 border-2 border-neo-white transition-all ${i === currentIndex ? 'bg-neo-yellow scale-125' : 'bg-transparent hover:bg-neo-white/50'
+                                        className={`w-3 h-3 border border-slate-100 transition-all ${i === currentIndex ? 'bg-teal-50 scale-125' : 'bg-transparent hover:bg-white/50'
                                             }`}
                                     />
                                 ))}
@@ -173,10 +173,10 @@ export default function TestimonialsSection() {
 
                             <button
                                 onClick={goToNext}
-                                className="w-12 h-12 bg-neo-white border-3 border-neo-white flex items-center justify-center
-                         hover:bg-neo-yellow hover:border-neo-black transition-all"
+                                className="w-12 h-12 bg-white border border-slate-100 flex items-center justify-center
+                         hover:bg-teal-50 hover:border-slate-200 transition-all"
                             >
-                                <ChevronRight className="w-6 h-6 text-neo-black" />
+                                <ChevronRight className="w-6 h-6 text-slate-800" />
                             </button>
                         </div>
                     </div>
@@ -187,7 +187,7 @@ export default function TestimonialsSection() {
                     <p className="text-center text-gray-500 mb-8">Ils nous font confiance</p>
                     <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-50">
                         {['OCP', 'Marjane', 'Attijariwafa', 'Inwi', 'BMCE', 'Addoha'].map((brand, i) => (
-                            <div key={i} className="font-display font-bold text-xl md:text-2xl text-white/60 hover:text-white transition-colors cursor-default">
+                            <div key={i} className="font-bold text-xl md:text-2xl text-white/60 hover:text-white transition-colors cursor-default">
                                 {brand}
                             </div>
                         ))}

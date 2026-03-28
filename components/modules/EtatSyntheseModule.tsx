@@ -228,11 +228,11 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
 
     if (loading) {
         return (
-            <div className="bg-neo-white border-3 border-neo-black shadow-neo p-8 text-center">
-                <div className="w-12 h-12 bg-neo-pink border-3 border-neo-black mx-auto mb-4 flex items-center justify-center animate-pulse">
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-8 text-center">
+                <div className="w-12 h-12 bg-neo-pink border border-slate-200 rounded-xl mx-auto mb-4 flex items-center justify-center animate-pulse">
                     <Scale className="w-6 h-6" />
                 </div>
-                <p className="font-display font-semibold">Chargement…</p>
+                <p className="font-semibold">Chargement…</p>
             </div>
         );
     }
@@ -251,9 +251,9 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`flex items-center gap-2 px-4 py-2 font-display font-bold text-sm border-3 border-neo-black transition-all ${activeTab === tab.key
-                                    ? 'bg-neo-pink text-neo-black shadow-neo -translate-x-0.5 -translate-y-0.5'
-                                    : 'bg-neo-white text-gray-600 hover:bg-neo-pink/20'
+                                className={`flex items-center gap-2 px-4 py-2 font-bold text-sm border border-slate-200 rounded-xl transition-all ${activeTab === tab.key
+                                    ? 'bg-neo-pink text-slate-800 shadow-md -translate-x-0.5 -translate-y-0.5'
+                                    : 'bg-white text-gray-600 hover:bg-neo-pink/20'
                                     }`}
                             >
                                 <Icon className="w-4 h-4" />
@@ -265,31 +265,31 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                 {/* Year Selector + Ajustements */}
                 <div className="flex items-end gap-3">
                     {toolbarContent}
-                    <div className="flex items-center gap-2 bg-neo-white border-3 border-neo-black px-3 py-1 shadow-neo h-[42px]">
+                    <div className="flex items-center gap-2 bg-white border border-slate-200 rounded-xl px-3 py-1 shadow-md h-[42px]">
                         <CalendarDays className="w-4 h-4 text-gray-500" />
                         <button
                             onClick={() => {
                                 const idx = availableYears.indexOf(selectedYear);
                                 if (idx < availableYears.length - 1) setSelectedYear(availableYears[idx + 1]);
                             }}
-                            className="w-7 h-7 border-2 border-neo-black flex items-center justify-center cursor-pointer hover:bg-neo-yellow transition-all"
+                            className="w-7 h-7 border border-slate-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-teal-50 transition-all"
                         >
                             <ChevronLeft className="w-4 h-4" />
                         </button>
-                        <span className="font-display font-black text-lg min-w-[50px] text-center">{selectedYear}</span>
+                        <span className="font-semibold font-black text-lg min-w-[50px] text-center">{selectedYear}</span>
                         <button
                             onClick={() => {
                                 const idx = availableYears.indexOf(selectedYear);
                                 if (idx > 0) setSelectedYear(availableYears[idx - 1]);
                             }}
-                            className="w-7 h-7 border-2 border-neo-black flex items-center justify-center cursor-pointer hover:bg-neo-yellow transition-all"
+                            className="w-7 h-7 border border-slate-200 rounded-xl flex items-center justify-center cursor-pointer hover:bg-teal-50 transition-all"
                         >
                             <ChevronRight className="w-4 h-4" />
                         </button>
                     </div>
                     <button
                         onClick={() => setShowAdjustModal(true)}
-                        className="flex items-center gap-2 px-3 h-[42px] bg-green-300 border-3 border-neo-black font-display font-bold text-sm shadow-neo hover:-translate-y-0.5 hover:shadow-neo-lg transition-all"
+                        className="flex items-center gap-2 px-3 h-[42px] bg-green-300 border border-slate-200 rounded-xl font-bold text-sm shadow-md hover:-translate-y-0.5 hover:shadow-md-lg transition-all"
                     >
                         <Plus className="w-4 h-4" />
                         Ajustements
@@ -299,17 +299,17 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
 
             {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <div className="bg-neo-white border-3 border-neo-black shadow-neo p-5">
-                    <p className="text-xs font-display font-semibold text-gray-500 mb-1">Total Actif</p>
-                    <p className="text-2xl font-display font-black">{fmt(bilanData.actif.total)} <span className="text-sm text-gray-400">MAD</span></p>
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-5">
+                    <p className="text-xs font-semibold text-gray-500 mb-1">Total Actif</p>
+                    <p className="text-2xl font-semibold font-black">{fmt(bilanData.actif.total)} <span className="text-sm text-gray-400">MAD</span></p>
                 </div>
-                <div className="bg-neo-white border-3 border-neo-black shadow-neo p-5">
-                    <p className="text-xs font-display font-semibold text-gray-500 mb-1">Total Passif</p>
-                    <p className="text-2xl font-display font-black">{fmt(bilanData.passif.total)} <span className="text-sm text-gray-400">MAD</span></p>
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-5">
+                    <p className="text-xs font-semibold text-gray-500 mb-1">Total Passif</p>
+                    <p className="text-2xl font-semibold font-black">{fmt(bilanData.passif.total)} <span className="text-sm text-gray-400">MAD</span></p>
                 </div>
-                <div className={`border-3 border-neo-black shadow-neo p-5 ${resultat >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
-                    <p className="text-xs font-display font-semibold text-gray-500 mb-1">Résultat Net</p>
-                    <p className={`text-2xl font-display font-black ${resultat >= 0 ? 'text-green-700' : 'text-red-600'}`}>
+                <div className={`border border-slate-200 rounded-xl shadow-md p-5 ${resultat >= 0 ? 'bg-green-50' : 'bg-red-50'}`}>
+                    <p className="text-xs font-semibold text-gray-500 mb-1">Résultat Net</p>
+                    <p className={`text-2xl font-semibold font-black ${resultat >= 0 ? 'text-green-700' : 'text-red-600'}`}>
                         {fmt(Math.abs(resultat))} <span className="text-sm">{resultat >= 0 ? 'Bénéfice' : 'Perte'}</span>
                     </p>
                 </div>
@@ -319,14 +319,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
             {activeTab === 'bilan' && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     {/* ── ACTIF ── */}
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden flex flex-col">
-                        <div className="px-5 py-4 border-b-3 border-neo-black bg-neo-blue/10 flex items-center gap-2">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden flex flex-col">
+                        <div className="px-5 py-4 border-b border-slate-200 bg-indigo-50/10 flex items-center gap-2">
                             <TrendingUp className="w-4 h-4" />
-                            <h3 className="font-display font-bold text-sm uppercase tracking-wider">ACTIF</h3>
+                            <h3 className="font-bold text-sm uppercase tracking-wider">ACTIF</h3>
                         </div>
                         <table className="w-full text-sm flex-1">
                             <thead>
-                                <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-500">
+                                <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-500">
                                     <th className="text-left px-4 py-3 w-24">Compte</th>
                                     <th className="text-left px-4 py-3">Libellé</th>
                                     <th className="text-right px-4 py-3 w-36">Montant</th>
@@ -334,8 +334,8 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                             </thead>
                             <tbody>
                                 {/* Actif immobilisé */}
-                                <tr className="bg-neo-blue/5">
-                                    <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                                <tr className="bg-indigo-50/5">
+                                    <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                         Actif Immobilisé
                                     </td>
                                 </tr>
@@ -348,14 +348,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-800">{fmt(l.solde)}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-display font-bold text-gray-600">Sous-total</td>
+                                <tr className="border-b border-gray-200 bg-gray-50">
+                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-bold text-gray-600">Sous-total</td>
                                     <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(bilanData.actif.immobilise.total)}</td>
                                 </tr>
 
                                 {/* Actif circulant */}
-                                <tr className="bg-neo-blue/5">
-                                    <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                                <tr className="bg-indigo-50/5">
+                                    <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                         Actif Circulant (H.T)
                                     </td>
                                 </tr>
@@ -368,14 +368,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-800">{fmt(l.solde)}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-display font-bold text-gray-600">Sous-total</td>
+                                <tr className="border-b border-gray-200 bg-gray-50">
+                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-bold text-gray-600">Sous-total</td>
                                     <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(bilanData.actif.circulant.total)}</td>
                                 </tr>
 
                                 {/* Trésorerie actif */}
-                                <tr className="bg-neo-blue/5">
-                                    <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                                <tr className="bg-indigo-50/5">
+                                    <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                         Trésorerie - Actif
                                     </td>
                                 </tr>
@@ -388,14 +388,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-800">{fmt(l.solde)}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-display font-bold text-gray-600">Sous-total</td>
+                                <tr className="border-b border-gray-200 bg-gray-50">
+                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-bold text-gray-600">Sous-total</td>
                                     <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(bilanData.actif.tresorerie.total)}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
-                                <tr className="bg-neo-black text-white">
-                                    <td colSpan={2} className="px-4 py-4 font-display font-bold text-sm uppercase tracking-wider">TOTAL ACTIF</td>
+                                <tr className="bg-slate-900 text-white">
+                                    <td colSpan={2} className="px-4 py-4 font-bold text-sm uppercase tracking-wider">TOTAL ACTIF</td>
                                     <td className="px-4 py-4 text-right font-mono font-bold text-lg">{fmt(bilanData.actif.total)}</td>
                                 </tr>
                             </tfoot>
@@ -403,14 +403,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                     </div>
 
                     {/* ── PASSIF ── */}
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden flex flex-col">
-                        <div className="px-5 py-4 border-b-3 border-neo-black bg-neo-yellow/20 flex items-center gap-2">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden flex flex-col">
+                        <div className="px-5 py-4 border-b border-slate-200 bg-teal-50/20 flex items-center gap-2">
                             <TrendingDown className="w-4 h-4" />
-                            <h3 className="font-display font-bold text-sm uppercase tracking-wider">PASSIF</h3>
+                            <h3 className="font-bold text-sm uppercase tracking-wider">PASSIF</h3>
                         </div>
                         <table className="w-full text-sm flex-1">
                             <thead>
-                                <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-500">
+                                <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-500">
                                     <th className="text-left px-4 py-3 w-24">Compte</th>
                                     <th className="text-left px-4 py-3">Libellé</th>
                                     <th className="text-right px-4 py-3 w-36">Montant</th>
@@ -418,8 +418,8 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                             </thead>
                             <tbody>
                                 {/* Financement permanent */}
-                                <tr className="bg-neo-yellow/10">
-                                    <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-yellow-700 border-b border-yellow-200">
+                                <tr className="bg-teal-50/10">
+                                    <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-yellow-700 border-b border-yellow-200">
                                         Financement Permanent
                                     </td>
                                 </tr>
@@ -432,14 +432,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-800">{fmt(l.solde)}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-display font-bold text-gray-600">Sous-total</td>
+                                <tr className="border-b border-gray-200 bg-gray-50">
+                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-bold text-gray-600">Sous-total</td>
                                     <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(bilanData.passif.permanent.total)}</td>
                                 </tr>
 
                                 {/* Passif circulant */}
-                                <tr className="bg-neo-yellow/10">
-                                    <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-yellow-700 border-b border-yellow-200">
+                                <tr className="bg-teal-50/10">
+                                    <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-yellow-700 border-b border-yellow-200">
                                         Passif Circulant (H.T)
                                     </td>
                                 </tr>
@@ -452,14 +452,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-800">{fmt(l.solde)}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-display font-bold text-gray-600">Sous-total</td>
+                                <tr className="border-b border-gray-200 bg-gray-50">
+                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-bold text-gray-600">Sous-total</td>
                                     <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(bilanData.passif.circulant.total)}</td>
                                 </tr>
 
                                 {/* Trésorerie passif */}
-                                <tr className="bg-neo-yellow/10">
-                                    <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-yellow-700 border-b border-yellow-200">
+                                <tr className="bg-teal-50/10">
+                                    <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-yellow-700 border-b border-yellow-200">
                                         Trésorerie - Passif
                                     </td>
                                 </tr>
@@ -472,14 +472,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-gray-800">{fmt(l.solde)}</td>
                                     </tr>
                                 ))}
-                                <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-display font-bold text-gray-600">Sous-total</td>
+                                <tr className="border-b border-gray-200 bg-gray-50">
+                                    <td colSpan={2} className="px-4 py-2 text-right text-xs font-bold text-gray-600">Sous-total</td>
                                     <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(bilanData.passif.tresorerie.total)}</td>
                                 </tr>
                             </tbody>
                             <tfoot>
-                                <tr className="bg-neo-black text-white">
-                                    <td colSpan={2} className="px-4 py-4 font-display font-bold text-sm uppercase tracking-wider">TOTAL PASSIF</td>
+                                <tr className="bg-slate-900 text-white">
+                                    <td colSpan={2} className="px-4 py-4 font-bold text-sm uppercase tracking-wider">TOTAL PASSIF</td>
                                     <td className="px-4 py-4 text-right font-mono font-bold text-lg">{fmt(bilanData.passif.total)}</td>
                                 </tr>
                             </tfoot>
@@ -490,16 +490,16 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
 
             {/* ─── CPC ───────────────────────────────────── */}
             {activeTab === 'cpc' && (
-                <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden flex flex-col">
-                    <div className="px-5 py-4 border-b-3 border-neo-black bg-neo-blue/10 flex items-center gap-2">
+                <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden flex flex-col">
+                    <div className="px-5 py-4 border-b border-slate-200 bg-indigo-50/10 flex items-center gap-2">
                         <BarChart3 className="w-4 h-4" />
-                        <h3 className="font-display font-bold text-sm uppercase tracking-wider">
+                        <h3 className="font-bold text-sm uppercase tracking-wider">
                             Compte de Produits et Charges
                         </h3>
                     </div>
                     <table className="w-full text-sm flex-1">
                         <thead>
-                            <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-500">
+                            <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-500">
                                 <th className="text-left px-4 py-3 w-24">Compte</th>
                                 <th className="text-left px-4 py-3">Libellé</th>
                                 <th className="text-right px-4 py-3 w-36">Montant</th>
@@ -507,8 +507,8 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                         </thead>
                         <tbody>
                             {/* ── I. Exploitation ── */}
-                            <tr className="bg-neo-blue/5">
-                                <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                            <tr className="bg-indigo-50/5">
+                                <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                     I. Exploitation
                                 </td>
                             </tr>
@@ -526,16 +526,16 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
-                            <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-display font-bold text-gray-600">Résultat Exploitation</td>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-bold text-gray-600">Résultat Exploitation</td>
                                 <td className={`px-4 py-2 text-right font-mono font-bold ${cpcData.exploitation.resultat < 0 ? 'text-red-600' : 'text-green-700'}`}>
                                     {fmt(cpcData.exploitation.resultat)}
                                 </td>
                             </tr>
 
                             {/* ── II. Financier ── */}
-                            <tr className="bg-neo-blue/5">
-                                <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                            <tr className="bg-indigo-50/5">
+                                <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                     II. Financier
                                 </td>
                             </tr>
@@ -553,16 +553,16 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
-                            <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-display font-bold text-gray-600">Résultat Financier</td>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-bold text-gray-600">Résultat Financier</td>
                                 <td className={`px-4 py-2 text-right font-mono font-bold ${cpcData.financier.resultat < 0 ? 'text-red-600' : 'text-green-700'}`}>
                                     {fmt(cpcData.financier.resultat)}
                                 </td>
                             </tr>
 
                             {/* ── III. Résultat Courant ── */}
-                            <tr className="bg-neo-yellow/20 border-t-2 border-b-2 border-neo-black">
-                                <td colSpan={2} className="px-4 py-3 font-display font-bold text-sm uppercase tracking-wider">
+                            <tr className="bg-teal-50/20 border-t border-b border-slate-200">
+                                <td colSpan={2} className="px-4 py-3 font-bold text-sm uppercase tracking-wider">
                                     III. Résultat Courant
                                 </td>
                                 <td className={`px-4 py-3 text-right font-mono font-bold text-base ${cpcData.courant < 0 ? 'text-red-600' : 'text-green-700'}`}>
@@ -571,8 +571,8 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                             </tr>
 
                             {/* ── IV. Non Courant ── */}
-                            <tr className="bg-neo-blue/5">
-                                <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                            <tr className="bg-indigo-50/5">
+                                <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                     IV. Non Courant
                                 </td>
                             </tr>
@@ -590,16 +590,16 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
-                            <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-display font-bold text-gray-600">Résultat Non Courant</td>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-bold text-gray-600">Résultat Non Courant</td>
                                 <td className={`px-4 py-2 text-right font-mono font-bold ${cpcData.nonCourant.resultat < 0 ? 'text-red-600' : 'text-green-700'}`}>
                                     {fmt(cpcData.nonCourant.resultat)}
                                 </td>
                             </tr>
 
                             {/* ── V. Impôts ── */}
-                            <tr className="bg-neo-blue/5">
-                                <td colSpan={3} className="px-4 py-2 font-display font-bold text-xs uppercase tracking-wider text-neo-blue border-b border-neo-blue/20">
+                            <tr className="bg-indigo-50/5">
+                                <td colSpan={3} className="px-4 py-2 font-bold text-xs uppercase tracking-wider text-indigo-600 border-b border-neo-blue/20">
                                     V. Impôts sur les Résultats
                                 </td>
                             </tr>
@@ -612,14 +612,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
-                            <tr className="border-b-2 border-gray-200 bg-gray-50">
-                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-display font-bold text-gray-600">Sous-total</td>
+                            <tr className="border-b border-gray-200 bg-gray-50">
+                                <td colSpan={2} className="px-4 py-2 text-left text-xs font-bold text-gray-600">Sous-total</td>
                                 <td className="px-4 py-2 text-right font-mono font-bold text-gray-800">{fmt(cpcData.impot.totalCharges)}</td>
                             </tr>
                         </tbody>
                         <tfoot>
-                            <tr className="bg-neo-black text-white">
-                                <td colSpan={2} className="px-4 py-4 font-display font-bold text-sm uppercase tracking-wider">RÉSULTAT NET</td>
+                            <tr className="bg-slate-900 text-white">
+                                <td colSpan={2} className="px-4 py-4 font-bold text-sm uppercase tracking-wider">RÉSULTAT NET</td>
                                 <td className="px-4 py-4 text-right font-mono font-bold text-lg">{fmt(cpcData.net)}</td>
                             </tr>
                         </tfoot>
@@ -630,12 +630,12 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
             {/* Ajustements Modal */}
             {showAdjustModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo-lg p-6 w-full max-w-md">
-                        <div className="flex items-center justify-between mb-6 border-b-3 border-neo-black pb-4">
-                            <h3 className="font-display text-xl font-bold">Ajustement — {selectedYear}</h3>
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl-lg p-6 w-full max-w-md">
+                        <div className="flex items-center justify-between mb-6 border-b border-slate-200 pb-4">
+                            <h3 className="font-semibold text-xl font-bold">Ajustement — {selectedYear}</h3>
                             <button
                                 onClick={() => setShowAdjustModal(false)}
-                                className="w-8 h-8 border-3 border-neo-black flex items-center justify-center hover:bg-neo-pink transition-all"
+                                className="w-8 h-8 border border-slate-200 rounded-xl flex items-center justify-center hover:bg-neo-pink transition-all"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -644,11 +644,11 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                         <div className="space-y-4">
                             {/* Account Selector */}
                             <div>
-                                <label className="block text-xs font-display font-bold text-gray-500 uppercase mb-1">Compte</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Compte</label>
                                 <select
                                     value={adjustForm.account}
                                     onChange={(e) => setAdjustForm(f => ({ ...f, account: e.target.value }))}
-                                    className="w-full border-3 border-neo-black px-3 py-2 font-display font-semibold text-sm bg-white"
+                                    className="w-full border border-slate-200 rounded-xl px-3 py-2 font-semibold text-sm bg-white"
                                 >
                                     {STRUCTURAL_ACCOUNTS.map(acc => (
                                         <option key={acc.code} value={acc.code}>{acc.code} — {acc.name}</option>
@@ -658,25 +658,25 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
 
                             {/* Label */}
                             <div>
-                                <label className="block text-xs font-display font-bold text-gray-500 uppercase mb-1">Libellé (optionnel)</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Libellé (optionnel)</label>
                                 <input
                                     type="text"
                                     value={adjustForm.label}
                                     onChange={(e) => setAdjustForm(f => ({ ...f, label: e.target.value }))}
                                     placeholder="Ex: Apport initial"
-                                    className="w-full border-3 border-neo-black px-3 py-2 font-display text-sm"
+                                    className="w-full border border-slate-200 rounded-xl px-3 py-2 font-semibold text-sm"
                                 />
                             </div>
 
                             {/* Amount */}
                             <div>
-                                <label className="block text-xs font-display font-bold text-gray-500 uppercase mb-1">Montant (MAD)</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Montant (MAD)</label>
                                 <input
                                     type="number"
                                     value={adjustForm.amount}
                                     onChange={(e) => setAdjustForm(f => ({ ...f, amount: e.target.value }))}
                                     placeholder="100000"
-                                    className="w-full border-3 border-neo-black px-3 py-2 font-display text-sm font-bold"
+                                    className="w-full border border-slate-200 rounded-xl px-3 py-2 font-semibold text-sm font-bold"
                                     min="0"
                                     step="0.01"
                                 />
@@ -688,14 +688,14 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                         <div className="flex gap-3 mt-6">
                             <button
                                 onClick={() => setShowAdjustModal(false)}
-                                className="flex-1 px-4 py-2 border-3 border-neo-black font-display font-bold text-sm bg-neo-white hover:bg-gray-100 transition-all"
+                                className="flex-1 px-4 py-2 border border-slate-200 rounded-xl font-bold text-sm bg-white hover:bg-gray-100 transition-all"
                             >
                                 Annuler
                             </button>
                             <button
                                 onClick={saveAdjustment}
                                 disabled={adjustSaving || !adjustForm.amount}
-                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border-3 border-neo-black font-display font-bold text-sm bg-green-300 shadow-neo hover:-translate-y-0.5 hover:shadow-neo-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-slate-200 rounded-xl font-bold text-sm bg-green-300 shadow-md hover:-translate-y-0.5 hover:shadow-md-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Save className="w-4 h-4" />
                                 {adjustSaving ? 'Enregistrement…' : 'Enregistrer'}

@@ -192,10 +192,10 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
         return (
             <div className="section-container py-12 flex items-center justify-center">
                 <div className="text-center">
-                    <div className="w-12 h-12 bg-neo-yellow border-3 border-neo-black mx-auto mb-4 flex items-center justify-center animate-pulse">
+                    <div className="w-12 h-12 bg-teal-50 border border-slate-200 rounded-xl mx-auto mb-4 flex items-center justify-center animate-pulse">
                         <Loader2 className="w-6 h-6 animate-spin" />
                     </div>
-                    <p className="font-display font-semibold">Chargement du document...</p>
+                    <p className="font-semibold">Chargement du document...</p>
                 </div>
             </div>
         );
@@ -204,11 +204,11 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
     if (!doc) {
         return (
             <div className="section-container py-12 text-center">
-                <div className="w-16 h-16 bg-neo-red border-3 border-neo-black mx-auto mb-4 flex items-center justify-center">
+                <div className="w-16 h-16 bg-rose-50 border border-slate-200 rounded-xl mx-auto mb-4 flex items-center justify-center">
                     <FileText className="w-8 h-8" />
                 </div>
-                <h2 className="font-display text-2xl font-bold mb-2">Document introuvable</h2>
-                <button onClick={() => router.back()} className="btn-neo mt-4">
+                <h2 className="font-semibold text-2xl font-bold mb-2">Document introuvable</h2>
+                <button onClick={() => router.back()} className="inline-flex items-center justify-center gap-2 px-4 py-2 font-medium rounded-xl transition-all shadow-sm mt-4">
                     <ArrowLeft className="w-4 h-4" /> Retour
                 </button>
             </div>
@@ -220,11 +220,11 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
     const isPdf = doc.file_type === 'application/pdf';
 
     const statusConfig: Record<string, { label: string; bg: string }> = {
-        processed: { label: 'Achevé', bg: 'bg-neo-lime' },
-        completed: { label: 'Achevé', bg: 'bg-neo-lime' },
-        pending: { label: 'En attente', bg: 'bg-neo-yellow' },
-        processing: { label: 'En cours', bg: 'bg-neo-blue' },
-        error: { label: 'Erreur', bg: 'bg-neo-red' },
+        processed: { label: 'Achevé', bg: 'bg-sky-50' },
+        completed: { label: 'Achevé', bg: 'bg-sky-50' },
+        pending: { label: 'En attente', bg: 'bg-teal-50' },
+        processing: { label: 'En cours', bg: 'bg-indigo-50' },
+        error: { label: 'Erreur', bg: 'bg-rose-50' },
     };
 
     const status = statusConfig[doc.status] || statusConfig.pending;
@@ -262,7 +262,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
             {/* Back button */}
             <button
                 onClick={() => router.back()}
-                className="flex items-center gap-2 font-display font-semibold text-sm mb-6 hover:text-gray-600 transition-colors group"
+                className="flex items-center gap-2 font-semibold text-sm mb-6 hover:text-gray-600 transition-colors group"
             >
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 Retour au tableau de bord
@@ -272,15 +272,15 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                 {/* Left: Document details */}
                 <div className="lg:col-span-3 space-y-6">
                     {/* Header Card */}
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo p-6">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-6">
                         <div className="flex items-start gap-4 mb-6">
-                            <div className="w-14 h-14 bg-neo-cream border-3 border-neo-black flex items-center justify-center shrink-0">
+                            <div className="w-14 h-14 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center shrink-0">
                                 <FileText className="w-7 h-7" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h1 className="font-display text-2xl font-bold mb-2 truncate">{getDisplayName(doc)}</h1>
+                                <h1 className="font-semibold text-2xl font-bold mb-2 truncate">{getDisplayName(doc)}</h1>
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <span className={`px-3 py-1 text-xs font-display font-bold border-2 border-neo-black ${status.bg}`}>
+                                    <span className={`px-3 py-1 text-xs font-bold border border-slate-200 rounded-xl ${status.bg}`}>
                                         {status.label}
                                     </span>
                                     <span className="text-xs text-gray-500 font-mono">
@@ -290,7 +290,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                         <button
                                             onClick={handleReprocess}
                                             disabled={reprocessing}
-                                            className="flex items-center gap-1.5 px-3 py-1 text-xs font-display font-semibold bg-neo-blue border-2 border-neo-black hover:-translate-y-0.5 transition-transform disabled:opacity-50"
+                                            className="flex items-center gap-1.5 px-3 py-1 text-xs font-semibold bg-indigo-50 border border-slate-200 rounded-xl hover:-translate-y-0.5 transition-transform disabled:opacity-50"
                                         >
                                             <RefreshCw className={`w-3.5 h-3.5 ${reprocessing ? 'animate-spin' : ''}`} />
                                             {reprocessing ? 'Traitement...' : 'Relancer le traitement'}
@@ -299,7 +299,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                     {duplicate && (
                                         <span
                                             onClick={() => router.push(`/dashboard/documents/${duplicate.id}`)}
-                                            className="flex items-center gap-1.5 px-3 py-1 text-xs font-display font-bold bg-red-100 text-red-700 border-2 border-red-400 cursor-pointer hover:-translate-y-0.5 transition-transform"
+                                            className="flex items-center gap-1.5 px-3 py-1 text-xs font-bold bg-red-100 text-red-700 border border-red-400 cursor-pointer hover:-translate-y-0.5 transition-transform"
                                         >
                                             <AlertTriangle className="w-3.5 h-3.5" />
                                             ⚠ Doublon détecté
@@ -311,11 +311,11 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
 
                         {/* Info Cards Grid */}
                         <div className="flex items-center justify-between mb-3">
-                            <span className="font-display font-bold text-sm text-gray-500 uppercase tracking-wider">Données extraites</span>
+                            <span className="font-bold text-sm text-gray-500 uppercase tracking-wider">Données extraites</span>
                             {!editing ? (
                                 <button
                                     onClick={startEditing}
-                                    className="p-1 text-gray-400 hover:text-neo-blue hover:bg-neo-blue/10 border border-transparent hover:border-neo-blue/30 transition-all"
+                                    className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/10 border border-transparent hover:border-neo-blue/30 transition-all"
                                     title="Modifier les données"
                                 >
                                     <Pencil className="w-4 h-4" />
@@ -332,7 +332,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                     <button
                                         onClick={handleSaveEdit}
                                         disabled={saving}
-                                        className="p-1.5 text-white bg-neo-blue hover:bg-neo-blue/80 border border-neo-blue transition-all flex items-center gap-1 text-xs font-display font-bold px-2 disabled:opacity-50"
+                                        className="p-1.5 text-white bg-indigo-50 hover:bg-indigo-50/80 border border-neo-blue transition-all flex items-center gap-1 text-xs font-bold px-2 disabled:opacity-50"
                                     >
                                         <Save className="w-3.5 h-3.5" />{saving ? '...' : 'Enregistrer'}
                                     </button>
@@ -343,12 +343,12 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                         {!editing ? (
                             <div className="grid grid-cols-2 gap-3">
                                 {infoCards.map((card, i) => (
-                                    <div key={i} className="bg-neo-cream border-2 border-neo-black p-4">
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 font-display font-semibold mb-2">
+                                    <div key={i} className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                        <div className="flex items-center gap-2 text-xs text-gray-500 font-semibold mb-2">
                                             <card.icon className="w-4 h-4" />
                                             {card.label}
                                         </div>
-                                        <p className="font-display font-bold text-lg">{card.value}</p>
+                                        <p className="font-bold text-lg">{card.value}</p>
                                     </div>
                                 ))}
                             </div>
@@ -365,8 +365,8 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                     { key: 'payment_method', label: 'Mode de paiement', icon: CreditCard, type: 'text' },
                                     { key: 'payment_date', label: 'Date de paiement', icon: Clock, type: 'date' },
                                 ].map((field) => (
-                                    <div key={field.key} className="bg-neo-cream border-2 border-neo-black p-4">
-                                        <div className="flex items-center gap-2 text-xs text-gray-500 font-display font-semibold mb-2">
+                                    <div key={field.key} className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                        <div className="flex items-center gap-2 text-xs text-gray-500 font-semibold mb-2">
                                             <field.icon className="w-4 h-4" />
                                             {field.label}
                                         </div>
@@ -375,7 +375,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                             step={field.type === 'number' ? '0.01' : undefined}
                                             value={editForm[field.key] ?? ''}
                                             onChange={e => setEditForm(f => ({ ...f, [field.key]: e.target.value }))}
-                                            className="w-full px-2 py-1.5 border-2 border-neo-black font-display font-bold text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue bg-white"
+                                            className="w-full px-2 py-1.5 border border-slate-200 rounded-xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue bg-white"
                                         />
                                     </div>
                                 ))}
@@ -385,10 +385,10 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
 
                     {/* Write section here: Data is Comptabilisée */}
                     {doc?.accounting_status && (
-                        <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                            <div className="bg-neo-cream border-b-3 border-neo-black p-4 flex items-center justify-between">
-                                <h3 className="font-display font-bold text-lg flex items-center gap-2">
-                                    <FileText className="w-5 h-5 text-neo-blue" />
+                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                            <div className="bg-slate-50 border-b border-slate-200 p-4 flex items-center justify-between">
+                                <h3 className="font-bold text-lg flex items-center gap-2">
+                                    <FileText className="w-5 h-5 text-indigo-600" />
                                     État Comptable
                                 </h3>
                                 <span className={`px-3 py-1 font-bold text-xs border rounded-full ${doc.accounting_status === 'saisi' ? 'bg-blue-100 text-blue-700 border-blue-300' :
@@ -409,14 +409,14 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                 <div className="overflow-x-auto">
                                     <table className="w-full text-xs">
                                         <thead>
-                                            <tr className="bg-gray-50 border-b border-neo-black text-left">
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600">Jrn</th>
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600">Date</th>
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600">Compte</th>
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600">Libellé</th>
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600 text-right">Débit</th>
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600 text-right">Crédit</th>
-                                                <th className="px-3 py-2 font-display font-bold text-gray-600 text-center">Let.</th>
+                                            <tr className="bg-gray-50 border-b border-slate-200 text-left">
+                                                <th className="px-3 py-2 font-bold text-gray-600">Jrn</th>
+                                                <th className="px-3 py-2 font-bold text-gray-600">Date</th>
+                                                <th className="px-3 py-2 font-bold text-gray-600">Compte</th>
+                                                <th className="px-3 py-2 font-bold text-gray-600">Libellé</th>
+                                                <th className="px-3 py-2 font-bold text-gray-600 text-right">Débit</th>
+                                                <th className="px-3 py-2 font-bold text-gray-600 text-right">Crédit</th>
+                                                <th className="px-3 py-2 font-bold text-gray-600 text-center">Let.</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -424,7 +424,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                                 <tr key={e.id} className={`border-b border-gray-100 ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                                                     <td className="px-3 py-2 font-mono font-bold text-[10px] text-gray-500">{e.journal}</td>
                                                     <td className="px-3 py-2 font-mono text-[10px] text-gray-500">{e.entry_date}</td>
-                                                    <td className="px-3 py-2 font-mono font-bold text-neo-blue">{e.account}</td>
+                                                    <td className="px-3 py-2 font-mono font-bold text-indigo-600">{e.account}</td>
                                                     <td className="px-3 py-2 truncate max-w-[150px]" title={e.label}>{e.label}</td>
                                                     <td className="px-3 py-2 font-mono font-bold text-right text-green-700">{e.debit > 0 ? Number(e.debit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}</td>
                                                     <td className="px-3 py-2 font-mono font-bold text-right text-red-600">{e.credit > 0 ? Number(e.credit).toLocaleString('fr-FR', { minimumFractionDigits: 2 }) : ''}</td>
@@ -437,7 +437,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                     </table>
                                 </div>
                             ) : (
-                                <div className="p-6 text-center text-sm font-display text-gray-500">
+                                <div className="p-6 text-center text-sm font-semibold text-gray-500">
                                     Aucune écriture comptable trouvée.
                                 </div>
                             )}
@@ -448,28 +448,28 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                 {/* Right: Preview & Actions */}
                 <div className="lg:col-span-2 space-y-6">
                     {/* File Preview */}
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo p-6 relative">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-6 relative">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="font-display font-bold flex items-center gap-2">
+                            <h3 className="font-bold flex items-center gap-2">
                                 <Eye className="w-5 h-5" />
                                 Aperçu du fichier
                             </h3>
                             {previewUrl && (isImage || previewUrl.toLowerCase().endsWith('.jpg') || previewUrl.toLowerCase().endsWith('.png')) && (
-                                <div className="flex items-center bg-white border-2 border-neo-black rounded overflow-hidden">
-                                    <button onClick={() => setZoomLevel(z => Math.max(0.25, z - 0.25))} className="p-1.5 hover:bg-gray-100 border-r-2 border-neo-black" title="Dézoomer"><ZoomOut className="w-4 h-4" /></button>
+                                <div className="flex items-center bg-white border border-slate-200 rounded-xl rounded overflow-hidden">
+                                    <button onClick={() => setZoomLevel(z => Math.max(0.25, z - 0.25))} className="p-1.5 hover:bg-gray-100 border-r border-slate-200" title="Dézoomer"><ZoomOut className="w-4 h-4" /></button>
                                     <div className="px-3 font-mono text-sm font-bold w-16 text-center">{Math.round(zoomLevel * 100)}%</div>
-                                    <button onClick={() => setZoomLevel(z => Math.min(4, z + 0.25))} className="p-1.5 hover:bg-gray-100 border-l-2 border-neo-black" title="Zoomer"><ZoomIn className="w-4 h-4" /></button>
-                                    <button onClick={() => setZoomLevel(1)} className="px-3 py-1.5 text-xs font-display font-bold hover:bg-gray-100 border-l-2 border-neo-black">RESET</button>
+                                    <button onClick={() => setZoomLevel(z => Math.min(4, z + 0.25))} className="p-1.5 hover:bg-gray-100 border-l border-slate-200" title="Zoomer"><ZoomIn className="w-4 h-4" /></button>
+                                    <button onClick={() => setZoomLevel(1)} className="px-3 py-1.5 text-xs font-bold hover:bg-gray-100 border-l border-slate-200">RESET</button>
                                 </div>
                             )}
                         </div>
 
                         {previewUrl ? (
-                            <div className="border-3 border-neo-black overflow-hidden bg-neo-cream">
+                            <div className="border border-slate-200 rounded-xl overflow-hidden bg-slate-50">
                                 {isImage ? (
                                     <div
                                         ref={scrollContainerRef}
-                                        className={`w-full h-[800px] overflow-auto border-neo-black ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                                        className={`w-full h-[800px] overflow-auto border-slate-200 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
                                         onMouseDown={(e) => {
                                             if (!scrollContainerRef.current) return;
                                             setIsDragging(true);
@@ -518,7 +518,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                 )}
                             </div>
                         ) : (
-                            <div className="w-full h-64 border-3 border-dashed border-gray-300 flex items-center justify-center bg-neo-cream">
+                            <div className="w-full h-64 border border-dashed border-gray-300 flex items-center justify-center bg-slate-50">
                                 <div className="text-center text-gray-400">
                                     <FileText className="w-12 h-12 mx-auto mb-2" />
                                     <p className="text-sm">Chargement de l&apos;aperçu...</p>
@@ -529,7 +529,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                         <button
                             onClick={handleDownload}
                             disabled={!previewUrl}
-                            className="btn-neo w-full mt-4 justify-center disabled:opacity-50"
+                            className="inline-flex items-center justify-center gap-2 px-4 py-2 font-medium rounded-xl transition-all shadow-sm w-full mt-4 justify-center disabled:opacity-50"
                         >
                             <Download className="w-4 h-4" />
                             Télécharger l&apos;original

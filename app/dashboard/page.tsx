@@ -13,11 +13,11 @@ import { LogOut, LayoutDashboard, FileText, BookOpen, BarChart3, Sparkles, Trend
 
 type ModuleKey = 'dashboard' | 'documents' | 'comptabilite' | 'agentia';
 
-const modules: { key: ModuleKey; label: string; icon: any; bg: string; description: string }[] = [
-    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, bg: 'bg-neo-yellow', description: 'Vue d\'ensemble' },
-    { key: 'documents', label: 'Documents', icon: FileText, bg: 'bg-neo-lime', description: 'Archivage & Classification' },
-    { key: 'comptabilite', label: 'Comptabilité', icon: BookOpen, bg: 'bg-neo-blue', description: 'Saisie & Lettrage' },
-    { key: 'agentia', label: 'Agent IA', icon: Sparkles, bg: 'bg-neo-purple', description: 'Assistant Intelligent' },
+const modules: { key: ModuleKey; label: string; icon: any; iconBg: string; iconColor: string; description: string }[] = [
+    { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', description: 'Vue d\'ensemble' },
+    { key: 'documents', label: 'Documents', icon: FileText, iconBg: 'bg-blue-100', iconColor: 'text-blue-600', description: 'Archivage & Classification' },
+    { key: 'comptabilite', label: 'Comptabilité', icon: BookOpen, iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600', description: 'Saisie & Lettrage' },
+    { key: 'agentia', label: 'Agent IA', icon: Sparkles, iconBg: 'bg-violet-100', iconColor: 'text-violet-600', description: 'Assistant Intelligent' },
 ];
 
 export default function DashboardPage() {
@@ -47,23 +47,23 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="section-container py-8">
+        <div className="section-container max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                <div>
-                    <div className="flex items-center gap-3 mb-2">
-                        <div className="w-10 h-10 bg-neo-yellow border-3 border-neo-black shadow-neo flex items-center justify-center">
-                            <Sparkles className="w-5 h-5" />
-                        </div>
-                        <h1 className="font-display text-3xl sm:text-4xl font-bold">AutoCompta</h1>
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center shadow-sm">
+                        <Sparkles className="w-6 h-6 text-white" />
                     </div>
-                    <p className="text-gray-600 ml-[52px]">
-                        Bienvenue{userName ? `, ${userName}` : ''} 👋
-                    </p>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight text-slate-900">AutoCompta</h1>
+                        <p className="text-slate-500 text-sm">
+                            Bienvenue{userName ? `, ${userName}` : ''} 👋
+                        </p>
+                    </div>
                 </div>
                 <button
                     onClick={handleLogout}
-                    className="btn-neo-secondary text-sm flex items-center gap-2 self-start"
+                    className="text-sm font-medium text-slate-600 hover:text-slate-900 flex items-center gap-2 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 px-4 py-2 rounded-lg transition-colors shadow-sm self-start sm:self-auto"
                 >
                     <LogOut className="w-4 h-4" />
                     Déconnexion
@@ -71,7 +71,7 @@ export default function DashboardPage() {
             </header>
 
             {/* Module Navigation */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 {modules.map((mod) => {
                     const Icon = mod.icon;
                     const isActive = activeModule === mod.key;
@@ -79,24 +79,22 @@ export default function DashboardPage() {
                         <button
                             key={mod.key}
                             onClick={() => setActiveModule(mod.key as ModuleKey)}
-                            className={`${mod.bg} border-3 border-neo-black p-5 text-left transition-all ${isActive
-                                ? 'shadow-neo-lg -translate-x-1 -translate-y-1 ring-2 ring-neo-black'
-                                : mod.key === 'agentia'
-                                    ? 'opacity-50 cursor-not-allowed grayscale'
-                                    : 'shadow-neo hover:shadow-neo-lg hover:-translate-x-1 hover:-translate-y-1 opacity-60 hover:opacity-100'
-                                } relative overflow-hidden`}
+                            className={`bg-white p-5 text-left transition-all duration-300 rounded-2xl border ${isActive
+                                ? 'border-emerald-500 shadow-md ring-1 ring-emerald-500'
+                                : 'border-slate-200 hover:border-slate-300 hover:shadow-sm'
+                                } relative overflow-hidden group`}
                         >
-
-                            <div className="flex items-center justify-between mb-3">
-                                <span className="text-sm font-display font-bold text-gray-800">{mod.label}</span>
-                                <div className={`w-8 h-8 flex items-center justify-center ${isActive ? 'bg-neo-black text-white' : 'bg-neo-black/20 text-gray-700'}`}>
-                                    <Icon className="w-4 h-4" />
+                            <div className="flex items-center gap-4">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors duration-300 shadow-sm
+                                 ${isActive ? mod.iconBg : 'bg-slate-100 group-hover:bg-slate-200'}
+                                 ${isActive ? mod.iconColor : 'text-slate-500'}`}>
+                                    <Icon className="w-6 h-6" />
+                                </div>
+                                <div>
+                                    <span className={`block text-sm font-bold mb-0.5 transition-colors ${isActive ? 'text-slate-900' : 'text-slate-700'}`}>{mod.label}</span>
+                                    <p className="text-xs text-slate-500 font-medium">{mod.description}</p>
                                 </div>
                             </div>
-                            <p className="text-xs text-gray-600 font-medium">{mod.description}</p>
-                            {isActive && (
-                                <div className="w-full h-1 bg-neo-black mt-3"></div>
-                            )}
                         </button>
                     );
                 })}
