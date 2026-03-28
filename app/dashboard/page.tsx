@@ -8,6 +8,7 @@ import DocumentList from '@/components/modules/DocumentList';
 import DocumentFilters, { AccountingFilters } from '@/components/modules/DocumentFilters';
 import ComptabiliteModule from '@/components/modules/ComptabiliteModule';
 import DashboardModule from '@/components/modules/DashboardModule';
+import AgentIAModule from '@/components/modules/AgentIAModule';
 import { LogOut, LayoutDashboard, FileText, BookOpen, BarChart3, Sparkles, TrendingUp, Clock, DollarSign } from 'lucide-react';
 
 type ModuleKey = 'dashboard' | 'documents' | 'comptabilite' | 'agentia';
@@ -16,7 +17,7 @@ const modules: { key: ModuleKey; label: string; icon: any; bg: string; descripti
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, bg: 'bg-neo-yellow', description: 'Vue d\'ensemble' },
     { key: 'documents', label: 'Documents', icon: FileText, bg: 'bg-neo-lime', description: 'Archivage & Classification' },
     { key: 'comptabilite', label: 'Comptabilité', icon: BookOpen, bg: 'bg-neo-blue', description: 'Saisie & Lettrage' },
-    { key: 'agentia', label: 'Agent IA', icon: Sparkles, bg: 'bg-gray-200', description: 'Work in Progress - Bientôt' },
+    { key: 'agentia', label: 'Agent IA', icon: Sparkles, bg: 'bg-neo-purple', description: 'Assistant Intelligent' },
 ];
 
 export default function DashboardPage() {
@@ -77,8 +78,7 @@ export default function DashboardPage() {
                     return (
                         <button
                             key={mod.key}
-                            onClick={() => mod.key !== 'agentia' && setActiveModule(mod.key as ModuleKey)}
-                            disabled={mod.key === 'agentia'}
+                            onClick={() => setActiveModule(mod.key as ModuleKey)}
                             className={`${mod.bg} border-3 border-neo-black p-5 text-left transition-all ${isActive
                                 ? 'shadow-neo-lg -translate-x-1 -translate-y-1 ring-2 ring-neo-black'
                                 : mod.key === 'agentia'
@@ -86,11 +86,7 @@ export default function DashboardPage() {
                                     : 'shadow-neo hover:shadow-neo-lg hover:-translate-x-1 hover:-translate-y-1 opacity-60 hover:opacity-100'
                                 } relative overflow-hidden`}
                         >
-                            {mod.key === 'agentia' && (
-                                <div className="absolute top-2 right-[-20px] bg-neo-black text-white text-[10px] font-bold px-8 py-1 rotate-45">
-                                    Bientôt
-                                </div>
-                            )}
+
                             <div className="flex items-center justify-between mb-3">
                                 <span className="text-sm font-display font-bold text-gray-800">{mod.label}</span>
                                 <div className={`w-8 h-8 flex items-center justify-center ${isActive ? 'bg-neo-black text-white' : 'bg-neo-black/20 text-gray-700'}`}>
@@ -127,6 +123,10 @@ export default function DashboardPage() {
 
             {activeModule === 'comptabilite' && (
                 <ComptabiliteModule />
+            )}
+
+            {activeModule === 'agentia' && (
+                <AgentIAModule />
             )}
         </div>
     );

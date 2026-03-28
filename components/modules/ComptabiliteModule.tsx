@@ -784,11 +784,11 @@ export default function ComptabiliteModule() {
 
     if (loading) {
         return (
-            <div className="bg-neo-white border-3 border-neo-black shadow-neo p-8 text-center">
-                <div className="w-12 h-12 bg-neo-blue border-3 border-neo-black mx-auto mb-4 flex items-center justify-center animate-pulse">
+            <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-8 text-center">
+                <div className="w-12 h-12 bg-indigo-50 border border-slate-200 rounded-xl mx-auto mb-4 flex items-center justify-center animate-pulse">
                     <BookOpen className="w-6 h-6" />
                 </div>
-                <p className="font-display font-semibold">Chargement…</p>
+                <p className="font-semibold">Chargement…</p>
             </div>
         );
     }
@@ -807,15 +807,15 @@ export default function ComptabiliteModule() {
                                     <button
                                         key={tab.key}
                                         onClick={() => { setActiveTab(tab.key); setSelectedAccount(null); }}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border-2 border-black transition-all ${activeTab === tab.key
-                                            ? 'bg-[#99ccff] text-[#1a2f4c] shadow-[3px_3px_0px_#000] -translate-x-0.5 -translate-y-0.5'
-                                            : 'bg-white text-[#4a6482] hover:bg-gray-50'
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border transition-all rounded-lg ${activeTab === tab.key
+                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-sm'
+                                            : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50'
                                             }`}
                                     >
                                         <Icon className="w-3.5 h-3.5" />
                                         {tab.label}
                                         {tab.badge !== undefined && tab.badge > 0 && (
-                                            <span className={`ml-1 px-1.5 py-0.5 text-[10px] items-center justify-center flex border border-black ${activeTab === tab.key ? 'bg-[#ffe58f] text-black font-bold' : 'bg-gray-200 text-gray-700'}`}>
+                                            <span className={`ml-1 px-1.5 py-0.5 text-[10px] items-center justify-center flex rounded-md font-bold ${activeTab === tab.key ? 'bg-emerald-200 text-emerald-800' : 'bg-slate-100 text-slate-600'}`}>
                                                 {tab.badge}
                                             </span>
                                         )}
@@ -831,7 +831,7 @@ export default function ComptabiliteModule() {
                                         <button
                                             key={tab.key}
                                             onClick={() => { setActiveTab(tab.key); setSelectedAccount(null); }}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border-2 border-black transition-all ${activeTab === tab.key
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-semibold border border-black transition-all ${activeTab === tab.key
                                                 ? 'bg-[#99ccff] text-[#1a2f4c] shadow-[3px_3px_0px_#000] -translate-x-0.5 -translate-y-0.5'
                                                 : 'bg-white text-[#4a6482] hover:bg-gray-50'
                                                 }`}
@@ -867,7 +867,7 @@ export default function ComptabiliteModule() {
                                     XLSX.utils.book_append_sheet(wb, ws, "Journal");
                                     XLSX.writeFile(wb, `Export_Journal_${new Date().toISOString().split('T')[0]}.xlsx`);
                                 }}
-                                className="flex items-center gap-2 bg-[#dcfce7] text-[#166534] border-2 border-[#166534] px-4 py-2 font-display font-bold text-sm shadow-[2px_2px_0px_#166534] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#166534] transition-all"
+                                className="flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 px-4 py-2 font-bold text-sm shadow-sm hover:bg-emerald-100 rounded-xl transition-all"
                             >
                                 <FileSpreadsheet className="w-4 h-4" />
                                 Excel
@@ -885,7 +885,7 @@ export default function ComptabiliteModule() {
                                         setShowSagePopup(true);
                                     }
                                 }}
-                                className="flex items-center gap-2 bg-[#fee2e2] text-[#991b1b] border-2 border-[#991b1b] px-4 py-2 font-display font-bold text-sm shadow-[2px_2px_0px_#991b1b] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#991b1b] transition-all"
+                                className="flex items-center gap-2 bg-rose-50 text-rose-700 border border-rose-200 px-4 py-2 font-bold text-sm shadow-sm hover:bg-rose-100 rounded-xl transition-all"
                             >
                                 <Download className="w-4 h-4" />
                                 Sage (TXT)
@@ -1123,7 +1123,7 @@ export default function ComptabiliteModule() {
 
                                     doc.save(`Journal_${journalFilter}_${now.toISOString().split('T')[0]}.pdf`);
                                 }}
-                                className="flex items-center gap-2 bg-[#fef3c7] text-[#92400e] border-2 border-[#92400e] px-4 py-2 font-display font-bold text-sm shadow-[2px_2px_0px_#92400e] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[3px_3px_0px_#92400e] transition-all"
+                                className="flex items-center gap-2 bg-amber-50 text-amber-700 border border-amber-200 px-4 py-2 font-bold text-sm shadow-sm hover:bg-amber-100 rounded-xl transition-all"
                             >
                                 <Download className="w-4 h-4" />
                                 PDF
@@ -1142,23 +1142,23 @@ export default function ComptabiliteModule() {
                                 placeholder="Rechercher…"
                                 value={searchQuery}
                                 onChange={e => setSearchQuery(e.target.value)}
-                                className="pl-9 pr-3 py-2 text-sm border-3 border-neo-black font-mono w-48 focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                className="pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl font-mono w-48 focus:outline-none focus:ring-2 focus:ring-neo-blue"
                             />
                         </div>
                         <input
                             type="month"
                             value={dateFilter}
                             onChange={e => setDateFilter(e.target.value)}
-                            className="px-3 py-2 text-sm border-3 border-neo-black font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                            className="px-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
                         />
                     </div>
                 )}
 
                 {/* ─── À SAISIR ───────────────────────────────── */}
                 {activeTab === 'asaisir' && (<>
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                        <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-yellow/30 flex items-center justify-between">
-                            <h2 className="font-display font-bold text-lg flex items-center gap-2">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-200 bg-teal-50/30 flex items-center justify-between">
+                            <h2 className="font-bold text-lg flex items-center gap-2">
                                 <FileText className="w-5 h-5" />
                                 Documents à comptabiliser
                             </h2>
@@ -1168,7 +1168,7 @@ export default function ComptabiliteModule() {
                                     <button
                                         onClick={handleComptabiliser}
                                         disabled={comptabilising}
-                                        className="flex items-center gap-2 px-4 py-2 bg-neo-black text-white font-display font-bold text-sm border-3 border-neo-black shadow-neo hover:shadow-neo-lg hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                                        className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white font-bold text-sm border border-slate-200 rounded-xl shadow-md hover:shadow-md-lg hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all disabled:opacity-50"
                                     >
                                         {comptabilising ? (
                                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -1182,7 +1182,7 @@ export default function ComptabiliteModule() {
                         </div>
 
                         {/* Filter bar */}
-                        <div className="px-4 py-3 border-b-2 border-gray-200 bg-gray-50/50">
+                        <div className="px-4 py-3 border-b border-gray-200 bg-gray-50/50">
                             <div className="flex items-center gap-2 flex-wrap">
                                 {/* Search */}
                                 <div className="relative flex-1 min-w-[200px]">
@@ -1192,7 +1192,7 @@ export default function ComptabiliteModule() {
                                         placeholder="Rechercher fournisseur, réf, n° facture…"
                                         value={pendingSearch}
                                         onChange={e => setPendingSearch(e.target.value)}
-                                        className="w-full pl-9 pr-3 py-2 text-sm border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue focus:border-neo-blue"
+                                        className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 bg-white"
                                     />
                                     {pendingSearch && (
                                         <button onClick={() => setPendingSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -1204,7 +1204,7 @@ export default function ComptabiliteModule() {
                                 <select
                                     value={pendingType}
                                     onChange={e => setPendingType(e.target.value)}
-                                    className="px-3 py-2 text-sm border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue bg-white"
+                                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white cursor-pointer"
                                 >
                                     <option value="all">Tous types</option>
                                     <option value="invoice">Facture</option>
@@ -1215,7 +1215,7 @@ export default function ComptabiliteModule() {
                                 <select
                                     value={pendingSortBy}
                                     onChange={e => setPendingSortBy(e.target.value as any)}
-                                    className="px-3 py-2 text-sm border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue bg-white"
+                                    className="px-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white cursor-pointer"
                                 >
                                     <option value="date">Trier par date</option>
                                     <option value="supplier">Trier par fournisseur</option>
@@ -1224,7 +1224,7 @@ export default function ComptabiliteModule() {
                                 </select>
                                 <button
                                     onClick={() => setPendingSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
-                                    className="flex items-center gap-1 px-2.5 py-2 text-sm border-2 border-gray-200 text-gray-600 hover:border-gray-300 transition-all"
+                                    className="flex items-center gap-1 px-2.5 py-2 text-sm border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-all"
                                     title={pendingSortOrder === 'asc' ? 'Croissant' : 'Décroissant'}
                                 >
                                     {pendingSortOrder === 'asc' ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
@@ -1232,7 +1232,9 @@ export default function ComptabiliteModule() {
                                 {/* Toggle advanced */}
                                 <button
                                     onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                                    className={`flex items-center gap-1 px-3 py-2 text-sm border-2 font-display font-bold transition-all ${showAdvancedFilters ? 'border-neo-blue bg-neo-blue/10 text-neo-blue' : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                                    className={`flex items-center gap-1 px-3 py-2 text-sm rounded-xl font-bold transition-all border ${showAdvancedFilters
+                                        ? 'border-indigo-300 bg-indigo-50 text-indigo-600'
+                                        : 'border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-slate-300'
                                         }`}
                                 >
                                     <SlidersHorizontal className="w-3.5 h-3.5" />
@@ -1242,7 +1244,7 @@ export default function ComptabiliteModule() {
                                 {hasActiveFilters && (
                                     <button
                                         onClick={resetPendingFilters}
-                                        className="flex items-center gap-1 px-3 py-2 text-sm border-2 border-red-200 text-red-500 hover:bg-red-50 font-display font-bold transition-all"
+                                        className="flex items-center gap-1 px-3 py-2 text-sm border border-red-200 rounded-xl text-red-500 hover:bg-red-50 font-bold transition-all"
                                     >
                                         <RotateCcw className="w-3.5 h-3.5" />
                                         Réinitialiser
@@ -1255,29 +1257,29 @@ export default function ComptabiliteModule() {
                                 <div className="flex items-center gap-3 mt-3 flex-wrap">
                                     <div className="flex items-center gap-1">
                                         <CalendarDays className="w-3.5 h-3.5 text-gray-400" />
-                                        <span className="text-xs text-gray-500 font-display">Date:</span>
+                                        <span className="text-xs text-gray-500 font-semibold">Date:</span>
                                         <input
                                             type="date"
                                             value={pendingDateFrom}
                                             onChange={e => setPendingDateFrom(e.target.value)}
-                                            className="px-2 py-1 text-xs border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                            className="px-2 py-1 text-xs border border-slate-200 rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                         />
                                         <span className="text-xs text-gray-400">→</span>
                                         <input
                                             type="date"
                                             value={pendingDateTo}
                                             onChange={e => setPendingDateTo(e.target.value)}
-                                            className="px-2 py-1 text-xs border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                            className="px-2 py-1 text-xs border border-slate-200 rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                         />
                                     </div>
                                     <div className="flex items-center gap-1">
-                                        <span className="text-xs text-gray-500 font-display">Montant TTC:</span>
+                                        <span className="text-xs text-gray-500 font-semibold">Montant TTC:</span>
                                         <input
                                             type="number"
                                             placeholder="Min"
                                             value={pendingMinAmount}
                                             onChange={e => setPendingMinAmount(e.target.value)}
-                                            className="w-24 px-2 py-1 text-xs border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                            className="w-24 px-2 py-1 text-xs border border-slate-200 rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                         />
                                         <span className="text-xs text-gray-400">→</span>
                                         <input
@@ -1285,7 +1287,7 @@ export default function ComptabiliteModule() {
                                             placeholder="Max"
                                             value={pendingMaxAmount}
                                             onChange={e => setPendingMaxAmount(e.target.value)}
-                                            className="w-24 px-2 py-1 text-xs border-2 border-gray-200 font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                            className="w-24 px-2 py-1 text-xs border border-slate-200 rounded-lg font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300"
                                         />
                                     </div>
                                 </div>
@@ -1294,22 +1296,22 @@ export default function ComptabiliteModule() {
 
                         {pendingDocs.length === 0 ? (
                             <div className="p-12 text-center">
-                                <div className="w-16 h-16 bg-green-50 border-3 border-green-200 mx-auto mb-4 flex items-center justify-center">
+                                <div className="w-16 h-16 bg-green-50 border border-green-200 mx-auto mb-4 flex items-center justify-center">
                                     <FileCheck className="w-8 h-8 text-green-500" />
                                 </div>
-                                <p className="text-gray-500 font-display font-semibold">Tous les documents sont comptabilisés ✓</p>
+                                <p className="text-gray-500 font-semibold">Tous les documents sont comptabilisés ✓</p>
                                 <p className="text-xs text-gray-400 mt-1">Consultez le Journal pour voir les écritures</p>
                             </div>
                         ) : filteredPendingDocs.length === 0 ? (
                             <div className="p-8 text-center">
-                                <p className="text-gray-400 font-display font-semibold">Aucun document ne correspond aux filtres</p>
-                                <button onClick={resetPendingFilters} className="text-xs text-neo-blue hover:underline mt-1">Réinitialiser les filtres</button>
+                                <p className="text-gray-400 font-semibold">Aucun document ne correspond aux filtres</p>
+                                <button onClick={resetPendingFilters} className="text-xs text-indigo-600 hover:underline mt-1">Réinitialiser les filtres</button>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                        <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                             <th className="px-4 py-3 w-10">
                                                 <input
                                                     type="checkbox"
@@ -1321,7 +1323,6 @@ export default function ComptabiliteModule() {
                                             <th className="text-left px-4 py-3">Réf.</th>
                                             <th className="text-left px-4 py-3">Date</th>
                                             <th className="text-left px-4 py-3">Fournisseur</th>
-                                            <th className="text-left px-4 py-3">Compte PCM</th>
                                             <th className="text-right px-4 py-3">HT</th>
                                             <th className="text-right px-4 py-3">TVA</th>
                                             <th className="text-right px-4 py-3">TTC</th>
@@ -1336,7 +1337,7 @@ export default function ComptabiliteModule() {
                                                     key={doc.id}
                                                     onClick={() => toggleDoc(doc.id)}
                                                     className={`border-b border-gray-100 cursor-pointer transition-all ${isSelected
-                                                        ? 'bg-neo-blue/10 border-l-4 border-l-neo-blue'
+                                                        ? 'bg-indigo-50/10 border-l-4 border-l-neo-blue'
                                                         : 'hover:bg-gray-50'
                                                         }`}
                                                 >
@@ -1349,17 +1350,13 @@ export default function ComptabiliteModule() {
                                                             className="w-4 h-4 accent-neo-blue cursor-pointer"
                                                         />
                                                     </td>
-                                                    <td className="px-4 py-3 font-mono text-xs">
-                                                        <span className="bg-gray-100 px-2 py-0.5 border border-gray-300">{doc.internal_ref || 'N/A'}</span>
+                                                    <td className="px-4 py-3">
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-mono border border-slate-200">
+                                                            {doc.internal_ref || 'N/A'}
+                                                        </span>
                                                     </td>
                                                     <td className="px-4 py-3 font-mono text-xs text-gray-600">{d?.date || '—'}</td>
                                                     <td className="px-4 py-3 font-medium text-gray-700">{d?.supplier || doc.original_name}</td>
-                                                    <td className="px-4 py-3">
-                                                        <span className="font-mono text-xs font-bold bg-neo-blue/10 px-2 py-0.5 border border-neo-blue/30">
-                                                            {d?.category_code || '—'}
-                                                        </span>
-                                                        <span className="text-xs text-gray-400 ml-1">{d?.category_name || ''}</span>
-                                                    </td>
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.amount_ht ? fmt(Number(d.amount_ht)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.tva_amount ? fmt(Number(d.tva_amount)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono font-bold">{d?.total_amount ? fmt(Number(d.total_amount)) : '—'}</td>
@@ -1373,25 +1370,23 @@ export default function ComptabiliteModule() {
                     </div>
 
                     {/* ─── TEXTE → ÉCRITURES (inside À saisir) ─── */}
-                    <div className="bg-neo-white border-3 border-neo-black shadow-neo mt-4">
-                        <div className="px-6 py-4 border-b-3 border-neo-black bg-gradient-to-r from-purple-50 to-blue-50 flex items-center justify-between">
-                            <h2 className="font-display font-bold text-lg flex items-center gap-2">
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl mt-4">
+                        <div className="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-purple-50 to-blue-50 flex items-center justify-between">
+                            <h2 className="font-bold text-lg flex items-center gap-2">
                                 <Sparkles className="w-5 h-5 text-purple-600" />
                                 Texte → Écritures comptables
                             </h2>
-                            <div className="flex items-center gap-3">
-                                <span className="text-xs text-gray-500 font-mono">Gemini AI + RAG</span>
-                            </div>
+
                         </div>
                         <div className="p-6 space-y-6">
                             <div>
-                                <label className="block font-display font-semibold text-sm mb-2">Collez ou saisissez le texte du document</label>
+                                <label className="block font-semibold text-sm mb-2">Collez ou saisissez le texte du document</label>
                                 <textarea
                                     value={texteInput}
                                     onChange={e => setTexteInput(e.target.value)}
                                     placeholder="Collez ici le texte de votre facture, reçu ou opération comptable…"
                                     rows={6}
-                                    className="w-full p-4 border-3 border-neo-black font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 resize-y bg-neo-cream"
+                                    className="w-full p-4 border border-slate-200 rounded-xl font-mono text-sm focus:outline-none focus:ring-2 focus:ring-purple-400 resize-y bg-slate-50"
                                 />
                             </div>
 
@@ -1421,7 +1416,7 @@ export default function ComptabiliteModule() {
                                         setTexteLoading(false);
                                     }}
                                     disabled={texteLoading || !texteInput.trim()}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white font-display font-bold border-3 border-neo-black shadow-neo hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
+                                    className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white font-bold border border-slate-200 rounded-xl shadow-md hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:hover:translate-y-0"
                                 >
                                     {texteLoading ? (
                                         <><Loader2 className="w-4 h-4 animate-spin" /> Analyse en cours…</>
@@ -1432,7 +1427,7 @@ export default function ComptabiliteModule() {
                                 {texteResult && (
                                     <button
                                         onClick={() => { setTexteResult(null); setTexteInput(''); }}
-                                        className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-red-600 border-2 border-gray-300 hover:border-red-300 transition-all"
+                                        className="flex items-center gap-1 px-3 py-2 text-sm text-gray-600 hover:text-red-600 border border-gray-300 hover:border-red-300 transition-all"
                                     >
                                         <RotateCcw className="w-3.5 h-3.5" /> Recommencer
                                     </button>
@@ -1440,7 +1435,7 @@ export default function ComptabiliteModule() {
                             </div>
 
                             {texteError && (
-                                <div className="flex items-center gap-2 p-3 bg-red-50 border-2 border-red-300 text-red-700 text-sm">
+                                <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-300 text-red-700 text-sm">
                                     <AlertCircle className="w-4 h-4 shrink-0" />
                                     {texteError}
                                 </div>
@@ -1449,10 +1444,10 @@ export default function ComptabiliteModule() {
                             {texteResult && (
                                 <div className="space-y-4">
                                     <div className="flex items-center gap-3 flex-wrap">
-                                        <span className="bg-purple-100 text-purple-800 px-3 py-1 text-xs font-display font-bold border border-purple-300">
+                                        <span className="bg-purple-100 text-purple-800 px-3 py-1 text-xs font-bold border border-purple-300">
                                             {texteResult.journal || 'OD'}
                                         </span>
-                                        <span className="font-display font-semibold text-sm">{texteResult.description}</span>
+                                        <span className="font-semibold text-sm">{texteResult.description}</span>
                                         {texteResult.supplier && (
                                             <span className="text-xs text-gray-500">• {texteResult.supplier}</span>
                                         )}
@@ -1461,10 +1456,10 @@ export default function ComptabiliteModule() {
                                         )}
                                     </div>
 
-                                    <div className="border-3 border-neo-black overflow-hidden">
+                                    <div className="border border-slate-200 rounded-xl overflow-hidden">
                                         <table className="w-full text-sm">
                                             <thead>
-                                                <tr className="bg-neo-black text-white text-xs font-display uppercase tracking-wider">
+                                                <tr className="bg-slate-900 text-white text-xs font-semibold uppercase tracking-wider">
                                                     <th className="text-left px-4 py-2.5">Compte</th>
                                                     <th className="text-left px-4 py-2.5">Libellé</th>
                                                     <th className="text-right px-4 py-2.5">Débit</th>
@@ -1473,7 +1468,7 @@ export default function ComptabiliteModule() {
                                             </thead>
                                             <tbody>
                                                 {(Array.isArray(texteResult.entries) ? texteResult.entries : []).map((e: any, i: number) => (
-                                                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-neo-cream/60'}>
+                                                    <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/60'}>
                                                         <td className="px-4 py-2.5 font-mono">
                                                             <span className="font-bold">{e.account}</span>
                                                             <span className="text-gray-500 ml-2 text-xs">{e.account_name}</span>
@@ -1489,7 +1484,7 @@ export default function ComptabiliteModule() {
                                                 ))}
                                             </tbody>
                                             <tfoot>
-                                                <tr className="border-t-3 border-neo-black bg-gray-100 font-display font-bold">
+                                                <tr className="border-t border-slate-200 bg-gray-100 font-bold">
                                                     <td colSpan={2} className="px-4 py-2.5 text-right uppercase text-xs tracking-wider">Total</td>
                                                     <td className="px-4 py-2.5 text-right font-mono">
                                                         {fmt((Array.isArray(texteResult.entries) ? texteResult.entries : []).reduce((s: number, e: any) => s + (e.debit || 0), 0) || 0)}
@@ -1590,7 +1585,7 @@ export default function ComptabiliteModule() {
                                                 setTexteSaving(false);
                                             }}
                                             disabled={texteSaving}
-                                            className="flex items-center gap-2 px-5 py-2.5 bg-neo-lime text-neo-black font-display font-bold border-3 border-neo-black shadow-neo hover:-translate-y-0.5 transition-all disabled:opacity-50"
+                                            className="flex items-center gap-2 px-5 py-2.5 bg-sky-50 text-slate-800 font-bold border border-slate-200 rounded-xl shadow-md hover:-translate-y-0.5 transition-all disabled:opacity-50"
                                         >
                                             {texteSaving ? (
                                                 <><Loader2 className="w-4 h-4 animate-spin" /> Enregistrement…</>
@@ -1609,9 +1604,9 @@ export default function ComptabiliteModule() {
                 {/* ─── JOURNAL ─────────────────────────────────── */}
                 {
                     activeTab === 'journal' && (
-                        <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                            <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-cream flex items-center justify-between">
-                                <h2 className="font-display font-bold text-lg flex items-center gap-2">
+                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                <h2 className="font-bold text-lg flex items-center gap-2">
                                     <BookOpen className="w-5 h-5" />
                                     Journal des écritures
                                 </h2>
@@ -1619,14 +1614,14 @@ export default function ComptabiliteModule() {
                             </div>
 
                             {/* Multi-journal filter tabs */}
-                            <div className="px-4 py-2 border-b-2 border-gray-200 bg-gray-50/50 flex items-center gap-1 flex-wrap">
+                            <div className="px-4 py-2 border-b border-gray-200 bg-gray-50/50 flex items-center gap-1 flex-wrap">
                                 {(['tous', 'HA', 'BQ', 'CA', 'OD'] as JournalFilter[]).map(jf => (
                                     <button
                                         key={jf}
                                         onClick={() => setJournalFilter(jf)}
-                                        className={`px-3 py-1.5 text-xs font-display font-bold border-2 transition-all ${journalFilter === jf
-                                            ? 'border-neo-black bg-neo-black text-white'
-                                            : 'border-gray-200 text-gray-500 hover:border-gray-300'
+                                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${journalFilter === jf
+                                            ? 'bg-slate-900 text-white shadow-sm'
+                                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
                                             }`}
                                     >
                                         {jf === 'tous' ? 'Tous' : jf === 'HA' ? '📦 Achats' : jf === 'BQ' ? '🏦 Banque' : jf === 'CA' ? '💵 Caisse' : '📝 OD'}
@@ -1637,7 +1632,7 @@ export default function ComptabiliteModule() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                        <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                             <th className="text-left px-3 py-3 w-16">Jour.</th>
                                             <th className="text-left px-3 py-3 w-28">N° Pièce</th>
                                             <th className="text-left px-3 py-3 w-24">Date</th>
@@ -1653,7 +1648,7 @@ export default function ComptabiliteModule() {
                                     <tbody>
                                         {filteredEntries.length === 0 ? (
                                             <tr>
-                                                <td colSpan={10} className="text-center py-12 text-gray-400 font-display">
+                                                <td colSpan={10} className="text-center py-12 text-gray-400 font-semibold">
                                                     Aucune écriture — comptabilisez des documents depuis l&apos;onglet &quot;À saisir&quot;
                                                 </td>
                                             </tr>
@@ -1670,7 +1665,7 @@ export default function ComptabiliteModule() {
                                                 return (
                                                     <tr
                                                         key={entry.id}
-                                                        className={`border-b border-gray-100 hover:bg-neo-yellow/10 transition-colors ${isFirstOfGroup ? 'border-t-2 border-t-gray-200' : ''}`}
+                                                        className={`border-b border-gray-100 hover:bg-teal-50/10 transition-colors ${isFirstOfGroup ? 'border-t border-t-gray-200' : ''}`}
                                                     >
                                                         <td className="px-3 py-2.5">
                                                             <span className={`text-[10px] font-bold font-mono px-1.5 py-0.5 border uppercase ${entry.journal === 'HA' ? 'bg-blue-50 text-blue-700 border-blue-200' : entry.journal === 'BQ' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : entry.journal === 'CA' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
@@ -1679,7 +1674,7 @@ export default function ComptabiliteModule() {
                                                         </td>
                                                         <td className="px-3 py-2.5 font-mono text-xs font-bold text-gray-700">
                                                             {isFirstOfGroup && entry.piece_num ? (
-                                                                <span className="bg-gray-100 flex items-center justify-center px-2 py-0.5 border border-gray-300 rounded shadow-sm text-[10px]">
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-mono font-bold border border-slate-200">
                                                                     {entry.piece_num}
                                                                 </span>
                                                             ) : ''}
@@ -1689,11 +1684,11 @@ export default function ComptabiliteModule() {
                                                         </td>
                                                         <td className="px-3 py-2.5 font-mono text-xs whitespace-nowrap">
                                                             {isFirstOfGroup ? (
-                                                                <span className="bg-gray-100 px-2 py-0.5 border border-gray-300 text-gray-700 text-[11px]">{entry.ref}</span>
+                                                                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-mono border border-slate-200">{entry.ref}</span>
                                                             ) : ''}
                                                         </td>
                                                         <td className="px-3 py-2.5">
-                                                            <span className="font-mono text-xs font-bold bg-neo-blue/10 px-2 py-0.5 border border-neo-blue/30">
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-xs font-mono font-bold border border-indigo-200">
                                                                 {entry.account}
                                                             </span>
                                                         </td>
@@ -1753,7 +1748,7 @@ export default function ComptabiliteModule() {
                                                                 )}
                                                                 <button
                                                                     onClick={() => startEditEntry(entry)}
-                                                                    className="group relative flex items-center justify-center p-1.5 text-gray-500 hover:text-neo-blue hover:bg-neo-blue/10 border border-transparent hover:border-neo-blue/30 transition-colors rounded"
+                                                                    className="group relative flex items-center justify-center p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50/10 border border-transparent hover:border-neo-blue/30 transition-colors rounded"
                                                                 >
                                                                     <Pencil className="w-4 h-4" />
                                                                     <span className="absolute bottom-full mb-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-gray-800 text-white text-[10px] font-bold rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-10 pointer-events-none shadow-sm">
@@ -1782,13 +1777,13 @@ export default function ComptabiliteModule() {
                                     </tbody>
                                     {filteredEntries.length > 0 && (
                                         <tfoot>
-                                            <tr className="bg-neo-black text-white font-display font-bold">
+                                            <tr className="bg-slate-900 text-white font-bold">
                                                 <td colSpan={7} className="px-4 py-3 text-right uppercase text-xs tracking-wider">Totaux</td>
                                                 <td className="px-4 py-3 text-right font-mono">{fmt(totalDebit)}</td>
                                                 <td className="px-4 py-3 text-right font-mono">{fmt(totalCredit)}</td>
                                                 <td colSpan={1}></td>
                                             </tr>
-                                            <tr className={`font-display text-xs ${Math.abs(totalDebit - totalCredit) < 0.01 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                            <tr className={`font-semibold text-xs ${Math.abs(totalDebit - totalCredit) < 0.01 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                                                 <td colSpan={10} className="px-4 py-2 text-center font-bold">
                                                     {Math.abs(totalDebit - totalCredit) < 0.01
                                                         ? '✓ Équilibre vérifié — Débit = Crédit'
@@ -1808,9 +1803,9 @@ export default function ComptabiliteModule() {
                 {
                     editingEntry && (
                         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setEditingEntry(null)}>
-                            <div className="bg-neo-white border-3 border-neo-black shadow-neo w-full max-w-lg" onClick={e => e.stopPropagation()}>
-                                <div className="px-6 py-3 border-b-3 border-neo-black bg-neo-blue/20 flex items-center justify-between">
-                                    <h3 className="font-display font-bold flex items-center gap-2">
+                            <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+                                <div className="px-6 py-3 border-b border-slate-200 bg-indigo-50/20 flex items-center justify-between">
+                                    <h3 className="font-bold flex items-center gap-2">
                                         <Pencil className="w-4 h-4" /> Modifier l&apos;écriture
                                     </h3>
                                     <button onClick={() => setEditingEntry(null)} className="p-1 hover:bg-red-100 transition-colors">
@@ -1820,53 +1815,53 @@ export default function ComptabiliteModule() {
                                 <div className="p-6 space-y-4">
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Compte</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Compte</label>
                                             <input
                                                 value={editForm.account}
                                                 onChange={e => setEditForm(f => ({ ...f, account: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black font-mono text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl font-mono text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                             />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Nom du compte</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Nom du compte</label>
                                             <input
                                                 value={editForm.account_name}
                                                 onChange={e => setEditForm(f => ({ ...f, account_name: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Libellé</label>
+                                        <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Libellé</label>
                                         <input
                                             value={editForm.label}
                                             onChange={e => setEditForm(f => ({ ...f, label: e.target.value }))}
-                                            className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Débit</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Débit</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
                                                 value={editForm.debit}
                                                 onChange={e => setEditForm(f => ({ ...f, debit: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black font-mono text-sm text-green-700 focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl font-mono text-sm text-green-700 focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                             />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Crédit</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Crédit</label>
                                             <input
                                                 type="number"
                                                 step="0.01"
                                                 value={editForm.credit}
                                                 onChange={e => setEditForm(f => ({ ...f, credit: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black font-mono text-sm text-red-600 focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl font-mono text-sm text-red-600 focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                             />
                                         </div>
                                     </div>
-                                    <div className="flex items-start gap-2 pt-3 pb-1 border-t-2 border-gray-100 mt-2">
+                                    <div className="flex items-start gap-2 pt-3 pb-1 border-t border-gray-100 mt-2">
                                         <input
                                             type="checkbox"
                                             id="syncOtherLines"
@@ -1882,13 +1877,13 @@ export default function ComptabiliteModule() {
                                     <div className="flex justify-end gap-2 pt-2">
                                         <button
                                             onClick={() => setEditingEntry(null)}
-                                            className="px-4 py-2 font-display font-bold text-sm border-2 border-neo-black bg-gray-100 hover:bg-gray-200 transition-colors"
+                                            className="px-4 py-2 font-bold text-sm border border-slate-200 rounded-xl bg-gray-100 hover:bg-gray-200 transition-colors"
                                         >
                                             Annuler
                                         </button>
                                         <button
                                             onClick={handleSaveEdit}
-                                            className="px-4 py-2 font-display font-bold text-sm border-2 border-neo-black bg-neo-blue text-white hover:bg-neo-blue/80 transition-colors flex items-center gap-1"
+                                            className="px-4 py-2 font-bold text-sm border border-slate-200 rounded-xl bg-indigo-50 text-white hover:bg-indigo-50/80 transition-colors flex items-center gap-1"
                                         >
                                             <Save className="w-4 h-4" /> Enregistrer
                                         </button>
@@ -1903,9 +1898,9 @@ export default function ComptabiliteModule() {
                 {
                     activeTab === 'grandlivre' && (
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                            <div className="lg:col-span-1 bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                                <div className="px-4 py-3 border-b-3 border-neo-black bg-neo-cream">
-                                    <h3 className="font-display font-bold text-sm flex items-center justify-between">
+                            <div className="lg:col-span-1 bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                                    <h3 className="font-bold text-sm flex items-center justify-between">
                                         <span className="flex items-center gap-2"><Hash className="w-4 h-4" /> Comptes</span>
                                         <label className="flex items-center gap-1.5 cursor-pointer">
                                             <input type="checkbox" checked={showSubAccountsGrandLivre} onChange={e => setShowSubAccountsGrandLivre(e.target.checked)} className="w-3 h-3 accent-neo-blue" />
@@ -1958,7 +1953,7 @@ export default function ComptabiliteModule() {
                                                     key={acc.account}
                                                     onClick={() => setSelectedAccount(selectedAccount === acc.account ? null : acc.account)}
                                                     className={`w-full text-left px-4 py-3 border-b border-gray-100 transition-all flex items-center justify-between ${selectedAccount === acc.account
-                                                        ? 'bg-neo-blue/20 border-l-4 border-l-neo-blue'
+                                                        ? 'bg-indigo-50/20 border-l-4 border-l-neo-blue'
                                                         : 'hover:bg-gray-50'
                                                         }`}
                                                 >
@@ -1995,13 +1990,13 @@ export default function ComptabiliteModule() {
                                                             key={s.account}
                                                             onClick={() => setSelectedAccount(selectedAccount === s.account ? null : s.account)}
                                                             className={`w-full text-left px-4 py-2 pl-8 border-b border-gray-50 bg-gray-50/50 transition-all flex items-center justify-between ${selectedAccount === s.account
-                                                                ? 'bg-neo-blue/10 border-l-4 border-l-neo-blue'
-                                                                : 'hover:bg-neo-yellow/5'
+                                                                ? 'bg-indigo-50/10 border-l-4 border-l-neo-blue'
+                                                                : 'hover:bg-teal-50/5'
                                                                 }`}
                                                         >
                                                             <div>
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="w-2 h-2 border-l-2 border-b-2 border-gray-300"></div>
+                                                                    <div className="w-2 h-2 border-l border-b border-gray-300"></div>
                                                                     <span className="font-mono text-[11px] text-gray-500">{s.account}</span>
                                                                 </div>
                                                                 <p className="text-[11px] text-gray-400 truncate max-w-[150px] ml-4">{s.name}</p>
@@ -2021,25 +2016,25 @@ export default function ComptabiliteModule() {
                                 </div>
                             </div>
 
-                            <div className="lg:col-span-3 bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
+                            <div className="lg:col-span-3 bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
                                 {selectedAccount ? (
                                     <>
-                                        <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-cream flex items-center justify-between">
-                                            <h3 className="font-display font-bold text-lg">
-                                                <span className="font-mono bg-neo-blue/10 px-2 py-1 border border-neo-blue/30 mr-2">{selectedAccount}</span>
+                                        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                            <h3 className="font-bold text-lg">
+                                                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-xs font-mono font-bold border border-indigo-200 mr-2">{selectedAccount}</span>
                                                 {getAccountName(selectedAccount)}
                                             </h3>
                                             <div className="flex items-center gap-2">
-                                                <label className="text-xs font-display font-bold text-gray-500 uppercase">Du</label>
-                                                <input type="date" value={reportDateFrom} onChange={e => setReportDateFrom(e.target.value)} className="px-2 py-1 text-sm border-2 border-neo-black font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
-                                                <label className="text-xs font-display font-bold text-gray-500 uppercase ml-2">Au</label>
-                                                <input type="date" value={reportDateTo} onChange={e => setReportDateTo(e.target.value)} className="px-2 py-1 text-sm border-2 border-neo-black font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                <label className="text-xs font-bold text-gray-500 uppercase">Du</label>
+                                                <input type="date" value={reportDateFrom} onChange={e => setReportDateFrom(e.target.value)} className="px-2 py-1 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                <label className="text-xs font-bold text-gray-500 uppercase ml-2">Au</label>
+                                                <input type="date" value={reportDateTo} onChange={e => setReportDateTo(e.target.value)} className="px-2 py-1 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                             </div>
                                         </div>
                                         <div className="overflow-x-auto">
                                             <table className="w-full text-sm">
                                                 <thead>
-                                                    <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                                    <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                                         <th className="text-left px-4 py-3">Date</th>
                                                         <th className="text-left px-4 py-3">Réf.</th>
                                                         <th className="text-left px-4 py-3">Libellé</th>
@@ -2075,11 +2070,11 @@ export default function ComptabiliteModule() {
                                                         return (
                                                             <>
                                                                 {(reportDateFrom && (ranDebit > 0 || ranCredit > 0)) && (
-                                                                    <tr className="bg-gray-200 border-b border-neo-black">
-                                                                        <td colSpan={3} className="px-4 py-2.5 text-right font-display font-bold text-xs uppercase tracking-wider text-gray-700">Report à Nouveau au {reportDateFrom}</td>
+                                                                    <tr className="bg-gray-200 border-b border-slate-200">
+                                                                        <td colSpan={3} className="px-4 py-2.5 text-right font-bold text-xs uppercase tracking-wider text-gray-700">Report à Nouveau au {reportDateFrom}</td>
                                                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(ranDebit)}</td>
                                                                         <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(ranCredit)}</td>
-                                                                        <td className={`px-4 py-2.5 text-right font-mono font-bold ${runningBalance >= 0 ? 'text-neo-black' : 'text-red-600'}`}>
+                                                                        <td className={`px-4 py-2.5 text-right font-mono font-bold ${runningBalance >= 0 ? 'text-slate-800' : 'text-red-600'}`}>
                                                                             {fmt(Math.abs(runningBalance))} {runningBalance >= 0 ? 'D' : 'C'}
                                                                         </td>
                                                                     </tr>
@@ -2087,10 +2082,10 @@ export default function ComptabiliteModule() {
                                                                 {periodEntries.map(entry => {
                                                                     runningBalance += entry.debit - entry.credit;
                                                                     return (
-                                                                        <tr key={entry.id} className="border-b border-gray-100 hover:bg-neo-yellow/10">
+                                                                        <tr key={entry.id} className="border-b border-gray-100 hover:bg-teal-50/10">
                                                                             <td className="px-4 py-2.5 font-mono text-xs">{entry.entry_date}</td>
                                                                             <td className="px-4 py-2.5 font-mono text-xs">
-                                                                                <span className="bg-gray-100 px-2 py-0.5 border border-gray-300 rounded shadow-sm flex items-center justify-center max-w-[max-content]">{entry.ref}</span>
+                                                                                <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-500 text-[10px] font-mono border border-slate-200 max-w-[max-content]">{entry.ref}</span>
                                                                             </td>
                                                                             <td className="px-4 py-2.5 text-gray-700">
                                                                                 {entry.lettre_code && (
@@ -2102,17 +2097,17 @@ export default function ComptabiliteModule() {
                                                                             </td>
                                                                             <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(entry.debit)}</td>
                                                                             <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(entry.credit)}</td>
-                                                                            <td className={`px-4 py-2.5 text-right font-mono font-bold ${runningBalance >= 0 ? 'text-neo-black' : 'text-red-600'}`}>
+                                                                            <td className={`px-4 py-2.5 text-right font-mono font-bold ${runningBalance >= 0 ? 'text-slate-800' : 'text-red-600'}`}>
                                                                                 {fmt(Math.abs(runningBalance))} {runningBalance >= 0 ? 'D' : 'C'}
                                                                             </td>
                                                                         </tr>
                                                                     );
                                                                 })}
-                                                                <tr className="bg-neo-blue/5 border-t-2 border-neo-black font-display text-xs">
+                                                                <tr className="bg-indigo-50/5 border-t border-slate-200 font-semibold text-xs">
                                                                     <td colSpan={3} className="px-4 py-3 text-right font-bold uppercase tracking-wider">Total Période</td>
                                                                     <td className="px-4 py-3 text-right font-mono font-bold">{fmt(periodEntries.reduce((s, e) => s + e.debit, 0))}</td>
                                                                     <td className="px-4 py-3 text-right font-mono font-bold">{fmt(periodEntries.reduce((s, e) => s + e.credit, 0))}</td>
-                                                                    <td className="px-4 py-3 bg-neo-black text-white text-right font-mono font-bold">
+                                                                    <td className="px-4 py-3 bg-slate-900 text-white text-right font-mono font-bold">
                                                                         Soldé: {fmt(Math.abs(runningBalance))} {runningBalance >= 0 ? 'D' : 'C'}
                                                                     </td>
                                                                 </tr>
@@ -2125,10 +2120,10 @@ export default function ComptabiliteModule() {
                                     </>
                                 ) : (
                                     <div className="p-12 text-center">
-                                        <div className="w-16 h-16 bg-gray-100 border-3 border-gray-200 mx-auto mb-4 flex items-center justify-center">
+                                        <div className="w-16 h-16 bg-gray-100 border border-gray-200 mx-auto mb-4 flex items-center justify-center">
                                             <ChevronRight className="w-8 h-8 text-gray-300" />
                                         </div>
-                                        <p className="text-gray-400 font-display font-semibold">Sélectionnez un compte à gauche</p>
+                                        <p className="text-gray-400 font-semibold">Sélectionnez un compte à gauche</p>
                                         <p className="text-xs text-gray-300 mt-1">pour voir le détail des écritures</p>
                                     </div>
                                 )}
@@ -2140,19 +2135,19 @@ export default function ComptabiliteModule() {
                 {/* ─── BALANCE ─────────────────────────────────── */}
                 {
                     activeTab === 'balance' && (
-                        <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                            <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-cream flex items-center justify-between">
-                                <h2 className="font-display font-bold text-lg flex items-center gap-2">
+                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                <h2 className="font-bold text-lg flex items-center gap-2">
                                     <BarChart3 className="w-5 h-5" /> Balance Générale
                                 </h2>
                                 <div className="flex items-center gap-4">
                                     <span className="text-xs font-mono text-gray-500">{accountsList.length} comptes</span>
 
-                                    <div className="flex items-center gap-2 border-l-2 border-gray-200 pl-4">
-                                        <label className="text-xs font-display font-bold text-gray-500 uppercase">Du</label>
-                                        <input type="date" value={reportDateFrom} onChange={e => setReportDateFrom(e.target.value)} className="px-2 py-1 text-sm border-2 border-neo-black font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
-                                        <label className="text-xs font-display font-bold text-gray-500 uppercase ml-2">Au</label>
-                                        <input type="date" value={reportDateTo} onChange={e => setReportDateTo(e.target.value)} className="px-2 py-1 text-sm border-2 border-neo-black font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                    <div className="flex items-center gap-2 border-l border-gray-200 pl-4">
+                                        <label className="text-xs font-bold text-gray-500 uppercase">Du</label>
+                                        <input type="date" value={reportDateFrom} onChange={e => setReportDateFrom(e.target.value)} className="px-2 py-1 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                        <label className="text-xs font-bold text-gray-500 uppercase ml-2">Au</label>
+                                        <input type="date" value={reportDateTo} onChange={e => setReportDateTo(e.target.value)} className="px-2 py-1 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                     </div>
                                 </div>
                             </div>
@@ -2160,7 +2155,7 @@ export default function ComptabiliteModule() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                        <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                             <th className="text-left px-4 py-3 w-20">N° Compte</th>
                                             <th className="text-left px-4 py-3">Libellé</th>
                                             <th className="text-right px-4 py-3 w-28" title="Solde Débiteur Début">RAN Débit</th>
@@ -2237,7 +2232,7 @@ export default function ComptabiliteModule() {
                                             const isExpanded = showAllSubAccountsBalance || expandedBalanceAccounts.has(p.account);
 
                                             renderRows.push(
-                                                <tr key={p.account} className={`border-b border-gray-100 hover:bg-neo-yellow/10 ${hasSubs ? 'cursor-pointer' : ''}`} onClick={() => { if (hasSubs) toggleBalanceAccount(p.account); }}>
+                                                <tr key={p.account} className={`border-b border-gray-100 hover:bg-teal-50/10 ${hasSubs ? 'cursor-pointer' : ''}`} onClick={() => { if (hasSubs) toggleBalanceAccount(p.account); }}>
                                                     <td className="px-4 py-3">
                                                         <div className="flex items-center gap-1">
                                                             {hasSubs && (
@@ -2245,7 +2240,7 @@ export default function ComptabiliteModule() {
                                                                     {isExpanded ? <ChevronRight className="w-3 h-3 rotate-90 transition-transform" /> : <ChevronRight className="w-3 h-3 transition-transform" />}
                                                                 </div>
                                                             )}
-                                                            <span className="font-mono text-xs font-bold bg-neo-blue/10 px-2 py-0.5 border border-neo-blue/30">{p.account}</span>
+                                                            <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 text-xs font-mono font-bold border border-indigo-200">{p.account}</span>
                                                         </div>
                                                     </td>
                                                     <td className="px-4 py-3 font-medium text-gray-700 truncate max-w-[200px]" title={p.name}>{p.name}</td>
@@ -2272,10 +2267,10 @@ export default function ComptabiliteModule() {
                                                     if (sFinalRanD === 0 && sFinalRanC === 0 && s.mvtD === 0 && s.mvtC === 0 && sFinalSoldeD === 0 && sFinalSoldeC === 0) continue;
 
                                                     renderRows.push(
-                                                        <tr key={s.account} className="border-b border-gray-50 bg-gray-50/50 hover:bg-neo-yellow/5">
+                                                        <tr key={s.account} className="border-b border-gray-50 bg-gray-50/50 hover:bg-teal-50/5">
                                                             <td className="px-4 py-2 pl-8">
                                                                 <div className="flex items-center gap-2">
-                                                                    <div className="w-2 h-2 border-l-2 border-b-2 border-gray-300"></div>
+                                                                    <div className="w-2 h-2 border-l border-b border-gray-300"></div>
                                                                     <span className="font-mono text-[11px] text-gray-500">{s.account}</span>
                                                                 </div>
                                                             </td>
@@ -2297,13 +2292,13 @@ export default function ComptabiliteModule() {
                                                 <tbody>
                                                     {renderRows.length === 0 ? (
                                                         <tr>
-                                                            <td colSpan={8} className="text-center py-12 text-gray-400 font-display">Aucune écriture comptable pour cette période</td>
+                                                            <td colSpan={8} className="text-center py-12 text-gray-400 font-semibold">Aucune écriture comptable pour cette période</td>
                                                         </tr>
                                                     ) : renderRows}
                                                 </tbody>
                                                 {renderRows.length > 0 && (
                                                     <tfoot>
-                                                        <tr className="bg-neo-black text-white font-display font-bold">
+                                                        <tr className="bg-slate-900 text-white font-bold">
                                                             <td colSpan={2} className="px-4 py-3 text-right uppercase text-xs tracking-wider">Totaux</td>
                                                             <td className="px-4 py-3 text-right font-mono text-xs">{fmt(totalRanD)}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-xs">{fmt(totalRanC)}</td>
@@ -2312,7 +2307,7 @@ export default function ComptabiliteModule() {
                                                             <td className="px-4 py-3 text-right font-mono text-xs">{fmt(totalSoldeD)}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-xs">{fmt(totalSoldeC)}</td>
                                                         </tr>
-                                                        <tr className={`font-display text-xs ${Math.abs(totalMvtD - totalMvtC) < 0.01 && Math.abs(totalRanD - totalRanC) < 0.01 && Math.abs(totalSoldeD - totalSoldeC) < 0.01 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                                                        <tr className={`font-semibold text-xs ${Math.abs(totalMvtD - totalMvtC) < 0.01 && Math.abs(totalRanD - totalRanC) < 0.01 && Math.abs(totalSoldeD - totalSoldeC) < 0.01 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                                                             <td colSpan={8} className="px-4 py-2 text-center font-bold">
                                                                 {Math.abs(totalMvtD - totalMvtC) < 0.01 && Math.abs(totalRanD - totalRanC) < 0.01 && Math.abs(totalSoldeD - totalSoldeC) < 0.01
                                                                     ? '✓ Balance équilibrée' : '⚠ Balance déséquilibrée (Vérifiez les totaux Débit/Crédit)'}
@@ -2332,24 +2327,24 @@ export default function ComptabiliteModule() {
                 {
                     activeTab === 'lettrage' && (
                         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                            <div className="lg:col-span-1 bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                                <div className="px-4 py-3 border-b-3 border-neo-black bg-neo-cream">
-                                    <h3 className="font-display font-bold text-sm flex items-center gap-2"><Link2 className="w-4 h-4" /> Comptes</h3>
+                            <div className="lg:col-span-1 bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                                <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+                                    <h3 className="font-bold text-sm flex items-center gap-2"><Link2 className="w-4 h-4" /> Comptes</h3>
                                 </div>
                                 <div className="max-h-[500px] overflow-y-auto">
                                     {accountsList.filter(a => a.account.startsWith('4') || a.account.startsWith('34')).map(acc => (
                                         <button key={acc.account} onClick={() => { setLettrageAccount(lettrageAccount === acc.account ? null : acc.account); setLettrageSelection(new Set()); }}
-                                            className={`w-full text-left px-4 py-3 border-b border-gray-100 transition-all flex items-center justify-between ${lettrageAccount === acc.account ? 'bg-neo-blue/20 border-l-4 border-l-neo-blue' : 'hover:bg-gray-50'}`}>
+                                            className={`w-full text-left px-4 py-3 border-b border-gray-100 transition-all flex items-center justify-between ${lettrageAccount === acc.account ? 'bg-indigo-50/20 border-l-4 border-l-neo-blue' : 'hover:bg-gray-50'}`}>
                                             <div><span className="font-mono text-xs font-bold">{acc.account}</span><p className="text-xs text-gray-500 truncate max-w-[150px]">{acc.name}</p></div>
                                         </button>
                                     ))}
                                 </div>
                             </div>
-                            <div className="lg:col-span-3 bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
+                            <div className="lg:col-span-3 bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
                                 {lettrageAccount ? (
                                     <>
-                                        <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-cream flex items-center justify-between flex-wrap gap-2">
-                                            <h3 className="font-display font-bold">Lettrage — <span className="font-mono">{lettrageAccount}</span> {getAccountName(lettrageAccount)}</h3>
+                                        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between flex-wrap gap-2">
+                                            <h3 className="font-bold">Lettrage — <span className="font-mono">{lettrageAccount}</span> {getAccountName(lettrageAccount)}</h3>
                                             <div className="flex items-center gap-2 flex-wrap">
                                                 {/* Lettrage Auto buttons */}
                                                 {(['montant', 'piece', 'facture'] as LettrageMode[]).map(mode => (
@@ -2363,7 +2358,7 @@ export default function ComptabiliteModule() {
                                                         }
                                                         alert(`${groups.length} groupe(s) lettré(s) par ${mode}`);
                                                         await fetchEntries();
-                                                    }} className="px-3 py-1.5 bg-purple-600 text-white font-display font-bold text-xs border-2 border-purple-900 shadow-neo hover:bg-purple-700 transition-all">
+                                                    }} className="px-3 py-1.5 bg-purple-600 text-white font-bold text-xs border border-purple-900 shadow-md hover:bg-purple-700 transition-all">
                                                         <Sparkles className="w-3 h-3 inline mr-1" />Auto: {mode === 'montant' ? 'Montant' : mode === 'piece' ? 'N° Pièce' : 'N° Facture'}
                                                     </button>
                                                 ))}
@@ -2377,26 +2372,26 @@ export default function ComptabiliteModule() {
                                                         const { error } = await supabase.from('journal_entries').update({ lettre_code: letter }).in('id', ids);
                                                         if (error) alert(`Erreur: ${error.message}`);
                                                         else { setLettrageSelection(new Set()); await fetchEntries(); }
-                                                    }} className="px-3 py-1.5 bg-amber-500 text-white font-display font-bold text-xs border-2 border-amber-700 shadow-neo hover:bg-amber-600 transition-all">
+                                                    }} className="px-3 py-1.5 bg-amber-500 text-white font-bold text-xs border border-amber-700 shadow-md hover:bg-amber-600 transition-all">
                                                         <Hash className="w-3 h-3 inline mr-1" />Pré-lettrer ({lettrageSelection.size})
                                                     </button>
                                                 )}
                                                 {/* Lettrage manuel */}
                                                 {lettrageSelection.size >= 2 && (
-                                                    <button onClick={handleLettrage} className="px-3 py-1.5 bg-neo-black text-white font-display font-bold text-xs border-2 border-neo-black shadow-neo hover:shadow-neo-lg transition-all">
+                                                    <button onClick={handleLettrage} className="px-3 py-1.5 bg-slate-900 text-white font-bold text-xs border border-slate-200 rounded-xl shadow-md hover:shadow-md-lg transition-all">
                                                         <CheckCircle2 className="w-3 h-3 inline mr-1" />Lettrer ({lettrageSelection.size})
                                                     </button>
                                                 )}
                                             </div>
                                         </div>
                                         <table className="w-full text-sm"><thead>
-                                            <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                            <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                                 <th className="px-3 py-3 w-10"></th><th className="text-left px-3 py-3">Date</th><th className="text-left px-3 py-3">Libellé</th>
                                                 <th className="text-right px-3 py-3">Débit</th><th className="text-right px-3 py-3">Crédit</th><th className="text-center px-3 py-3">Lettre</th><th className="text-center px-3 py-3 w-16">Act.</th>
                                             </tr>
                                         </thead><tbody>
                                                 {allEntries.filter(e => e.account === lettrageAccount).map(entry => (
-                                                    <tr key={entry.id} className={`border-b border-gray-100 cursor-pointer transition-all ${lettrageSelection.has(entry.id) ? 'bg-neo-blue/10' : entry.lettre_code ? 'bg-green-50' : 'hover:bg-gray-50'}`}
+                                                    <tr key={entry.id} className={`border-b border-gray-100 cursor-pointer transition-all ${lettrageSelection.has(entry.id) ? 'bg-indigo-50/10' : entry.lettre_code ? 'bg-green-50' : 'hover:bg-gray-50'}`}
                                                         onClick={() => { if (entry.lettre_code) return; setLettrageSelection(prev => { const n = new Set(prev); n.has(entry.id) ? n.delete(entry.id) : n.add(entry.id); return n; }); }}>
                                                         <td className="px-3 py-2"><input type="checkbox" checked={lettrageSelection.has(entry.id)} disabled={!!entry.lettre_code} readOnly className="w-4 h-4 accent-neo-blue" /></td>
                                                         <td className="px-3 py-2 font-mono text-xs">{entry.entry_date}</td>
@@ -2422,8 +2417,8 @@ export default function ComptabiliteModule() {
                                             </tbody></table>
                                     </>
                                 ) : (
-                                    <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 border-3 border-gray-200 mx-auto mb-4 flex items-center justify-center"><Link2 className="w-8 h-8 text-gray-300" /></div>
-                                        <p className="text-gray-400 font-display font-semibold">Sélectionnez un compte pour le lettrage</p></div>
+                                    <div className="p-12 text-center"><div className="w-16 h-16 bg-gray-100 border border-gray-200 mx-auto mb-4 flex items-center justify-center"><Link2 className="w-8 h-8 text-gray-300" /></div>
+                                        <p className="text-gray-400 font-semibold">Sélectionnez un compte pour le lettrage</p></div>
                                 )}
                             </div>
                         </div>
@@ -2433,9 +2428,9 @@ export default function ComptabiliteModule() {
                 {/* ─── PLAN TIERS ─────────────────────────────── */}
                 {
                     activeTab === 'tiers' && (
-                        <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                            <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-cream flex items-center justify-between">
-                                <h2 className="font-display font-bold text-lg flex items-center gap-2">
+                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                <h2 className="font-bold text-lg flex items-center gap-2">
                                     <Users className="w-5 h-5" />
                                     Plan Tiers
                                 </h2>
@@ -2444,7 +2439,7 @@ export default function ComptabiliteModule() {
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
                                     <thead>
-                                        <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                        <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                             <th className="text-left px-4 py-3">Compte Aux.</th>
                                             <th className="text-left px-4 py-3">Type</th>
                                             <th className="text-left px-4 py-3">Nom du Tiers</th>
@@ -2457,15 +2452,15 @@ export default function ComptabiliteModule() {
                                     <tbody>
                                         {tiers.length === 0 ? (
                                             <tr>
-                                                <td colSpan={7} className="text-center py-12 text-gray-400 font-display">
+                                                <td colSpan={7} className="text-center py-12 text-gray-400 font-semibold">
                                                     Votre base Tiers est vide. Elle s&apos;alimentera automatiquement lors de vos saisies comptables.
                                                 </td>
                                             </tr>
                                         ) : (
                                             tiers.map(t => (
-                                                <tr key={t.id} className="border-b border-gray-100 hover:bg-neo-blue/5 transition-colors">
+                                                <tr key={t.id} className="border-b border-gray-100 hover:bg-indigo-50/5 transition-colors">
                                                     <td className="px-4 py-3">
-                                                        <span className="font-mono font-bold bg-neo-blue/10 px-2 py-1 border border-neo-blue/30 text-xs">
+                                                        <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-mono font-bold border border-indigo-200 text-xs">
                                                             {t.account_code_aux}
                                                         </span>
                                                     </td>
@@ -2485,7 +2480,7 @@ export default function ComptabiliteModule() {
                                                     <td className="px-4 py-3 text-center">
                                                         <button
                                                             onClick={() => { setEditingTier(t); setTierEditForm({ name: t.name, account_code_aux: t.account_code_aux, telephone: t.telephone || '', email: t.email || '', adresse: t.adresse || '', rc: t.rc || '', identifiant_fiscal: t.identifiant_fiscal || '', ice: t.ice || '', delai_reglement_jours: t.delai_reglement_jours || 30, mode_reglement: t.mode_reglement || 'virement', condition_reglement: t.condition_reglement || 'net', jour_tombee: t.jour_tombee || 0 }); }}
-                                                            className="p-1.5 text-gray-500 hover:text-neo-blue hover:bg-neo-blue/10 rounded transition-colors"
+                                                            className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50/10 rounded transition-colors"
                                                             title="Modifier"
                                                         >
                                                             <Pencil className="w-4 h-4" />
@@ -2505,9 +2500,9 @@ export default function ComptabiliteModule() {
                 {
                     editingTier && (
                         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setEditingTier(null)}>
-                            <div className="bg-neo-white border-3 border-neo-black shadow-neo w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-                                <div className="px-6 py-3 border-b-3 border-neo-black bg-neo-blue/20 flex items-center justify-between sticky top-0 z-10">
-                                    <h3 className="font-display font-bold flex items-center gap-2">
+                            <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+                                <div className="px-6 py-3 border-b border-slate-200 bg-indigo-50/20 flex items-center justify-between sticky top-0 z-10">
+                                    <h3 className="font-bold flex items-center gap-2">
                                         <Users className="w-4 h-4" /> Fiche Tiers — {editingTier.name}
                                     </h3>
                                     <button onClick={() => setEditingTier(null)} className="p-1 hover:bg-red-100 transition-colors">
@@ -2516,69 +2511,69 @@ export default function ComptabiliteModule() {
                                 </div>
                                 <div className="p-6 space-y-4">
                                     {/* Identification */}
-                                    <p className="text-[10px] font-display font-black uppercase tracking-widest text-gray-400 border-b pb-1">Identification</p>
+                                    <p className="text-[10px] font-semibold font-black uppercase tracking-widest text-gray-400 border-b pb-1">Identification</p>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Compte Aux.</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Compte Aux.</label>
                                             <input value={tierEditForm.account_code_aux} onChange={e => setTierEditForm(f => ({ ...f, account_code_aux: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black font-mono text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl font-mono text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Nom du Tiers</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Nom du Tiers</label>
                                             <input value={tierEditForm.name} onChange={e => setTierEditForm(f => ({ ...f, name: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Adresse</label>
+                                        <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Adresse</label>
                                         <input value={tierEditForm.adresse} onChange={e => setTierEditForm(f => ({ ...f, adresse: e.target.value }))}
-                                            className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" placeholder="Adresse complète" />
+                                            className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" placeholder="Adresse complète" />
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Téléphone</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Téléphone</label>
                                             <input value={tierEditForm.telephone} onChange={e => setTierEditForm(f => ({ ...f, telephone: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" placeholder="+212..." />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" placeholder="+212..." />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Email</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Email</label>
                                             <input value={tierEditForm.email} onChange={e => setTierEditForm(f => ({ ...f, email: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" type="email" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue" type="email" />
                                         </div>
                                     </div>
 
                                     {/* Identifiants fiscaux */}
-                                    <p className="text-[10px] font-display font-black uppercase tracking-widest text-gray-400 border-b pb-1 mt-4">Identifiants Fiscaux</p>
+                                    <p className="text-[10px] font-semibold font-black uppercase tracking-widest text-gray-400 border-b pb-1 mt-4">Identifiants Fiscaux</p>
                                     <div className="grid grid-cols-3 gap-3">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">RC</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">RC</label>
                                             <input value={tierEditForm.rc} onChange={e => setTierEditForm(f => ({ ...f, rc: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">IF</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">IF</label>
                                             <input value={tierEditForm.identifiant_fiscal} onChange={e => setTierEditForm(f => ({ ...f, identifiant_fiscal: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">ICE</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">ICE</label>
                                             <input value={tierEditForm.ice} onChange={e => setTierEditForm(f => ({ ...f, ice: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                         </div>
                                     </div>
 
                                     {/* Conditions de règlement */}
-                                    <p className="text-[10px] font-display font-black uppercase tracking-widest text-gray-400 border-b pb-1 mt-4">Conditions de Règlement</p>
+                                    <p className="text-[10px] font-semibold font-black uppercase tracking-widest text-gray-400 border-b pb-1 mt-4">Conditions de Règlement</p>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Délai (jours)</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Délai (jours)</label>
                                             <input type="number" value={tierEditForm.delai_reglement_jours} onChange={e => setTierEditForm(f => ({ ...f, delai_reglement_jours: Number(e.target.value) }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" />
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Mode</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Mode</label>
                                             <select value={tierEditForm.mode_reglement} onChange={e => setTierEditForm(f => ({ ...f, mode_reglement: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue">
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue">
                                                 <option value="virement">Virement</option><option value="cheque">Chèque</option><option value="especes">Espèces</option>
                                                 <option value="effet">Effet</option><option value="prelevement">Prélèvement</option>
                                             </select>
@@ -2586,26 +2581,26 @@ export default function ComptabiliteModule() {
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Condition</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Condition</label>
                                             <select value={tierEditForm.condition_reglement} onChange={e => setTierEditForm(f => ({ ...f, condition_reglement: e.target.value }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue">
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue">
                                                 <option value="net">Net (Date + Délai)</option><option value="fin_mois">Fin de mois</option><option value="fin_mois_le">Fin de mois le...</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="text-xs font-display font-bold text-gray-500 uppercase mb-1 block">Jour tombée</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Jour tombée</label>
                                             <input type="number" value={tierEditForm.jour_tombee} onChange={e => setTierEditForm(f => ({ ...f, jour_tombee: Number(e.target.value) }))}
-                                                className="w-full px-3 py-2 border-2 border-neo-black text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" placeholder="Ex: 10" min={0} max={31} />
+                                                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue" placeholder="Ex: 10" min={0} max={31} />
                                         </div>
                                     </div>
 
                                     <div className="flex gap-3 mt-4">
                                         <button type="button" onClick={handleDeleteTier}
-                                            className="w-1/3 px-4 py-3 font-display font-bold text-sm border-3 border-red-200 bg-red-50 text-red-600 hover:bg-red-100 shadow-neo hover:shadow-neo-lg transition-all flex items-center justify-center">
+                                            className="w-1/3 px-4 py-3 font-bold text-sm border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 shadow-md hover:shadow-md-lg transition-all flex items-center justify-center">
                                             <Trash2 className="w-4 h-4 mr-2" />Supprimer
                                         </button>
                                         <button type="button" onClick={handleSaveTier}
-                                            className="w-2/3 px-4 py-3 font-display font-bold text-sm border-3 border-neo-black bg-neo-blue text-white hover:bg-neo-blue/80 shadow-neo hover:shadow-neo-lg transition-all flex items-center justify-center">
+                                            className="w-2/3 px-4 py-3 font-bold text-sm border border-slate-200 rounded-xl bg-indigo-50 text-white hover:bg-indigo-50/80 shadow-md hover:shadow-md-lg transition-all flex items-center justify-center">
                                             <Save className="w-4 h-4 mr-2" />Enregistrer
                                         </button>
                                     </div>
@@ -2629,14 +2624,14 @@ export default function ComptabiliteModule() {
                                                 placeholder="Rechercher…"
                                                 value={searchQuery}
                                                 onChange={e => setSearchQuery(e.target.value)}
-                                                className="pl-9 pr-3 h-[42px] text-sm border-3 border-neo-black font-mono w-48 focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                                className="pl-9 pr-3 h-[42px] text-sm border border-slate-200 rounded-xl font-mono w-48 focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                             />
                                         </div>
                                         <input
                                             type="month"
                                             value={dateFilter}
                                             onChange={e => setDateFilter(e.target.value)}
-                                            className="px-3 h-[42px] text-sm border-3 border-neo-black font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
+                                            className="px-3 h-[42px] text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                         />
                                     </div>
                                 }
@@ -2695,37 +2690,37 @@ export default function ComptabiliteModule() {
                             <div className="space-y-4">
                                 {/* Summary cards */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                    <div className="bg-neo-white border-3 border-neo-black shadow-neo p-5 relative overflow-hidden">
+                                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-5 relative overflow-hidden">
                                         <div className="absolute top-0 right-0 w-16 h-16 bg-blue-100 rounded-bl-full -mr-8 -mt-8"></div>
-                                        <p className="text-xs font-display font-semibold text-gray-500 mb-1">TVA Facturée (Sur Ventes)</p>
-                                        <p className="text-2xl font-display font-black text-neo-blue">{fmt(totalTvaFacturee)} <span className="text-sm text-gray-400">MAD</span></p>
+                                        <p className="text-xs font-semibold text-gray-500 mb-1">TVA Facturée (Sur Ventes)</p>
+                                        <p className="text-2xl font-semibold font-black text-indigo-600">{fmt(totalTvaFacturee)} <span className="text-sm text-gray-400">MAD</span></p>
                                     </div>
-                                    <div className="bg-neo-white border-3 border-neo-black shadow-neo p-5 relative overflow-hidden">
+                                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-5 relative overflow-hidden">
                                         <div className="absolute top-0 right-0 w-16 h-16 bg-green-100 rounded-bl-full -mr-8 -mt-8"></div>
-                                        <p className="text-xs font-display font-semibold text-gray-500 mb-1">TVA Récupérable (Sur Achats)</p>
-                                        <p className="text-2xl font-display font-black text-green-600">{fmt(totalTvaRecuperable)} <span className="text-sm text-gray-400">MAD</span></p>
+                                        <p className="text-xs font-semibold text-gray-500 mb-1">TVA Récupérable (Sur Achats)</p>
+                                        <p className="text-2xl font-semibold font-black text-green-600">{fmt(totalTvaRecuperable)} <span className="text-sm text-gray-400">MAD</span></p>
                                     </div>
-                                    <div className={`${totalTvaDue > 0 ? 'bg-red-50 border-red-900 border-4' : 'bg-green-50 border-green-900 border-4'} shadow-neo p-5 relative overflow-hidden`}>
-                                        <p className={`text-xs font-display font-bold mb-1 ${totalTvaDue > 0 ? 'text-red-700' : 'text-green-800'}`}>
+                                    <div className={`${totalTvaDue > 0 ? 'bg-red-50 border-red-900 border' : 'bg-green-50 border-green-900 border'} shadow-md p-5 relative overflow-hidden`}>
+                                        <p className={`text-xs font-bold mb-1 ${totalTvaDue > 0 ? 'text-red-700' : 'text-green-800'}`}>
                                             {totalTvaDue > 0 ? 'TVA DUE (À PAYER)' : 'CRÉDIT DE TVA (À REPORTER)'}
                                         </p>
-                                        <p className={`text-3xl font-display font-black ${totalTvaDue > 0 ? 'text-red-600' : 'text-green-700'}`}>
+                                        <p className={`text-3xl font-semibold font-black ${totalTvaDue > 0 ? 'text-red-600' : 'text-green-700'}`}>
                                             {fmt(Math.abs(totalTvaDue))} <span className="text-sm opacity-60">MAD</span>
                                         </p>
                                     </div>
                                 </div>
 
                                 {/* Table */}
-                                <div className="bg-neo-white border-3 border-neo-black shadow-neo overflow-hidden">
-                                    <div className="px-6 py-4 border-b-3 border-neo-black bg-neo-cream flex items-center justify-between">
-                                        <h2 className="font-display font-bold text-lg flex items-center gap-2">
+                                <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                                        <h2 className="font-bold text-lg flex items-center gap-2">
                                             <Calculator className="w-5 h-5" />
                                             État de la TVA par Période
                                         </h2>
                                         <select
                                             value={tvaPeriod}
                                             onChange={e => setTvaPeriod(e.target.value)}
-                                            className="px-3 py-1.5 text-sm border-2 border-neo-black font-mono bg-white cursor-pointer hover:bg-gray-50 transition-colors"
+                                            className="px-3 py-1.5 text-sm border border-slate-200 rounded-xl font-mono bg-white cursor-pointer hover:bg-gray-50 transition-colors"
                                         >
                                             <option value="">Toutes les années</option>
                                             {years.map(y => <option key={y} value={y}>Année {y}</option>)}
@@ -2735,7 +2730,7 @@ export default function ComptabiliteModule() {
                                     <div className="overflow-x-auto">
                                         <table className="w-full text-sm">
                                             <thead>
-                                                <tr className="bg-gray-50 border-b-2 border-neo-black font-display text-xs uppercase tracking-wider text-gray-600">
+                                                <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                                     <th className="text-left px-4 py-3 border-r border-gray-200">Période</th>
                                                     <th className="text-right px-4 py-3 bg-blue-50/50 w-36">Base HT Ventes</th>
                                                     <th className="text-right px-4 py-3 bg-blue-50/50 font-bold border-r border-gray-200 w-32">TVA Facturée</th>
@@ -2747,17 +2742,17 @@ export default function ComptabiliteModule() {
                                             <tbody>
                                                 {tvaRows.length === 0 ? (
                                                     <tr>
-                                                        <td colSpan={6} className="text-center py-12 text-gray-400 font-display">
+                                                        <td colSpan={6} className="text-center py-12 text-gray-400 font-semibold">
                                                             Aucune écriture comptable contenant de la TVA n'a été trouvée.
                                                         </td>
                                                     </tr>
                                                 ) : tvaRows.map(([month, data]) => {
                                                     const tvaDue = data.tvaVentes - data.tvaAchats;
                                                     return (
-                                                        <tr key={month} className="border-b border-gray-100 hover:bg-neo-yellow/10">
-                                                            <td className="px-4 py-3 font-display font-semibold border-r border-gray-100 whitespace-nowrap">{monthLabel(month)}</td>
+                                                        <tr key={month} className="border-b border-gray-100 hover:bg-teal-50/10">
+                                                            <td className="px-4 py-3 font-semibold border-r border-gray-100 whitespace-nowrap">{monthLabel(month)}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(data.baseHTVentes) || '—'}</td>
-                                                            <td className="px-4 py-3 text-right font-mono text-neo-blue border-r border-gray-100 font-medium">{fmt(data.tvaVentes) || '—'}</td>
+                                                            <td className="px-4 py-3 text-right font-mono text-indigo-600 border-r border-gray-100 font-medium">{fmt(data.tvaVentes) || '—'}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(data.baseHTAchats) || '—'}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-green-600 border-r border-gray-100 font-medium">{fmt(data.tvaAchats) || '—'}</td>
                                                             <td className={`px-4 py-3 text-right font-mono font-bold whitespace-nowrap ${tvaDue > 0 ? 'text-red-600' : 'text-green-700'}`}>
@@ -2769,10 +2764,10 @@ export default function ComptabiliteModule() {
                                             </tbody>
                                             {tvaRows.length > 0 && (
                                                 <tfoot>
-                                                    <tr className="bg-neo-black text-white font-display font-bold">
+                                                    <tr className="bg-slate-900 text-white font-bold">
                                                         <td className="px-4 py-3 uppercase text-xs tracking-wider border-r border-gray-700">Total</td>
                                                         <td className="px-4 py-3 text-right font-mono">{fmt(tvaRows.reduce((s, [, v]) => s + v.baseHTVentes, 0)) || '—'}</td>
-                                                        <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-neo-blue">{fmt(totalTvaFacturee) || '—'}</td>
+                                                        <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-indigo-600">{fmt(totalTvaFacturee) || '—'}</td>
                                                         <td className="px-4 py-3 text-right font-mono">{fmt(tvaRows.reduce((s, [, v]) => s + v.baseHTAchats, 0)) || '—'}</td>
                                                         <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-green-400">{fmt(totalTvaRecuperable) || '—'}</td>
                                                         <td className={`px-4 py-3 text-right font-mono whitespace-nowrap ${totalTvaDue > 0 ? 'text-red-400' : 'text-green-400'}`}>
@@ -2794,19 +2789,19 @@ export default function ComptabiliteModule() {
             {showSagePopup && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowSagePopup(false)}>
                     <div
-                        className="bg-white border-3 border-black shadow-neo max-w-xl w-full p-0 relative max-h-[90vh] overflow-y-auto"
+                        className="bg-white border border-black shadow-md max-w-xl w-full p-0 relative max-h-[90vh] overflow-y-auto"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
                         <div className="bg-[#991b1b] text-white px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-                            <h3 className="font-display font-bold text-lg">Export Sage — Configuration</h3>
+                            <h3 className="font-bold text-lg">Export Sage — Configuration</h3>
                             <button onClick={() => setShowSagePopup(false)} className="text-white/80 hover:text-white text-xl font-bold">✕</button>
                         </div>
 
                         {/* Body */}
                         <div className="px-6 py-5 space-y-4">
-                            <div className="bg-amber-50 border-2 border-amber-300 p-4">
-                                <p className="font-display font-bold text-amber-800 mb-1">⚙️ Configuration initiale (une seule fois)</p>
+                            <div className="bg-amber-50 border border-amber-300 p-4">
+                                <p className="font-bold text-amber-800 mb-1">⚙️ Configuration initiale (une seule fois)</p>
                                 <p className="text-sm text-amber-700">
                                     Avant d{"'"}importer votre premier fichier TXT, vous devez créer un <strong>modèle de format paramétrable</strong> directement dans Sage. Cette opération ne se fait qu{"'"}une seule fois.
                                 </p>
@@ -2869,7 +2864,7 @@ export default function ComptabiliteModule() {
                                     downloadSageCsv();
                                     setShowSagePopup(false);
                                 }}
-                                className="w-full flex items-center justify-center gap-2 bg-[#991b1b] text-white px-4 py-3 font-display font-bold text-sm border-2 border-black shadow-[3px_3px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#000] transition-all"
+                                className="w-full flex items-center justify-center gap-2 bg-[#991b1b] text-white px-4 py-3 font-bold text-sm border border-black shadow-[3px_3px_0px_#000] hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-[4px_4px_0px_#000] transition-all"
                             >
                                 <Download className="w-4 h-4" />
                                 Télécharger le fichier TXT maintenant
