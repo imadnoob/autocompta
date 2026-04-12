@@ -110,7 +110,9 @@ export const PCM_ACCOUNTS: Record<string, string> = {
     '3421': 'Clients',
     '4411': 'Fournisseurs',
     '4452': 'État — Impôts et taxes',
+    '3455': 'État — TVA récupérable',
     '4455': 'État — TVA facturée',
+    '34551': 'TVA récupérable sur immobilisations',
     '34552': 'TVA récupérable sur charges',
     '5141': 'Banque',
     '5161': 'Caisse',
@@ -419,6 +421,11 @@ export function buildBilan(accounts: { account: string; name: string; debit: num
         let code = acc.account;
         let name = acc.name;
 
+        // Fallback: if the stored name is too vague (e.g. just "TVA"), use PCM lookup
+        if (!name || name.length <= 4 || name.toUpperCase() === 'TVA') {
+            name = getAccountName(code);
+        }
+
         // Regroupement Fournisseurs et Clients
         if (code.startsWith('4411') && code.length > 4) {
             code = '4411';
@@ -538,6 +545,15 @@ export function buildBilan(accounts: { account: string; name: string; debit: num
             bilan.passif.permanent.total -= resultLine.solde;
         }
     }
+
+    // Sort lines within each section by account number
+    const sortLines = (lines: BilanLine[]) => lines.sort((a, b) => a.account.localeCompare(b.account));
+    bilan.actif.immobilise.lines = sortLines(bilan.actif.immobilise.lines);
+    bilan.actif.circulant.lines = sortLines(bilan.actif.circulant.lines);
+    bilan.actif.tresorerie.lines = sortLines(bilan.actif.tresorerie.lines);
+    bilan.passif.permanent.lines = sortLines(bilan.passif.permanent.lines);
+    bilan.passif.circulant.lines = sortLines(bilan.passif.circulant.lines);
+    bilan.passif.tresorerie.lines = sortLines(bilan.passif.tresorerie.lines);
 
     bilan.actif.total = bilan.actif.immobilise.total + bilan.actif.circulant.total + bilan.actif.tresorerie.total;
     bilan.passif.total = bilan.passif.permanent.total + bilan.passif.circulant.total + bilan.passif.tresorerie.total;

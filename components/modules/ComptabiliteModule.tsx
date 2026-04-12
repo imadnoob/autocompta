@@ -1133,7 +1133,7 @@ export default function ComptabiliteModule() {
                 </div>
 
                 {/* Content areas */}
-                {activeTab !== 'asaisir' && activeTab !== 'sig' && (
+                {activeTab !== 'asaisir' && activeTab !== 'sig' && activeTab !== 'tva' && (
                     <div className="ml-auto flex justify-end items-center gap-2 mb-4">
                         <div className="relative">
                             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -2672,7 +2672,11 @@ export default function ComptabiliteModule() {
                         const tvaRows = Array.from(tvaByMonth.entries())
                             .filter(([, v]) => Math.abs(v.baseHTAchats) > 0.01 || Math.abs(v.tvaAchats) > 0.01 || Math.abs(v.baseHTVentes) > 0.01 || Math.abs(v.tvaVentes) > 0.01)
                             .sort((a, b) => a[0].localeCompare(b[0]))
-                            .filter(([m]) => !tvaPeriod || m.startsWith(tvaPeriod));
+                            .filter(([m]) => {
+                                if (!tvaPeriod) return true;
+                                if (tvaPeriod.includes(',')) return tvaPeriod.split(',').includes(m);
+                                return m.startsWith(tvaPeriod);
+                            });
 
                         const totalTvaFacturee = tvaRows.reduce((s, [, v]) => s + v.tvaVentes, 0);
                         const totalTvaRecuperable = tvaRows.reduce((s, [, v]) => s + v.tvaAchats, 0);
@@ -2688,6 +2692,26 @@ export default function ComptabiliteModule() {
 
                         return (
                             <div className="space-y-4">
+                                {/* Period selector for TVA */}
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-lg font-bold text-slate-800">Déclaration TVA</h2>
+                                    <select
+                                        value={tvaPeriod}
+                                        onChange={e => setTvaPeriod(e.target.value)}
+                                        className="px-4 py-2 text-sm font-semibold border border-slate-200 rounded-xl bg-white cursor-pointer hover:bg-gray-50 transition-colors shadow-sm"
+                                    >
+                                        <option value="">Toutes les périodes</option>
+                                        <option value={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`}>📅 Mois en cours</option>
+                                        {(() => {
+                                            const now = new Date();
+                                            const q = Math.floor(now.getMonth() / 3);
+                                            const qMonths = [q * 3, q * 3 + 1, q * 3 + 2].map(m => `${now.getFullYear()}-${String(m + 1).padStart(2, '0')}`);
+                                            return <option value={qMonths.join(',')}>📊 Trimestre en cours (T{q + 1})</option>;
+                                        })()}
+                                        {years.map(y => <option key={y} value={y}>📆 Année {y}</option>)}
+                                    </select>
+                                </div>
+
                                 {/* Summary cards */}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                     <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl p-5 relative overflow-hidden">
@@ -2700,12 +2724,13 @@ export default function ComptabiliteModule() {
                                         <p className="text-xs font-semibold text-gray-500 mb-1">TVA Récupérable (Sur Achats)</p>
                                         <p className="text-2xl font-semibold font-black text-green-600">{fmt(totalTvaRecuperable)} <span className="text-sm text-gray-400">MAD</span></p>
                                     </div>
-                                    <div className={`${totalTvaDue > 0 ? 'bg-red-50 border-red-900 border' : 'bg-green-50 border-green-900 border'} shadow-md p-5 relative overflow-hidden`}>
-                                        <p className={`text-xs font-bold mb-1 ${totalTvaDue > 0 ? 'text-red-700' : 'text-green-800'}`}>
+                                    <div className={`rounded-2xl shadow-sm p-5 relative overflow-hidden ${totalTvaDue > 0 ? 'bg-white border border-red-200' : 'bg-white border border-emerald-200'}`}>
+                                        <div className={`absolute top-0 right-0 w-16 h-16 rounded-bl-full -mr-8 -mt-8 ${totalTvaDue > 0 ? 'bg-red-100' : 'bg-emerald-100'}`}></div>
+                                        <p className={`text-xs font-bold mb-1 uppercase tracking-wider ${totalTvaDue > 0 ? 'text-red-600' : 'text-emerald-700'}`}>
                                             {totalTvaDue > 0 ? 'TVA DUE (À PAYER)' : 'CRÉDIT DE TVA (À REPORTER)'}
                                         </p>
-                                        <p className={`text-3xl font-semibold font-black ${totalTvaDue > 0 ? 'text-red-600' : 'text-green-700'}`}>
-                                            {fmt(Math.abs(totalTvaDue))} <span className="text-sm opacity-60">MAD</span>
+                                        <p className={`text-2xl font-semibold font-black ${totalTvaDue > 0 ? 'text-red-600' : 'text-emerald-700'}`}>
+                                            {fmt(Math.abs(totalTvaDue))} <span className="text-sm text-gray-400">MAD</span>
                                         </p>
                                     </div>
                                 </div>
@@ -2722,8 +2747,15 @@ export default function ComptabiliteModule() {
                                             onChange={e => setTvaPeriod(e.target.value)}
                                             className="px-3 py-1.5 text-sm border border-slate-200 rounded-xl font-mono bg-white cursor-pointer hover:bg-gray-50 transition-colors"
                                         >
-                                            <option value="">Toutes les années</option>
-                                            {years.map(y => <option key={y} value={y}>Année {y}</option>)}
+                                            <option value="">Toutes les périodes</option>
+                                            <option value={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`}>📅 Mois en cours</option>
+                                            {(() => {
+                                                const now = new Date();
+                                                const q = Math.floor(now.getMonth() / 3);
+                                                const qMonths = [q * 3, q * 3 + 1, q * 3 + 2].map(m => `${now.getFullYear()}-${String(m + 1).padStart(2, '0')}`);
+                                                return <option value={qMonths.join(',')}>📊 Trimestre en cours (T{q + 1})</option>;
+                                            })()}
+                                            {years.map(y => <option key={y} value={y}>📆 Année {y}</option>)}
                                         </select>
                                     </div>
 

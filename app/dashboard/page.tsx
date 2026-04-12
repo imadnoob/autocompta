@@ -51,8 +51,9 @@ export default function DashboardPage() {
             {/* Header */}
             <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center shadow-sm">
-                        <Sparkles className="w-6 h-6 text-white" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-sm relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer bg-[length:200%_auto]" />
+                        <Sparkles className="w-6 h-6 text-white relative z-10" />
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight text-slate-900">AutoCompta</h1>

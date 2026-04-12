@@ -45,7 +45,7 @@ export default function HeroSection() {
                     <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-slate-900 mb-8 animate-slide-up stagger-1 leading-tight">
                         La comptabilité
                         <br />
-                        <span className="text-emerald-600">automatisée</span>
+                        <span className="bg-linear-to-r from-emerald-600 via-emerald-400 to-emerald-600 bg-[length:200%_auto] bg-clip-text text-transparent animate-shimmer">automatisée</span>
                     </h1>
 
                     {/* Subheadline */}
@@ -119,14 +119,9 @@ export default function HeroSection() {
                                             { name: 'Dashboard', desc: 'Vue d\'ensemble', bg: 'bg-emerald-50 border-emerald-500', icon: 'LayoutDashboard', active: true, iconClass: 'text-emerald-700' },
                                             { name: 'Documents', desc: 'Archivage & Classification', bg: 'bg-white border-transparent', icon: 'FileText', iconClass: 'text-slate-400' },
                                             { name: 'Comptabilité', desc: 'Saisie & Lettrage', bg: 'bg-white border-transparent', icon: 'BookOpen', iconClass: 'text-slate-400' },
-                                            { name: 'Agent IA', desc: 'Work in Progress - Bientôt', bg: 'bg-slate-50 border-transparent', icon: 'Sparkles', iconClass: 'text-slate-400' },
+                                            { name: 'Agent IA', desc: 'Assistant Intelligent', bg: 'bg-white border-transparent', icon: 'Sparkles', iconClass: 'text-slate-400' },
                                         ].map((tab, i) => (
                                             <div key={i} className={`border ${tab.bg} p-4 rounded-xl shadow-sm transition-all ${tab.active ? 'ring-1 ring-emerald-500' : 'hover:border-slate-300'} relative overflow-hidden`}>
-                                                {i === 3 && (
-                                                    <div className="absolute top-3 right-[-28px] bg-slate-200 text-slate-500 text-[9px] font-bold px-8 py-0.5 rotate-45">
-                                                        Bientôt
-                                                    </div>
-                                                )}
                                                 <div className="flex justify-between items-center mb-2">
                                                     <span className={`text-sm font-semibold ${tab.active ? 'text-emerald-900' : 'text-slate-700'}`}>{tab.name}</span>
                                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${tab.active ? 'bg-emerald-100' : 'bg-slate-100'}`}>
