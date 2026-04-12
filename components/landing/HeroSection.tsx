@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Sparkles, Zap, FileText, Bot, Shield, BarChart3, BookOpen, Scale } from 'lucide-react';
+import { ArrowRight, Sparkles, Zap, FileText, Bot, Shield, BarChart3, BookOpen, Scale, LayoutDashboard } from 'lucide-react';
 
 export default function HeroSection() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -125,7 +125,7 @@ export default function HeroSection() {
                                                 <div className="flex justify-between items-center mb-2">
                                                     <span className={`text-sm font-semibold ${tab.active ? 'text-emerald-900' : 'text-slate-700'}`}>{tab.name}</span>
                                                     <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${tab.active ? 'bg-emerald-100' : 'bg-slate-100'}`}>
-                                                        {i === 0 && <span className="w-3.5 h-3.5 bg-emerald-600 scale-75" style={{ clipPath: 'polygon(0% 0%, 40% 0%, 40% 40%, 0% 40%, 0% 60%, 40% 60%, 40% 100%, 0% 100%, 60% 100%, 60% 60%, 100% 60%, 100% 100%, 100% 0%, 60% 0%, 60% 40%, 100% 40%)' }} />}
+                                                        {i === 0 && <LayoutDashboard className="w-4 h-4 text-emerald-600" />}
                                                         {i === 1 && <FileText className="w-4 h-4 text-slate-500" />}
                                                         {i === 2 && <BookOpen className="w-4 h-4 text-slate-500" />}
                                                         {i === 3 && <Sparkles className="w-4 h-4 text-slate-400" />}
