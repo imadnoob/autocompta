@@ -33,6 +33,16 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
         delivery_note: 'BL', bank_statement: 'REL', other: 'DOC',
     };
 
+    const normalizeDocType = (t: string | undefined): string => {
+        const s = (t || '').toLowerCase().trim();
+        if (s === 'invoice' || s === 'facture') return 'invoice';
+        if (s === 'receipt' || s === 'recu' || s === 'reçu' || s === 'ticket') return 'receipt';
+        if (s === 'credit_note' || s === 'avoir') return 'credit_note';
+        if (s === 'delivery_note' || s === 'bl' || s === 'bon_livraison' || s === 'bon de livraison') return 'delivery_note';
+        if (s === 'bank_statement' || s === 'releve' || s === 'relevé') return 'bank_statement';
+        return s || 'other';
+    };
+
     const getDisplayName = (d: any): string => {
         const ext = d.extracted_data;
         const ref = d.internal_ref;
@@ -40,7 +50,8 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
             return ref ? `[${ref}] ${d.original_name}` : d.original_name;
         }
         const parts: string[] = [];
-        parts.push(typePrefix[ext.type || ext.document_type || ''] || 'DOC');
+        const normalizedType = normalizeDocType(ext.type || ext.document_type);
+        parts.push(typePrefix[normalizedType] || 'DOC');
         if (ext.supplier) parts.push(ext.supplier.toUpperCase().substring(0, 25));
         if (ext.date) parts.push(ext.date);
         if (ext.total_amount != null) parts.push(`${Number(ext.total_amount).toLocaleString('fr-FR')} ${ext.currency || 'MAD'}`);
