@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
         "tva_rate": number (percentage, e.g. 20 for 20%),
         "currency": "MAD" or "EUR" or "USD",
         "invoice_number": "string",
-        "type": "invoice" or "receipt" or "credit_note",
+        "type": "invoice" or "receipt" or "credit_note" or "delivery_note" or "bank_statement" or "other",
         "category_code": "string" (Plan Comptable Marocain 4-digit code, e.g., 6111 for achats de marchandises),
         "category_name": "string",
         "payment_method": "especes" or "virement" or "cheque" or "carte" or "effet" or "prelevement" or null,

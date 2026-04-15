@@ -37,14 +37,15 @@ const accountingStatusConfig: Record<string, { label: string; bg: string; text: 
     lettre: { label: 'Lettré', bg: 'bg-purple-100', text: 'text-purple-700' },
 };
 
-function normalizeDocType(t: string | undefined): string {
-    const s = (t || '').toLowerCase().trim();
-    if (s === 'invoice' || s === 'facture') return 'invoice';
-    if (s === 'receipt' || s === 'recu' || s === 'reçu' || s === 'ticket') return 'receipt';
-    if (s === 'credit_note' || s === 'avoir') return 'credit_note';
-    if (s === 'delivery_note' || s === 'bl' || s === 'bon_livraison' || s === 'bon de livraison') return 'delivery_note';
-    if (s === 'bank_statement' || s === 'releve' || s === 'relevé') return 'bank_statement';
-    return s || 'other';
+function normalizeDocType(data: any): string {
+    if (!data) return 'other';
+    const s = (data.type || data.document_type || data.description || '').toLowerCase().trim();
+    if (s.includes('invoice') || s.includes('facture')) return 'invoice';
+    if (s.includes('receipt') || s.includes('recu') || s.includes('reçu') || s.includes('ticket')) return 'receipt';
+    if (s.includes('credit_note') || s.includes('avoir')) return 'credit_note';
+    if (s.includes('delivery_note') || s.includes('bl') || s.includes('bon_livraison') || s.includes('livraison')) return 'delivery_note';
+    if (s.includes('bank_statement') || s.includes('releve') || s.includes('relevé')) return 'bank_statement';
+    return 'other';
 }
 
 const typePrefix: Record<string, string> = {
@@ -67,7 +68,7 @@ function getDisplayName(doc: Document): string {
     const parts: string[] = [];
 
     // 1. Type prefix
-    const normalizedType = normalizeDocType(data.type || data.document_type);
+    const normalizedType = normalizeDocType(data);
     const prefix = typePrefix[normalizedType] || 'DOC';
     parts.push(prefix);
 
@@ -193,7 +194,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
 
         // Type
         if (filters?.type && filters.type !== 'all') {
-            const normalizedType = normalizeDocType(data.type || data.document_type);
+            const normalizedType = normalizeDocType(data);
             if (normalizedType !== filters.type) return false;
         }
 
