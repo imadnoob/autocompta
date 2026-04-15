@@ -30,6 +30,7 @@ export default {
                 'scale-in': 'scaleIn 0.4s ease-out',
                 'spin-slow': 'spin 8s linear infinite',
                 'marquee': 'marquee 30s linear infinite',
+                'shimmer': 'shimmer 2.5s linear infinite',
             },
             keyframes: {
                 float: {
@@ -55,6 +56,10 @@ export default {
                 marquee: {
                     '0%': { transform: 'translateX(0%)' },
                     '100%': { transform: 'translateX(-50%)' },
+                },
+                shimmer: {
+                    '0%': { transform: 'translateX(-100%)' },
+                    '100%': { transform: 'translateX(100%)' },
                 }
             },
             transitionTimingFunction: {

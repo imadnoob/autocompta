@@ -262,8 +262,9 @@ export default function AgentIAModule() {
                     <div className="max-w-3xl mx-auto space-y-8">
                         {sessions.length === 0 || !activeSession ? (
                             <div className="flex flex-col items-center justify-center text-center mt-20 space-y-5 animate-in fade-in zoom-in duration-500">
-                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white flex items-center justify-center shadow-md">
-                                    <Sparkles className="w-8 h-8" />
+                                <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white flex items-center justify-center shadow-md overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-shimmer" />
+                                    <Sparkles className="relative z-10 w-8 h-8" />
                                 </div>
                                 <div>
                                     <h3 className="text-2xl font-semibold text-slate-800 tracking-tight">Bonjour, je suis votre Agent.</h3>
