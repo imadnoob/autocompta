@@ -41,6 +41,9 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
         if (s.includes('credit_note') || s.includes('avoir')) return 'credit_note';
         if (s.includes('delivery_note') || s.includes('bl') || s.includes('bon_livraison') || s.includes('livraison')) return 'delivery_note';
         if (s.includes('bank_statement') || s.includes('releve') || s.includes('relevé')) return 'bank_statement';
+        
+        if (data.invoice_number) return 'invoice';
+        
         return 'other';
     };
 
