@@ -315,7 +315,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                             {!editing ? (
                                 <button
                                     onClick={startEditing}
-                                    className="p-1 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50/10 border border-transparent hover:border-neo-blue/30 transition-all"
+                                    className="p-1 text-slate-900 hover:text-black hover:bg-slate-100 border border-transparent hover:border-slate-300 transition-all rounded"
                                     title="Modifier les données"
                                 >
                                     <Pencil className="w-4 h-4" />
@@ -332,7 +332,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                     <button
                                         onClick={handleSaveEdit}
                                         disabled={saving}
-                                        className="p-1.5 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-1 text-xs font-bold px-3 disabled:opacity-50"
+                                        className="p-1.5 text-white bg-emerald-500 rounded-lg hover:bg-emerald-600 transition-all flex items-center gap-1 text-xs font-bold px-3 disabled:opacity-50"
                                     >
                                         <Save className="w-3.5 h-3.5" />{saving ? '...' : 'Enregistrer'}
                                     </button>
