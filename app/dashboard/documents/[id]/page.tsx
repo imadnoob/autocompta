@@ -220,11 +220,11 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
     const isPdf = doc.file_type === 'application/pdf';
 
     const statusConfig: Record<string, { label: string; bg: string }> = {
-        processed: { label: 'Achevé', bg: 'bg-sky-50' },
-        completed: { label: 'Achevé', bg: 'bg-sky-50' },
-        pending: { label: 'En attente', bg: 'bg-teal-50' },
-        processing: { label: 'En cours', bg: 'bg-indigo-50' },
-        error: { label: 'Erreur', bg: 'bg-rose-50' },
+        processed: { label: 'Archivé', bg: 'bg-green-100 text-green-800 border-green-200' },
+        completed: { label: 'Archivé', bg: 'bg-green-100 text-green-800 border-green-200' },
+        pending: { label: 'En attente', bg: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+        processing: { label: 'En cours', bg: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+        error: { label: 'Erreur', bg: 'bg-rose-100 text-rose-800 border-rose-200' },
     };
 
     const status = statusConfig[doc.status] || statusConfig.pending;
@@ -280,7 +280,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                             <div className="flex-1 min-w-0">
                                 <h1 className="font-semibold text-2xl font-bold mb-2 truncate">{getDisplayName(doc)}</h1>
                                 <div className="flex items-center gap-3 flex-wrap">
-                                    <span className={`px-3 py-1 text-xs font-bold border border-slate-200 rounded-xl ${status.bg}`}>
+                                    <span className={`px-3 py-1 text-xs font-bold border rounded-xl ${status.bg}`}>
                                         {status.label}
                                     </span>
                                     <span className="text-xs text-gray-500 font-mono">
@@ -332,7 +332,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                     <button
                                         onClick={handleSaveEdit}
                                         disabled={saving}
-                                        className="p-1.5 text-white bg-indigo-50 hover:bg-indigo-50/80 border border-neo-blue transition-all flex items-center gap-1 text-xs font-bold px-2 disabled:opacity-50"
+                                        className="p-1.5 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-all flex items-center gap-1 text-xs font-bold px-3 disabled:opacity-50"
                                     >
                                         <Save className="w-3.5 h-3.5" />{saving ? '...' : 'Enregistrer'}
                                     </button>
