@@ -350,9 +350,15 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                             </>
                                         ) : (
                                             <>
-                                                <p className="font-semibold group-hover:underline underline-offset-2 truncate">
-                                                    {getDisplayName(doc)}
-                                                </p>
+                                                <div 
+                                                    className="overflow-hidden whitespace-nowrap" 
+                                                    style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
+                                                    title={getDisplayName(doc)}
+                                                >
+                                                    <p className="font-semibold inline-block transition-transform duration-[6s] ease-linear group-hover:-translate-x-[50%]">
+                                                        <span className="group-hover:underline underline-offset-2">{getDisplayName(doc)}</span>
+                                                    </p>
+                                                </div>
                                                 <div className="flex items-center gap-2 text-xs text-gray-500 mt-1 font-mono flex-wrap">
                                                     <span>{new Date(doc.created_at).toLocaleDateString('fr-MA')}</span>
                                                     {data.date && (
