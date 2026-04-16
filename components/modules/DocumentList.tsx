@@ -356,8 +356,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                                     title={getDisplayName(doc)}
                                                 >
                                                     <p 
-                                                        className="font-semibold inline-block group-hover/title:-translate-x-[50%]"
-                                                        style={{ transition: 'transform 6s linear', willChange: 'transform' }}
+                                                        className="font-semibold inline-block transition-none group-hover/title:transition-transform group-hover/title:duration-[6s] group-hover/title:ease-linear group-hover/title:-translate-x-[50%]"
                                                     >
                                                         <span className="group-hover:underline underline-offset-2">{getDisplayName(doc)}</span>
                                                     </p>
