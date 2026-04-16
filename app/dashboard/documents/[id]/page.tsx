@@ -293,7 +293,7 @@ export default function DocumentDetail({ params }: { params: Promise<{ id: strin
                                 <FileText className="w-7 h-7" />
                             </div>
                             <div className="flex-1 min-w-0">
-                                <h1 className="font-semibold text-2xl font-bold mb-2 truncate">{getDisplayName(doc)}</h1>
+                                <h1 className="font-semibold text-2xl font-bold mb-2 break-words text-balance leading-tight">{getDisplayName(doc)}</h1>
                                 <div className="flex items-center gap-3 flex-wrap">
                                     <span className={`px-3 py-1 text-xs font-bold border rounded-xl ${status.bg}`}>
                                         {status.label}

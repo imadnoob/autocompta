@@ -351,11 +351,14 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                         ) : (
                                             <>
                                                 <div 
-                                                    className="overflow-hidden whitespace-nowrap" 
+                                                    className="overflow-hidden whitespace-nowrap group/title" 
                                                     style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
                                                     title={getDisplayName(doc)}
                                                 >
-                                                    <p className="font-semibold inline-block transition-transform duration-[6s] ease-linear group-hover:-translate-x-[50%]">
+                                                    <p 
+                                                        className="font-semibold inline-block group-hover/title:-translate-x-[50%]"
+                                                        style={{ transition: 'transform 6s linear', willChange: 'transform' }}
+                                                    >
                                                         <span className="group-hover:underline underline-offset-2">{getDisplayName(doc)}</span>
                                                     </p>
                                                 </div>
