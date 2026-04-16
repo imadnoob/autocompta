@@ -72,7 +72,6 @@ export default function DocumentFilters({ onFilterChange }: FilterProps) {
     const statusOptions = [
         { value: 'all', label: 'Tous', dot: 'bg-gray-400' },
         { value: 'pending', label: 'En attente', dot: 'bg-yellow-500' },
-        { value: 'processing', label: 'En cours', dot: 'bg-blue-500' },
         { value: 'completed', label: 'Traités', dot: 'bg-green-500' },
         { value: 'error', label: 'Erreurs', dot: 'bg-red-500' },
     ];
