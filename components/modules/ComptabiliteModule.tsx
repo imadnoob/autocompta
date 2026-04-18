@@ -240,40 +240,45 @@ export default function ComptabiliteModule() {
         let loopIndex = 0;
         for (const doc of docsToProcess) {
             loopIndex++;
-            // 1. Détermination du Fournisseur / Client (Plan Tiers)
-            let supplierCode = '4411';
-            let supplierAccName = 'Fournisseurs';
+            const categoryCode = doc.extracted_data?.category_code || '';
+            const isSale = categoryCode.startsWith('7');
+            const journalCode = isSale ? 'VT' : 'HA';
+            const piecePrefix = isSale ? 'VEN' : 'ACH';
 
-            const supplierName = doc.extracted_data?.merchant_name || doc.extracted_data?.supplier || null;
-            if (supplierName && supplierName.trim() !== '') {
-                const sName = supplierName.trim();
+            // 1. Détermination du Fournisseur / Client (Plan Tiers)
+            let tierCode = isSale ? '3421' : '4411';
+            let tierName = isSale ? 'Clients' : 'Fournisseurs';
+
+            const extractedName = doc.extracted_data?.merchant_name || doc.extracted_data?.supplier || null;
+            if (extractedName && extractedName.trim() !== '') {
+                const sName = extractedName.trim();
                 const { data: tiersData } = await supabase.from('tiers').select('*').eq('name', sName).eq('user_id', user.id).single();
 
                 if (tiersData) {
-                    supplierCode = tiersData.account_code_aux;
-                    supplierAccName = tiersData.name;
+                    tierCode = tiersData.account_code_aux;
+                    tierName = tiersData.name;
                 } else {
-                    // Création automatique du tiers (Fournisseur par défaut pour l'instant)
+                    // Création automatique du tiers
                     const { data: maxTiers } = await supabase.from('tiers')
                         .select('account_code_aux')
                         .eq('user_id', user.id)
-                        .like('account_code_aux', '4411000%')
+                        .like('account_code_aux', tierCode + '000%')
                         .order('account_code_aux', { ascending: false })
                         .limit(1)
                         .single();
 
                     let nextNum = 1;
                     if (maxTiers && maxTiers.account_code_aux) {
-                        nextNum = parseInt(maxTiers.account_code_aux.replace('4411000', '')) + 1;
+                        nextNum = parseInt(maxTiers.account_code_aux.replace(tierCode + '000', '')) + 1;
                     }
-                    supplierCode = `4411000${nextNum}`;
-                    supplierAccName = sName;
+                    tierCode = `${tierCode}000${nextNum}`;
+                    tierName = sName;
 
                     await supabase.from('tiers').insert({
                         user_id: user.id,
-                        type: 'fournisseur',
-                        name: supplierAccName,
-                        account_code_aux: supplierCode,
+                        type: isSale ? 'client' : 'fournisseur',
+                        name: tierName,
+                        account_code_aux: tierCode,
                         adresse: doc.extracted_data?.tier_address || null,
                         telephone: doc.extracted_data?.tier_telephone || null,
                         email: doc.extracted_data?.tier_email || null,
@@ -284,19 +289,19 @@ export default function ComptabiliteModule() {
                 }
             }
 
-            // 2. Génération du Numéro de Pièce (Pièce Comptable)
+            // 2. Génération du Numéro de Pièce
             const { count } = await supabase
                 .from('journal_entries')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id)
-                .eq('journal', 'HA');
+                .eq('journal', journalCode);
 
-            const pieceNum = `ACH-${String((count || 0) + loopIndex).padStart(4, '0')}`;
+            const pieceNum = `${piecePrefix}-${String((count || 0) + loopIndex).padStart(4, '0')}`;
 
             // 3. Construction des écritures
-            const entries = buildEntriesFromDoc(doc, supplierCode, supplierAccName);
+            const entries = buildEntriesFromDoc(doc, tierCode, tierName);
             for (const e of entries) {
-                rows.push({ ...e, user_id: user.id, piece_num: pieceNum });
+                rows.push({ ...e, user_id: user.id, piece_num: pieceNum, journal: journalCode });
             }
         }
 
@@ -1604,37 +1609,35 @@ export default function ComptabiliteModule() {
                                 </div>
                             )}
                         </div>
-                    </div>
-                </>)
-                }
+                    </>
+                )}
 
                 {/* ─── JOURNAL ─────────────────────────────────── */}
-                {
-                    activeTab === 'journal' && (
-                        <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
-                            <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-                                <h2 className="font-bold text-lg flex items-center gap-2">
-                                    <BookOpen className="w-5 h-5" />
-                                    Journal des écritures
-                                </h2>
-                                <span className="text-xs font-mono text-gray-500">{filteredEntries.length} écritures</span>
-                            </div>
+                {activeTab === 'journal' && (
+                    <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
+                        <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+                            <h2 className="font-bold text-lg flex items-center gap-2">
+                                <BookOpen className="w-5 h-5" />
+                                Journal des écritures
+                            </h2>
+                            <span className="text-xs font-mono text-gray-500">{filteredEntries.length} écritures</span>
+                        </div>
 
-                            {/* Multi-journal filter tabs */}
-                            <div className="px-4 py-2 border-b border-gray-200 bg-gray-50/50 flex items-center gap-1 flex-wrap">
-                                {(['tous', 'HA', 'BQ', 'CA', 'OD'] as JournalFilter[]).map(jf => (
-                                    <button
-                                        key={jf}
-                                        onClick={() => setJournalFilter(jf)}
-                                        className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${journalFilter === jf
-                                            ? 'bg-slate-900 text-white shadow-sm'
-                                            : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
-                                            }`}
-                                    >
-                                        {jf === 'tous' ? 'Tous' : jf === 'HA' ? '📦 Achats' : jf === 'BQ' ? '🏦 Banque' : jf === 'CA' ? '💵 Caisse' : '📝 OD'}
-                                    </button>
-                                ))}
-                            </div>
+                        {/* Multi-journal filter tabs */}
+                        <div className="px-4 py-2 border-b border-gray-200 bg-gray-50/50 flex items-center gap-1 flex-wrap">
+                            {(['tous', 'HA', 'VT', 'BQ', 'CA', 'OD'] as JournalFilter[]).map(jf => (
+                                <button
+                                    key={jf}
+                                    onClick={() => setJournalFilter(jf)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${journalFilter === jf
+                                        ? 'bg-slate-900 text-white shadow-sm'
+                                        : 'bg-slate-100 text-slate-500 hover:bg-slate-200'
+                                        }`}
+                                >
+                                    {jf === 'tous' ? 'Tous' : jf === 'HA' ? '📦 Achats' : jf === 'VT' ? '🏷️ Ventes' : jf === 'BQ' ? '🏦 Banque' : jf === 'CA' ? '💵 Caisse' : '📝 OD'}
+                                </button>
+                            ))}
+                        </div>
 
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
@@ -1675,7 +1678,7 @@ export default function ComptabiliteModule() {
                                                         className={`border-b border-gray-100 hover:bg-teal-50/10 transition-colors ${isFirstOfGroup ? 'border-t border-t-gray-200' : ''}`}
                                                     >
                                                         <td className="px-3 py-2.5">
-                                                            <span className={`text-[10px] font-bold font-mono px-1.5 py-0.5 border uppercase ${entry.journal === 'HA' ? 'bg-blue-50 text-blue-700 border-blue-200' : entry.journal === 'BQ' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : entry.journal === 'CA' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
+                                                            <span className={`text-[10px] font-bold font-mono px-1.5 py-0.5 border uppercase ${entry.journal === 'HA' ? 'bg-blue-50 text-blue-700 border-blue-200' : entry.journal === 'VT' ? 'bg-purple-50 text-purple-700 border-purple-200' : entry.journal === 'BQ' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : entry.journal === 'CA' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-gray-50 text-gray-600 border-gray-200'}`}>
                                                                 {entry.journal}
                                                             </span>
                                                         </td>
