@@ -1609,8 +1609,9 @@ export default function ComptabiliteModule() {
                                 </div>
                             )}
                         </div>
-                    </>
-                )}
+                    </div>
+                </>
+            )}
 
                 {/* ─── JOURNAL ─────────────────────────────────── */}
                 {activeTab === 'journal' && (
