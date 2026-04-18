@@ -479,8 +479,13 @@ export default function ComptabiliteModule() {
             }
 
             // 2. Identify the third-party account (Supplier or Client) to settle
-            // Typical heuristic: 4411xxx for supplier, 3421xxx for client
-            const thirdPartyEntry = dbEntries.find((e: any) => e.account.startsWith('44') || e.account.startsWith('34'));
+            // We must strictly avoid tax accounts (3455, 4455) and target collective accounts (4411, 3421, etc.)
+            const thirdPartyEntry = dbEntries.find((e: any) => 
+                e.account.startsWith('4411') || // Fournisseurs
+                e.account.startsWith('3421') || // Clients
+                e.account.startsWith('4441') || // Organismes sociaux
+                e.account.startsWith('4452')    // État - Impôts et taxes (non-TVA)
+            );
             if (!thirdPartyEntry) {
                 alert("Impossible d'identifier le compte tiers (fournisseur/client) à régler.");
                 return;
