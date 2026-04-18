@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, Mail, Lock, User, ArrowRight, Sparkles, Check } from 'lucide-react';
+import { Loader2, Mail, Lock, User, ArrowRight, Sparkles, Check, Building, Fingerprint } from 'lucide-react';
 
 export default function SignupPage() {
     const [fullName, setFullName] = useState('');
+    const [companyName, setCompanyName] = useState('');
+    const [ice, setIce] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -27,6 +29,8 @@ export default function SignupPage() {
                 options: {
                     data: {
                         full_name: fullName,
+                        company_name: companyName,
+                        ice: ice,
                     },
                 },
             });
@@ -135,6 +139,40 @@ export default function SignupPage() {
                                     value={fullName}
                                     onChange={(e) => setFullName(e.target.value)}
                                     placeholder=""
+                                    required
+                                    className="w-full bg-slate-50 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm pl-12"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold mb-2">
+                                Nom de l&apos;entreprise
+                            </label>
+                            <div className="relative">
+                                <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    placeholder="Ex: Ma Société SARL"
+                                    required
+                                    className="w-full bg-slate-50 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm pl-12"
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold mb-2">
+                                ICE (Identifiant Commun de l&apos;Entreprise)
+                            </label>
+                            <div className="relative">
+                                <Fingerprint className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    value={ice}
+                                    onChange={(e) => setIce(e.target.value)}
+                                    placeholder="15 chiffres"
                                     required
                                     className="w-full bg-slate-50 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm pl-12"
                                 />
