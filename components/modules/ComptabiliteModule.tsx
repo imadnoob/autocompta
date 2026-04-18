@@ -181,7 +181,8 @@ export default function ComptabiliteModule() {
             .eq('user_id', user.id)
             .order('entry_date', { ascending: false })
             .order('created_at', { ascending: false })
-            .order('id', { ascending: true });
+            .order('debit', { ascending: false })
+            .order('account', { ascending: false });
         setAllEntries((data || []).map((e: any) => ({
             id: e.id, doc_id: e.doc_id, entry_date: e.entry_date, ref: e.ref || '',
             account: e.account, account_name: e.account_name, label: e.label,
@@ -195,7 +196,7 @@ export default function ComptabiliteModule() {
     useEffect(() => { fetchEntries(); fetchTiers(); }, [fetchEntries, fetchTiers]);
 
     const filteredEntries = useMemo(() => {
-        // Tri stable : entry_date DESC, created_at DESC, id ASC
+        // Tri comptable : entry_date DESC, created_at DESC, debit DESC, account DESC
         return allEntries.filter((e: JournalEntry) => {
             if (journalFilter !== 'tous' && e.journal !== journalFilter) return false;
             if (searchQuery) {
