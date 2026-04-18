@@ -180,7 +180,8 @@ export default function ComptabiliteModule() {
             .select('*')
             .eq('user_id', user.id)
             .order('entry_date', { ascending: false })
-            .order('created_at', { ascending: false });
+            .order('created_at', { ascending: false })
+            .order('id', { ascending: true });
         setAllEntries((data || []).map((e: any) => ({
             id: e.id, doc_id: e.doc_id, entry_date: e.entry_date, ref: e.ref || '',
             account: e.account, account_name: e.account_name, label: e.label,
@@ -194,7 +195,7 @@ export default function ComptabiliteModule() {
     useEffect(() => { fetchEntries(); fetchTiers(); }, [fetchEntries, fetchTiers]);
 
     const filteredEntries = useMemo(() => {
-        // No client-side sort: Supabase already returns entries sorted by entry_date ASC, created_at ASC
+        // Tri stable : entry_date DESC, created_at DESC, id ASC
         return allEntries.filter((e: JournalEntry) => {
             if (journalFilter !== 'tous' && e.journal !== journalFilter) return false;
             if (searchQuery) {
