@@ -48,7 +48,6 @@ export default function ComptabiliteModule() {
     const [editForm, setEditForm] = useState<{ account: string; account_name: string; label: string; debit: string; credit: string }>({ account: '', account_name: '', label: '', debit: '', credit: '' });
     const [syncOtherLines, setSyncOtherLines] = useState(true);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-    const [reanalysingId, setReanalysingId] = useState<string | null>(null);
     // Text-to-entries state
     const [texteInput, setTexteInput] = useState('');
     const [texteLoading, setTexteLoading] = useState(false);
@@ -227,25 +226,6 @@ export default function ComptabiliteModule() {
 
     const totalDebit = filteredEntries.reduce((s: number, e: JournalEntry) => s + e.debit, 0);
     const totalCredit = filteredEntries.reduce((s: number, e: JournalEntry) => s + e.credit, 0);
-    const handleReanalyseDoc = async (docId: string, filePath: string, fileType: string) => {
-        setReanalysingId(docId);
-        try {
-            const resp = await fetch('/api/process-document', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ documentId: docId, filePath, fileType })
-            });
-            const result = await resp.json();
-            if (result.success) {
-                await fetchDocs(); // Refresh docs
-            } else {
-                alert(`Erreur de ré-analyse: ${result.error}`);
-            }
-        } catch (err: any) {
-            alert(`Erreur: ${err.message}`);
-        }
-        setReanalysingId(null);
-    };
 
     // ─── Comptabiliser: persist entries to DB ────────────────
     const handleComptabiliser = async () => {
@@ -1366,11 +1346,11 @@ export default function ComptabiliteModule() {
                                             <th className="text-left px-4 py-3">Réf.</th>
                                             <th className="text-left px-4 py-3">Date</th>
                                             <th className="text-left px-4 py-3">Fournisseur</th>
-                                             <th className="text-center px-4 py-3">Journal</th>
+                                             
                                             <th className="text-right px-4 py-3">HT</th>
                                             <th className="text-right px-4 py-3">TVA</th>
                                             <th className="text-right px-4 py-3">TTC</th>
-                                            <th className="text-center px-4 py-3 w-16">Actions</th>
+                                            
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1402,44 +1382,11 @@ export default function ComptabiliteModule() {
                                                     </td>
                                                     <td className="px-4 py-3 font-mono text-xs text-gray-600">{d?.date || '—'}</td>
                                                     <td className="px-4 py-3 font-medium text-gray-700">{d?.supplier || doc.original_name}</td>
-                                                     <td className="px-4 py-3 text-center">
-                                                         {(() => {
-                                                             const classification = classifyDocument(d || {});
-                                                             const isVT = classification.suggestedJournal === "VT";
-                                                             return (
-                                                                 <div className="flex flex-col items-center gap-1">
-                                                                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${isVT ? "bg-green-50 text-green-700 border-green-200" : "bg-orange-50 text-orange-700 border-orange-200" }`}>
-                                                                         {isVT ? "VENTE (VT)" : "ACHAT (HA)"}
-                                                                     </span>
-                                                                     {classification.reasoning && (
-                                                                         <span className="text-[9px] text-gray-400 max-w-[120px] leading-tight italic">
-                                                                             {classification.reasoning}
-                                                                         </span>
-                                                                     )}
-                                                                 </div>
-                                                             );
-                                                         })()}
-                                                     </td>
+                                                     
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.amount_ht ? fmt(Number(d.amount_ht)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.tva_amount ? fmt(Number(d.tva_amount)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono font-bold">{d?.total_amount ? fmt(Number(d.total_amount)) : '—'}</td>
-                                                    <td className="px-4 py-3 text-center">
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                handleReanalyseDoc(doc.id, doc.file_path, doc.file_type);
-                                                            }}
-                                                            disabled={reanalysingId === doc.id}
-                                                            title="Relancer l'analyse IA"
-                                                            className={`p-1.5 rounded-lg transition-all ${reanalysingId === doc.id ? 'text-gray-300' : 'text-slate-400 hover:text-neo-blue hover:bg-neo-blue/10'}`}
-                                                        >
-                                                            {reanalysingId === doc.id ? (
-                                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                            ) : (
-                                                                <RotateCcw className="w-4 h-4" />
-                                                            )}
-                                                        </button>
-                                                    </td>
+                                                    
                                                 </tr>
                                             );
                                         })}
@@ -2556,15 +2503,7 @@ export default function ComptabiliteModule() {
                                                     <td className="px-4 py-3 text-center">
                                                         <span className="text-xs font-mono">{t.delai_reglement_jours || 30}j {t.condition_reglement === 'fin_mois' ? 'FM' : t.condition_reglement === 'fin_mois_le' ? `FM le ${t.jour_tombee || '?'}` : 'Net'}</span>
                                                     </td>
-                                                    <td className="px-4 py-3 text-center">
-                                                        <button
-                                                            onClick={() => { setEditingTier(t); setTierEditForm({ name: t.name, account_code_aux: t.account_code_aux, telephone: t.telephone || '', email: t.email || '', adresse: t.adresse || '', rc: t.rc || '', identifiant_fiscal: t.identifiant_fiscal || '', ice: t.ice || '', delai_reglement_jours: t.delai_reglement_jours || 30, mode_reglement: t.mode_reglement || 'virement', condition_reglement: t.condition_reglement || 'net', jour_tombee: t.jour_tombee || 0 }); }}
-                                                            className="p-1.5 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50/10 rounded transition-colors"
-                                                            title="Modifier"
-                                                        >
-                                                            <Pencil className="w-4 h-4" />
-                                                        </button>
-                                                    </td>
+                                                    
                                                 </tr>
                                             ))
                                         )}
