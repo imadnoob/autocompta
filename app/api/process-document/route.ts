@@ -78,9 +78,10 @@ export async function POST(req: NextRequest) {
       You are an expert Moroccan accountant. Analyze this document (likely an invoice or receipt).
       
       CONTEXT FOR YOUR ANALYSIS:
-      - The owner of this application is: "${userCompanyName}" (ICE: ${userIce}).
-      - If this entity appears as a CUSTOMER (near words like 'Client', 'Facturé à', 'Doit'), this is a PURCHASE (HA).
-      - If this entity appears as a VENDOR/ISSUER (Header, Footer, near 'Émetteur'), this is a SALES (VT).
+      - The owner of this application (YOUR CLIENT) is: "${userCompanyName}" (ICE: ${userIce}).
+      - If this entity appears as a CUSTOMER (near words like 'Client', 'Facturé à', 'Doit'), this is a PURCHASE (HA) for your client.
+      - IMPORTANT: If this entity ("${userCompanyName}") is the ISSUER/MERCHANT (Top/Header, Footer, Logo area), this is a SALE (VT) for your client. 
+      - If it is a SALE, YOU MUST use a Moroccan Chart of Accounts "category_code" starting with 7 (e.g., 7111).
       
       Extract the following information in strict JSON format:
       {

@@ -8,11 +8,37 @@ export interface ClassificationResult {
     confidence: number;
 }
 
-export function classifyDocument(extractedData: any): ClassificationResult {
+export interface UserContext {
+    companyName?: string;
+    ice?: string;
+}
+
+export function classifyDocument(extractedData: any, userContext?: UserContext): ClassificationResult {
     let scoreAchat = 0;
     let scoreVente = 0;
 
-    const { ice_position_y, anchors } = extractedData;
+    const { ice_position_y, anchors, supplier, tier_ice } = extractedData;
+
+    // RULE 0: Hard Match (Absolute Priority)
+    if (userContext) {
+        // Compare ICE (Numeric only comparison to avoid formatting issues)
+        if (userContext.ice && tier_ice) {
+            const cleanUserIce = userContext.ice.replace(/\D/g, '');
+            const cleanTierIce = tier_ice.replace(/\D/g, '');
+            if (cleanUserIce === cleanTierIce && cleanUserIce.length >= 10) {
+                scoreVente += 1000; // Force Sales
+            }
+        }
+
+        // Compare Company Name (Fuzzy/Inclusive)
+        if (userContext.companyName && supplier) {
+            const uName = userContext.companyName.toLowerCase().trim();
+            const sName = supplier.toLowerCase().trim();
+            if (sName.includes(uName) || uName.includes(sName)) {
+                scoreVente += 1000; // Force Sales
+            }
+        }
+    }
 
     // RULE 1: Spatial ICE (Robust)
     if (ice_position_y !== null && ice_position_y !== undefined) {
@@ -39,10 +65,10 @@ export function classifyDocument(extractedData: any): ClassificationResult {
     // Decision
     const suggestedJournal = scoreVente > scoreAchat ? 'VT' : 'HA';
     
-    // Confidence calculation (basic)
+    // Confidence calculation (capped at 1)
     const maxScore = Math.max(scoreAchat, scoreVente);
     const minScore = Math.min(scoreAchat, scoreVente);
-    const confidence = maxScore > 0 ? (maxScore - minScore) / maxScore : 0;
+    const confidence = maxScore > 0 ? Math.min(1, (maxScore - minScore) / (maxScore || 1)) : 0;
 
     return {
         scoreAchat,

@@ -48,6 +48,7 @@ export default function ComptabiliteModule() {
     const [editForm, setEditForm] = useState<{ account: string; account_name: string; label: string; debit: string; credit: string }>({ account: '', account_name: '', label: '', debit: '', credit: '' });
     const [syncOtherLines, setSyncOtherLines] = useState(true);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+    const [reanalysingId, setReanalysingId] = useState<string | null>(null);
     // Text-to-entries state
     const [texteInput, setTexteInput] = useState('');
     const [texteLoading, setTexteLoading] = useState(false);
@@ -226,6 +227,25 @@ export default function ComptabiliteModule() {
 
     const totalDebit = filteredEntries.reduce((s: number, e: JournalEntry) => s + e.debit, 0);
     const totalCredit = filteredEntries.reduce((s: number, e: JournalEntry) => s + e.credit, 0);
+    const handleReanalyseDoc = async (docId: string, filePath: string, fileType: string) => {
+        setReanalysingId(docId);
+        try {
+            const resp = await fetch('/api/process-document', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ documentId: docId, filePath, fileType })
+            });
+            const result = await resp.json();
+            if (result.success) {
+                await fetchDocuments(); // Refresh docs
+            } else {
+                alert(`Erreur de ré-analyse: ${result.error}`);
+            }
+        } catch (err: any) {
+            alert(`Erreur: ${err.message}`);
+        }
+        setReanalysingId(null);
+    };
 
     // ─── Comptabiliser: persist entries to DB ────────────────
     const handleComptabiliser = async () => {
@@ -242,8 +262,12 @@ export default function ComptabiliteModule() {
         for (const doc of docsToProcess) {
             loopIndex++;
             
-            // 0. Scoring Classification (Spatial + Anchors)
-            const classification = classifyDocument(doc.extracted_data || {});
+            // 0. Scoring Classification (Spatial + Anchors + Rule 0)
+            const userContext = {
+                companyName: user.user_metadata?.company_name,
+                ice: user.user_metadata?.ice
+            };
+            const classification = classifyDocument(doc.extracted_data || {}, userContext);
             const isSale = classification.suggestedJournal === 'VT';
             
             // Fallback to category code if scores are neutral
@@ -1349,6 +1373,7 @@ export default function ComptabiliteModule() {
                                             <th className="text-right px-4 py-3">HT</th>
                                             <th className="text-right px-4 py-3">TVA</th>
                                             <th className="text-right px-4 py-3">TTC</th>
+                                            <th className="text-center px-4 py-3 w-16">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1383,6 +1408,23 @@ export default function ComptabiliteModule() {
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.amount_ht ? fmt(Number(d.amount_ht)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.tva_amount ? fmt(Number(d.tva_amount)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono font-bold">{d?.total_amount ? fmt(Number(d.total_amount)) : '—'}</td>
+                                                    <td className="px-4 py-3 text-center">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleReanalyseDoc(doc.id, doc.file_path, doc.file_type);
+                                                            }}
+                                                            disabled={reanalysingId === doc.id}
+                                                            title="Relancer l'analyse IA"
+                                                            className={`p-1.5 rounded-lg transition-all ${reanalysingId === doc.id ? 'text-gray-300' : 'text-slate-400 hover:text-neo-blue hover:bg-neo-blue/10'}`}
+                                                        >
+                                                            {reanalysingId === doc.id ? (
+                                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                            ) : (
+                                                                <RotateCcw className="w-4 h-4" />
+                                                            )}
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             );
                                         })}
