@@ -1626,7 +1626,7 @@ export default function ComptabiliteModule() {
 
                         {/* Multi-journal filter tabs */}
                         <div className="px-4 py-2 border-b border-gray-200 bg-gray-50/50 flex items-center gap-1 flex-wrap">
-                            {(['tous', 'HA', 'BQ', 'CA', 'OD', 'VT'] as JournalFilter[]).map(jf => (
+                            {(['tous', 'HA', 'VT', 'BQ', 'CA', 'OD'] as JournalFilter[]).map(jf => (
                                 <button
                                     key={jf}
                                     onClick={() => setJournalFilter(jf)}
