@@ -7,6 +7,8 @@ export interface Document {
     accounting_status: string | null;
     internal_ref: string | null;
     extracted_data: any;
+    file_path: string;
+    file_type: string;
 }
 
 export interface JournalEntry {
