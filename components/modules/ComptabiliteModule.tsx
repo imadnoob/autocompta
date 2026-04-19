@@ -1366,6 +1366,7 @@ export default function ComptabiliteModule() {
                                             <th className="text-left px-4 py-3">Réf.</th>
                                             <th className="text-left px-4 py-3">Date</th>
                                             <th className="text-left px-4 py-3">Fournisseur</th>
+                                             <th className="text-center px-4 py-3">Journal</th>
                                             <th className="text-right px-4 py-3">HT</th>
                                             <th className="text-right px-4 py-3">TVA</th>
                                             <th className="text-right px-4 py-3">TTC</th>
@@ -1401,6 +1402,24 @@ export default function ComptabiliteModule() {
                                                     </td>
                                                     <td className="px-4 py-3 font-mono text-xs text-gray-600">{d?.date || '—'}</td>
                                                     <td className="px-4 py-3 font-medium text-gray-700">{d?.supplier || doc.original_name}</td>
+                                                     <td className="px-4 py-3 text-center">
+                                                         {(() => {
+                                                             const classification = classifyDocument(d || {});
+                                                             const isVT = classification.suggestedJournal === "VT";
+                                                             return (
+                                                                 <div className="flex flex-col items-center gap-1">
+                                                                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold border ${isVT ? "bg-green-50 text-green-700 border-green-200" : "bg-orange-50 text-orange-700 border-orange-200" }`}>
+                                                                         {isVT ? "VENTE (VT)" : "ACHAT (HA)"}
+                                                                     </span>
+                                                                     {classification.reasoning && (
+                                                                         <span className="text-[9px] text-gray-400 max-w-[120px] leading-tight italic">
+                                                                             {classification.reasoning}
+                                                                         </span>
+                                                                     )}
+                                                                 </div>
+                                                             );
+                                                         })()}
+                                                     </td>
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.amount_ht ? fmt(Number(d.amount_ht)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono text-gray-700">{d?.tva_amount ? fmt(Number(d.tva_amount)) : '—'}</td>
                                                     <td className="px-4 py-3 text-right font-mono font-bold">{d?.total_amount ? fmt(Number(d.total_amount)) : '—'}</td>
