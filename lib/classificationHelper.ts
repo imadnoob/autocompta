@@ -1,5 +1,5 @@
 /**
- * Helper to calculate Sales vs Purchase score based on Semantic Reasoning from Gemini
+ * Helper to calculate Sales vs Purchase score based on Direct Semantic Selection (V3)
  */
 export interface ClassificationResult {
     scoreAchat: number;
@@ -10,34 +10,34 @@ export interface ClassificationResult {
 }
 
 export function classifyDocument(extractedData: any): ClassificationResult {
-    const { detected_user_role, confidence_score, reasoning } = extractedData;
+    const { document_nature, reasoning } = extractedData;
 
-    if (detected_user_role === 'ISSUER') {
+    if (document_nature === 'VENTE') {
         return {
             scoreAchat: 0,
             scoreVente: 100,
             suggestedJournal: 'VT',
-            confidence: (confidence_score || 100) / 100,
+            confidence: 1,
             reasoning
         };
     }
 
-    if (detected_user_role === 'CUSTOMER') {
+    if (document_nature === 'ACHAT') {
         return {
             scoreAchat: 100,
             scoreVente: 0,
             suggestedJournal: 'HA',
-            confidence: (confidence_score || 100) / 100,
+            confidence: 1,
             reasoning
         };
     }
 
-    // Default neutral result if UNKNOWN or missing
+    // Default neutral result if INCONNU or missing
     return {
         scoreAchat: 0,
         scoreVente: 0,
         suggestedJournal: 'HA', // Default absolute
         confidence: 0,
-        reasoning: reasoning || "Rôle utilisateur non identifié par l'IA."
+        reasoning: reasoning || "Nature du document non identifiée par l'IA."
     };
 }

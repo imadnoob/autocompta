@@ -73,19 +73,21 @@ export async function POST(req: NextRequest) {
             console.error("RAG steps failed, proceeding without context:", ragError);
         }
 
-        // 5. Final Prompt for Gemini (Semantic Reasoning Approach)
+        // 5. Final Prompt for Gemini (Direct Semantic Classification V3)
         const prompt = `
-      You are an expert Moroccan accountant. Analyze this document (likely an invoice or receipt).
+      Tu es un expert comptable marocain. Analyse ce document.
       
-      CONTEXT FOR YOUR ANALYSIS:
-      - The owner of this accounting application is: "${userCompanyName}" (ICE: ${userIce}).
-      - Objective: Determine if "${userCompanyName}" is ISSUING or RECEIVING this invoice.
+      CONTEXTE CRITIQUE :
+      - Pour l'entreprise : "${userCompanyName}" (ICE : ${userIce}).
+      - Question : Est-ce que cette facture est un ACHAT ou une VENTE pour cette entreprise ?
       
-      RULES TO DECIDE:
-      1. If "${userCompanyName}" or its ICE "${userIce}" matches the main brand, is at the top (header), bottom (footer), or near the bank details for payment, they are the ISSUER -> Return "ISSUER".
-      2. If "${userCompanyName}" or its ICE "${userIce}" is listed as the recipient, customer, near phrases like 'Client', 'Facturé à', 'Doit', or 'À l'attention de', they are the CUSTOMER -> Return "CUSTOMER".
+      RÈGLES DE DÉCISION :
+      1. Si "${userCompanyName}" ou ICE "${userIce}" est l'ÉMETTEUR (En-tête, Logo, RIB en bas), alors document_nature = "VENTE".
+         DANS CE CAS, category_code DOIT obligatoirement commencer par 7 (ex: 7111).
+      2. Si "${userCompanyName}" ou ICE "${userIce}" est le CLIENT (near 'Client', 'Facturé à', 'Doit'), alors document_nature = "ACHAT".
+         DANS CE CAS, category_code DOIT commencer par 6 (charges), 2 (immobilisations) ou 3 (stocks).
       
-      Extract the following information in strict JSON format:
+      Extract in strict JSON format:
       {
         "date": "YYYY-MM-DD",
         "supplier": "string",
@@ -98,10 +100,8 @@ export async function POST(req: NextRequest) {
         "type": "invoice",
         "category_code": "string",
         "category_name": "string",
-        "payment_method": "string",
-        "detected_user_role": "ISSUER" | "CUSTOMER" | "UNKNOWN",
-        "confidence_score": number, (0 to 100),
-        "reasoning": "string", (Brief explanation of why you chose this role based on the layout),
+        "document_nature": "ACHAT" | "VENTE" | "INCONNU",
+        "reasoning": "string" (Explain why in French, e.g. 'ICE trouvé dans l'en-tête'),
         "tier_ice": "string or null (ICE of the other party)"
       }
       Strictly conform to the Plan Comptable Marocain.
