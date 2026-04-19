@@ -38,8 +38,9 @@ export async function POST(req: NextRequest) {
         const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(docInfo.user_id);
         const userCompanyName = user?.user_metadata?.company_name || "Unknown Company";
         const userIce = user?.user_metadata?.ice || "Unknown ICE";
+        const userSector = user?.user_metadata?.sector || "COMMERCE";
 
-        console.log(`[DEBUG] Extraction pour l'entreprise: "${userCompanyName}" (ICE: ${userIce})`);
+        console.log(`[DEBUG] Extraction pour l'entreprise: "${userCompanyName}" (ICE: ${userIce}, Secteur: ${userSector})`);
 
         // 4. Step A: Get a brief description to search in vector DB
         const descriptionPrompt = "Analyse brièvement ce document et donne moi une seule phrase décrivant la nature de la transaction (ex: 'Achat de matériel informatique', 'Facture d'électricité', 'Vente de services de conseil').";
@@ -59,6 +60,10 @@ export async function POST(req: NextRequest) {
             const queryEmbedding = embedResult.embedding.values;
 
             // Step C: Match in Supabase
+            // Note: We'll filter by sector in the final prompt if needed, 
+            // but the vector DB matches may include hotel entries. 
+            // We'll import PCM_META to filter them out here if the sector isn't hotel.
+            const { PCM_META } = require('@/components/modules/comptaHelpers');
             const { data: matchedAccounts, error: matchError } = await supabaseAdmin.rpc('match_pcm_accounts', {
                 query_embedding: queryEmbedding,
                 match_threshold: 0.1,
@@ -68,6 +73,10 @@ export async function POST(req: NextRequest) {
             if (!matchError && matchedAccounts && matchedAccounts.length > 0) {
                 pcmContext = "COMPTES PCM PERTINENTS SUGGÉRÉS (Utilisez un de ces comptes si cela correspond à la nature du document) :\n";
                 matchedAccounts.forEach((acc: any) => {
+                    const meta = PCM_META[acc.code];
+                    // Skip hotel-only accounts if the user is not in hospitality
+                    if (meta?.sector && meta.sector !== userSector) return;
+                    
                     pcmContext += `- Compte ${acc.code} : ${acc.name}\n`;
                 });
             }
@@ -82,6 +91,11 @@ export async function POST(req: NextRequest) {
       CONTEXTE DE L'UTILISATEUR :
       - Votre client actuel est l'entreprise : "${userCompanyName}"
       - Son ICE est : ${userIce}
+      - Son secteur d'activité est : ${userSector}
+      
+      IMPORTANT (Règle Métier) :
+      - Si le secteur est "HOTELLERIE_RESTAURATION", utilisez les comptes spécialisés comme 71241 (Nuitées), 71242 (Restauration), 445262 (Taxe de séjour), 3111 (Stocks alimentaires), etc.
+      - Pour TOUS les autres secteurs, utilisez UNIQUEMENT les comptes généraux du Plan Comptable Marocain standard (ex: 7111 pour ventes marchandises, 7124 pour services généraux, 6111 pour achats).
       
       OBJECTIF : Déterminer si ce document est une VENTE (émise par "${userCompanyName}") ou un ACHAT (reçue par "${userCompanyName}").
       

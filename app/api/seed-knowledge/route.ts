@@ -159,23 +159,32 @@ const TEXTBOOK_ENTRIES = [
     { situation: "Frais de réception et d'hospitalité (repas d'affaires)", journal: "HA", main: "6143", tier: "4411", tva: "34552" },
 
     // ═══════════════════════════════════════════════════════════
-    // ★★★ SECTEUR HÔTELIER — TVA 10% ★★★
+    // ★★★ SECTEUR HÔTELIER — EXPERT V4 ★★★
     // ═══════════════════════════════════════════════════════════
-    { situation: "Vente de nuitées d'hôtel (hébergement, chambre d'hôtel) TVA 10%", journal: "VT", main: "7111", tier: "3421", tva: "4455" },
-    { situation: "Vente de prestations de restauration dans un hôtel (restaurant hôtelier) TVA 10%", journal: "VT", main: "7115", tier: "3421", tva: "4455" },
-    { situation: "Vente de services hôteliers (spa, piscine, salle de conférence) TVA 10%", journal: "VT", main: "7124", tier: "3421", tva: "4455" },
-    { situation: "Vente de petit-déjeuner hôtel TVA 10%", journal: "VT", main: "7115", tier: "3421", tva: "4455" },
-    { situation: "Achat de linge de maison pour hôtel (draps, serviettes, oreillers)", journal: "HA", main: "6122", tier: "4411", tva: "34552" },
-    { situation: "Achat de produits d'accueil pour hôtel (savon, shampoing, gel douche)", journal: "HA", main: "6122", tier: "4411", tva: "34552" },
-    { situation: "Achat de produits alimentaires pour restaurant d'hôtel (denrées périssables)", journal: "HA", main: "6111", tier: "4411", tva: "34552" },
-    { situation: "Achat de boissons pour restaurant d'hôtel ou bar", journal: "HA", main: "6111", tier: "4411", tva: "34552" },
-    { situation: "Charges de blanchisserie et pressing (lavage linge hôtel)", journal: "HA", main: "6136", tier: "4411", tva: "34552" },
+    { situation: "Vente de nuitées d'hôtel (hébergement, chambre d'hôtel) TVA 10%", journal: "VT", main: "71241", tier: "3421", tva: "4455" },
+    { situation: "Vente de prestations de restauration hôtel (restaurant, petit-déjeuner) TVA 10%", journal: "VT", main: "71242", tier: "3421", tva: "4455" },
+    { situation: "Vente de boissons, mini-bar, discothèque hôtel TVA 20%", journal: "VT", main: "71245", tier: "3421", tva: "4455" },
+    { situation: "Services de blanchisserie et lingerie pour clients TVA 20%", journal: "VT", main: "712481", tier: "3421", tva: "4455" },
+    { situation: "Collecte de la Taxe de séjour (TS) sur facture client", journal: "VT", main: "445262", tier: "3421", tva: null },
+    { situation: "Collecte de la Taxe de Promotion Touristique (TPT) sur facture client", journal: "VT", main: "445261", tier: "3421", tva: null },
+    { situation: "Vente de services hôteliers divers (spa, piscine, salle conférence) TVA 10%", journal: "VT", main: "7124", tier: "3421", tva: "4455" },
+    
+    // --- STOCKS & CONSOMMABLES HÔTELIERS ---
+    { situation: "Achat de denrées alimentaires et produits de cuisine pour restaurant d'hôtel (Stock)", journal: "HA", main: "3111", tier: "4411", tva: "34552" },
+    { situation: "Achat de vins, spiritueux et boissons alcoolisées pour bar d'hôtel (Stock)", journal: "HA", main: "31112", tier: "4411", tva: "34552" },
+    { situation: "Achat de produits d'accueil (savon, shampoing, kits invités) pour chambres", journal: "HA", main: "312221", tier: "4411", tva: "34552" },
+    { situation: "Achat de produits et matières pour la blanchisserie hôtelière (Produits chimiques, lessive)", journal: "HA", main: "312211", tier: "4411", tva: "34552" },
+    
+    // --- ÉQUIPEMENTS & ASSETS HÔTELIERS ---
+    { situation: "Acquisition de linge de maison, draps, serviettes (Immobilisations hôtelières)", journal: "HA", main: "233242", tier: "4411", tva: "34551" },
+    { situation: "Acquisition de vaisselle professionnelle, verrerie et couverts (Immobilisations restaurant)", journal: "HA", main: "233243", tier: "4411", tva: "34551" },
+    
+    // --- CHARGES EXPLOITATION HÔTEL ---
+    { situation: "Charges de blanchisserie externe et pressing (service lavage)", journal: "HA", main: "6136", tier: "4411", tva: "34552" },
     { situation: "Frais de maintenance et entretien hôtelier (climatisation, ascenseur, plomberie)", journal: "HA", main: "6133", tier: "4411", tva: "34552" },
     { situation: "Commission versée à Booking.com, Expedia ou agence de voyage", journal: "HA", main: "6136", tier: "4411", tva: "34552" },
-    { situation: "Taxe de séjour (taxe de promotion touristique)", journal: "OD", main: "6168", tier: "4457", tva: null },
-    { situation: "Achat de mobilier d'hôtel (lits, tables, chaises de restaurant)", journal: "HA", main: "2351", tier: "4411", tva: "34551" },
-    { situation: "Travaux d'aménagement et décoration de chambres d'hôtel", journal: "HA", main: "2327", tier: "4411", tva: "34551" },
-
+    { situation: "Paiement des taxes locales hôtelières (Taxe de séjour, TPT)", journal: "OD", main: "61615", tier: "4452", tva: null },
+    
     // ─── SALAIRES HÔTELIER ───────────────────────────────────
     { situation: "Salaires du personnel hôtelier (réceptionnistes, femmes de chambre, cuisiniers)", journal: "OD", main: "6171", tier: "4432", tva: null },
 

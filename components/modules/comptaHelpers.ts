@@ -83,6 +83,7 @@ export interface AccountMeta {
     nature: 'debit' | 'credit';
     lettrable: boolean;
     code_taxe?: string;
+    sector?: string;
 }
 
 export interface SIGModel {
@@ -107,11 +108,19 @@ export const PCM_ACCOUNTS: Record<string, string> = {
     '2311': 'Terrains',
     '2321': 'Bâtiments',
     '2340': 'Matériel de transport',
+    '2351': 'Mobilier de bureau',
     '2355': 'Matériel informatique',
-    '3111': 'Marchandises',
+    '233242': 'Linge et teinture (Immobilisations)',
+    '233243': 'Vaisselle, verrerie et matériel de table',
+    '3111': 'Produits alimentaires',
+    '31112': 'Boissons alcoolisées',
+    '312211': 'Matière de blanchisserie',
+    '312221': 'Produits d\'accueil (savons, kits)',
     '3421': 'Clients',
     '4411': 'Fournisseurs',
     '4452': 'État — Impôts et taxes',
+    '445261': 'Taxe de promotion touristique (TPT)',
+    '445262': 'Taxe de séjour',
     '3455': 'État — TVA récupérable',
     '4455': 'État — TVA facturée',
     '34551': 'TVA récupérable sur immobilisations',
@@ -121,6 +130,7 @@ export const PCM_ACCOUNTS: Record<string, string> = {
     '6111': 'Achats de marchandises',
     '6121': 'Achats de matières premières',
     '6122': 'Achats de matières et fournitures consommables',
+    '61225': 'Fournitures de bureau',
     '6125': 'Achats non stockés de mat. et fournitures',
     '6131': 'Locations et charges locatives',
     '6134': 'Primes d\'assurance',
@@ -130,11 +140,16 @@ export const PCM_ACCOUNTS: Record<string, string> = {
     '6145': 'Frais postaux et de télécommunications',
     '6147': 'Services bancaires',
     '6161': 'Impôts et taxes directs',
+    '61615': 'Impôts et taxes locaux (hôteliers)',
     '6167': 'Impôts et taxes indirects',
     '6171': 'Rémunérations du personnel',
     '6174': 'Charges sociales',
     '7111': 'Ventes de marchandises',
     '7124': 'Ventes de services',
+    '71241': 'Ventes hébergement',
+    '71242': 'Ventes restauration',
+    '71245': 'Ventes bars et mini-bars',
+    '712481': 'Blanchisserie',
     '7127': 'Ventes et produits accessoires',
 };
 
@@ -666,12 +681,21 @@ export const PCM_META: Record<string, AccountMeta> = {
     '2311': { name: 'Terrains', type: 'detail', nature: 'debit', lettrable: false },
     '2321': { name: 'Bâtiments', type: 'detail', nature: 'debit', lettrable: false },
     '2340': { name: 'Matériel de transport', type: 'detail', nature: 'debit', lettrable: false },
+    '2351': { name: 'Mobilier de bureau', type: 'detail', nature: 'debit', lettrable: false },
     '2355': { name: 'Matériel informatique', type: 'detail', nature: 'debit', lettrable: false },
-    '3111': { name: 'Marchandises', type: 'detail', nature: 'debit', lettrable: false },
+    '233242': { name: 'Linge et teinture (Immo)', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
+    '233243': { name: 'Vaisselle, verrerie et matériel de table', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
+    '3111': { name: 'Produits alimentaires', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
+    '31112': { name: 'Boissons alcoolisées', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
+    '312211': { name: 'Matière de blanchisserie', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
+    '312221': { name: 'Produits d\'accueil (savons, kits)', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
     '3421': { name: 'Clients', type: 'total', nature: 'debit', lettrable: true },
     '4411': { name: 'Fournisseurs', type: 'total', nature: 'credit', lettrable: true },
     '4452': { name: 'État — Impôts et taxes', type: 'detail', nature: 'credit', lettrable: false },
+    '445261': { name: 'Taxe de promotion touristique (TPT)', type: 'detail', nature: 'credit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
+    '445262': { name: 'Taxe de séjour', type: 'detail', nature: 'credit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
     '4455': { name: 'État, TVA facturée', type: 'detail', nature: 'credit', lettrable: false },
+    '34551': { name: 'TVA récupérable sur immobilisations', type: 'detail', nature: 'debit', lettrable: false },
     '34552': { name: 'TVA récupérable sur charges', type: 'detail', nature: 'debit', lettrable: false },
     '5141': { name: 'Banque', type: 'detail', nature: 'debit', lettrable: false },
     '5161': { name: 'Caisse', type: 'detail', nature: 'debit', lettrable: false },
@@ -687,13 +711,36 @@ export const PCM_META: Record<string, AccountMeta> = {
     '6145': { name: 'Frais postaux et télécom', type: 'detail', nature: 'debit', lettrable: false, code_taxe: 'D20' },
     '6147': { name: 'Services bancaires', type: 'detail', nature: 'debit', lettrable: false },
     '6161': { name: 'Impôts et taxes directs', type: 'detail', nature: 'debit', lettrable: false },
+    '61615': { name: 'Impôts et taxes locaux (hôteliers)', type: 'detail', nature: 'debit', lettrable: false, sector: 'HOTELLERIE_RESTAURATION' },
     '6167': { name: 'Impôts et taxes indirects', type: 'detail', nature: 'debit', lettrable: false },
     '6171': { name: 'Rémunérations du personnel', type: 'detail', nature: 'debit', lettrable: false },
     '6174': { name: 'Charges sociales', type: 'detail', nature: 'debit', lettrable: false },
     '7111': { name: 'Ventes de marchandises', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C20' },
     '7124': { name: 'Ventes de services', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C20' },
+    '71241': { name: 'Ventes hébergement', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C10', sector: 'HOTELLERIE_RESTAURATION' },
+    '71242': { name: 'Ventes restauration', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C10', sector: 'HOTELLERIE_RESTAURATION' },
+    '71245': { name: 'Ventes bars et mini-bars', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C20', sector: 'HOTELLERIE_RESTAURATION' },
+    '712481': { name: 'Blanchisserie', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C20', sector: 'HOTELLERIE_RESTAURATION' },
     '7127': { name: 'Ventes et produits accessoires', type: 'detail', nature: 'credit', lettrable: false, code_taxe: 'C20' },
 };
+
+/**
+ * Returns the chart of accounts filtered by the user's specific industry sector.
+ * Specialized accounts (like hotel-specific ones) are only included if they match the user's sector.
+ */
+export function getPCMAccountsForSector(sector?: string): Record<string, string> {
+    const filtered: Record<string, string> = {};
+    
+    for (const [code, meta] of Object.entries(PCM_META)) {
+        // Include if the account has no specific sector (general) 
+        // OR if it matches the user's selected sector.
+        if (!meta.sector || meta.sector === sector) {
+            filtered[code] = PCM_ACCOUNTS[code] || meta.name;
+        }
+    }
+    
+    return filtered;
+}
 
 // ─── SIG (Soldes Intermédiaires de Gestion) ──────────────────
 export function buildSIG(cpc: CPCModel): SIGModel {

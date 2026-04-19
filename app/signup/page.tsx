@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, Mail, Lock, User, ArrowRight, Sparkles, Check, Building, Fingerprint } from 'lucide-react';
+import { Loader2, Mail, Lock, User, ArrowRight, Sparkles, Check, Building, Fingerprint, ChevronDown } from 'lucide-react';
 
 export default function SignupPage() {
     const [fullName, setFullName] = useState('');
@@ -12,6 +12,7 @@ export default function SignupPage() {
     const [ice, setIce] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [sector, setSector] = useState('COMMERCE');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState(false);
@@ -31,6 +32,7 @@ export default function SignupPage() {
                         full_name: fullName,
                         company_name: companyName,
                         ice: ice,
+                        sector: sector,
                     },
                 },
             });
@@ -176,6 +178,34 @@ export default function SignupPage() {
                                     required
                                     className="w-full bg-slate-50 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm pl-12"
                                 />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block font-semibold mb-2">
+                                Secteur d&apos;activité
+                            </label>
+                            <div className="relative">
+                                <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <select
+                                    value={sector}
+                                    onChange={(e) => setSector(e.target.value)}
+                                    required
+                                    className="w-full bg-slate-50 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm pl-12 pr-10 appearance-none cursor-pointer"
+                                >
+                                    <option value="COMMERCE">Commerce</option>
+                                    <option value="SERVICE">Service</option>
+                                    <option value="HOTELLERIE_RESTAURATION">Hôtellerie & Restauration</option>
+                                    <option value="INDUSTRIE">Industrie</option>
+                                    <option value="BTP_CONSTRUCTION">BTP & Construction</option>
+                                    <option value="PROMOTION_IMMOBILIERE">Promotion Immobilière</option>
+                                    <option value="AGRICULTURE">Agriculture</option>
+                                    <option value="TRANSPORT_LOGISTIQUE">Transport & Logistique</option>
+                                    <option value="ASSOCIATION_COOPERATIVE">Association & Coopérative</option>
+                                    <option value="PROFESSION_LIBERALE">Profession Libérale</option>
+                                    <option value="ARTISANAT">Artisanat</option>
+                                </select>
+                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
                             </div>
                         </div>
 

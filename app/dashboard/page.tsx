@@ -30,12 +30,14 @@ export default function DashboardPage() {
     });
     const [refreshKey, setRefreshKey] = useState(0);
     const [userName, setUserName] = useState('');
+    const [userSector, setUserSector] = useState<string | undefined>(undefined);
 
     useEffect(() => {
         const getUser = async () => {
             const { data } = await supabase.auth.getUser();
             if (data.user) {
                 setUserName(data.user.user_metadata?.full_name || data.user.email || '');
+                setUserSector(data.user.user_metadata?.sector);
             }
         };
         getUser();
@@ -121,7 +123,7 @@ export default function DashboardPage() {
             )}
 
             {activeModule === 'comptabilite' && (
-                <ComptabiliteModule />
+                <ComptabiliteModule userSector={userSector} />
             )}
 
             {activeModule === 'agentia' && (

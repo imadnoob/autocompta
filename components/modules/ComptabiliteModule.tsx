@@ -17,12 +17,13 @@ import {
     autoLettrage, preLettrage, calcEcheance,
     PCM_ACCOUNTS, JOURNAL_LABELS, DEFAULT_JOURNAL_CONFIGS,
     COMPTES_COLLECTIFS, getCompteCollectifParent,
+    getPCMAccountsForSector,
 } from './comptaHelpers';
 import EtatSyntheseModule from './EtatSyntheseModule';
 import { classifyDocument } from '@/lib/classificationHelper';
 
 // ─── Component ───────────────────────────────────────────────
-export default function ComptabiliteModule() {
+export default function ComptabiliteModule({ userSector }: { userSector?: string }) {
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<SubTab>('asaisir');
@@ -74,6 +75,11 @@ export default function ComptabiliteModule() {
     const [expandedBalanceAccounts, setExpandedBalanceAccounts] = useState<Set<string>>(new Set());
     const [expandedGrandLivreAccounts, setExpandedGrandLivreAccounts] = useState<Set<string>>(new Set());
     const [showSagePopup, setShowSagePopup] = useState(false);
+
+    // Filter PCM accounts based on user sector
+    const filteredPCMAccounts = useMemo(() => {
+        return getPCMAccountsForSector(userSector);
+    }, [userSector]);
 
     const toggleBalanceAccount = (acc: string) => {
         setExpandedBalanceAccounts(prev => {
@@ -1843,10 +1849,23 @@ export default function ComptabiliteModule() {
                                         <div>
                                             <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Compte</label>
                                             <input
+                                                list="pcm-account-suggestions"
                                                 value={editForm.account}
-                                                onChange={e => setEditForm(f => ({ ...f, account: e.target.value }))}
+                                                onChange={e => {
+                                                    const code = e.target.value;
+                                                    setEditForm(f => ({ 
+                                                        ...f, 
+                                                        account: code,
+                                                        account_name: filteredPCMAccounts[code] || f.account_name 
+                                                    }));
+                                                }}
                                                 className="w-full px-3 py-2 border border-slate-200 rounded-xl font-mono text-sm focus:outline-none focus:ring-2 focus:ring-neo-blue"
                                             />
+                                            <datalist id="pcm-account-suggestions">
+                                                {Object.entries(filteredPCMAccounts).map(([code, name]) => (
+                                                    <option key={code} value={code}>{name}</option>
+                                                ))}
+                                            </datalist>
                                         </div>
                                         <div>
                                             <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Nom du compte</label>

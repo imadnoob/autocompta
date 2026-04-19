@@ -230,8 +230,13 @@ export async function POST(req: NextRequest) {
             ).join('\n')}\n\n`
             : '';
 
+        // Fetch user metadata for sector
+        const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
+        const userSector = user?.user_metadata?.sector || "COMMERCE";
+        const sectorContext = `\nSECTEUR D'ACTIVITÉ DE L'UTILISATEUR: ${userSector}\n(Si le secteur est HOTELLERIE_RESTAURATION, tu peux utiliser les comptes hôteliers spécifiques comme 71241, 71242, 445262, 3111, etc. Sinon, reste sur le plan comptable général.)\n`;
+
         // Step 1: Ask Gemini to select a tool or answer directly
-        const step1Prompt = `${TOOL_DEFINITIONS}${historyContext}Requête utilisateur: "${query}"`;
+        const step1Prompt = `${TOOL_DEFINITIONS}${historyContext}${sectorContext}Requête utilisateur: "${query}"`;
         const step1Result = await model.generateContent(step1Prompt);
         const step1Text = step1Result.response.text().trim();
 
