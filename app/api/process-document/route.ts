@@ -26,7 +26,20 @@ export async function POST(req: NextRequest) {
 
         const mimeType = fileType || 'application/pdf'; // Default or from request
 
-        // 3. Step A: Get a brief description to search in vector DB
+        // 3. Get user metadata for personalized extraction
+        const { data: docInfo, error: docError } = await supabaseAdmin
+            .from('documents')
+            .select('user_id')
+            .eq('id', documentId)
+            .single();
+
+        if (docError || !docInfo) throw new Error('Document non trouvé');
+
+        const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(docInfo.user_id);
+        const userIce = user?.user_metadata?.ice || '';
+        const userCompanyName = user?.user_metadata?.company_name || '';
+
+        // 4. Step A: Get a brief description to search in vector DB
         const descriptionPrompt = "Analyse brièvement ce document et donne moi une seule phrase décrivant la nature de la transaction (ex: 'Achat de matériel informatique', 'Facture d'électricité', 'Vente de services de conseil').";
         let pcmContext = "";
 
@@ -60,37 +73,42 @@ export async function POST(req: NextRequest) {
             console.error("RAG steps failed, proceeding without context:", ragError);
         }
 
-        // 4. Final Prompt for Gemini containing the RAG context
+        // 5. Final Prompt for Gemini (Incorporating Scoring Rules)
         const prompt = `
       You are an expert Moroccan accountant. Analyze this document (likely an invoice or receipt).
+      
+      CONTEXT FOR YOUR ANALYSIS:
+      - The owner of this application is: "${userCompanyName}" (ICE: ${userIce}).
+      - If this entity appears as a CUSTOMER (near words like 'Client', 'Facturé à', 'Doit'), this is a PURCHASE (HA).
+      - If this entity appears as a VENDOR/ISSUER (Header, Footer, near 'Émetteur'), this is a SALES (VT).
+      
       Extract the following information in strict JSON format:
       {
         "date": "YYYY-MM-DD",
         "supplier": "string",
-        "total_amount": number (TTC, total including all taxes),
-        "amount_ht": number (amount before tax / hors taxe),
-        "tva_amount": number (TVA amount),
-        "tva_rate": number (percentage, e.g. 20 for 20%),
-        "currency": "MAD" or "EUR" or "USD",
+        "total_amount": number,
+        "amount_ht": number,
+        "tva_amount": number,
+        "tva_rate": number,
+        "currency": "MAD",
         "invoice_number": "string",
-        "type": "invoice" or "receipt" or "credit_note" or "delivery_note" or "bank_statement" or "other",
-        "category_code": "string" (Plan Comptable Marocain 4-digit code, e.g., 6111 for achats de marchandises),
+        "type": "invoice",
+        "category_code": "string",
         "category_name": "string",
-        "payment_method": "especes" or "virement" or "cheque" or "carte" or "effet" or "prelevement" or null,
-        "payment_date": "YYYY-MM-DD" or null,
-        "tier_address": "string or null",
-        "tier_ice": "string or null (15 chiffres)",
-        "tier_if": "string or null",
-        "tier_rc": "string or null",
-        "tier_telephone": "string or null",
-        "tier_email": "string or null"
+        "payment_method": "string",
+        "ice_position_y": number | null, (Vertical position of USER'S ICE ${userIce} from 0 to 1),
+        "anchors": {
+          "is_near_client_anchor": boolean, (Is user's name/ICE near keywords like 'Client' or 'Facturé à'?),
+          "is_near_vendor_anchor": boolean (Is user's name/ICE near 'Émetteur' or in the main brand header?)
+        },
+        "tier_ice": "string or null (ICE of the other party)"
       }
-      If a field is missing, use null. Conform strictly to the Plan Comptable Marocain for categorization.
+      Strictly conform to the Plan Comptable Marocain.
       
-      ${pcmContext ? `--- CONTEXTE RAG ---\n${pcmContext}\n--------------------\nPrivilégiez ABSOLUMENT l'un des "category_code" proposés dans le contexte RAG s'il est pertinent.` : ''}
+      ${pcmContext ? `--- CONTEXTE RAG ---\n${pcmContext}\n--------------------\nPrivilégiez l'un des "category_code" suggérés.` : ''}
     `;
 
-        // 5. Call Gemini for extraction
+        // 6. Call Gemini for extraction
         const result = await model.generateContent([
             prompt,
             { inlineData: { data: fileBytes, mimeType: mimeType } },

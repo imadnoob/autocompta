@@ -19,6 +19,7 @@ import {
     COMPTES_COLLECTIFS, getCompteCollectifParent,
 } from './comptaHelpers';
 import EtatSyntheseModule from './EtatSyntheseModule';
+import { classifyDocument } from '@/lib/classificationHelper';
 
 // ─── Component ───────────────────────────────────────────────
 export default function ComptabiliteModule() {
@@ -240,14 +241,24 @@ export default function ComptabiliteModule() {
         let loopIndex = 0;
         for (const doc of docsToProcess) {
             loopIndex++;
-            const categoryCode = doc.extracted_data?.category_code || '';
-            const isSale = categoryCode.startsWith('7');
-            const journalCode = isSale ? 'VT' : 'HA';
-            const piecePrefix = isSale ? 'VEN' : 'ACH';
+            
+            // 0. Scoring Classification (Spatial + Anchors)
+            const classification = classifyDocument(doc.extracted_data || {});
+            const isSale = classification.suggestedJournal === 'VT';
+            
+            // Fallback to category code if scores are neutral
+            let finalIsSale = isSale;
+            if (classification.scoreAchat === 0 && classification.scoreVente === 0) {
+                const categoryCode = doc.extracted_data?.category_code || '';
+                finalIsSale = categoryCode.startsWith('7');
+            }
+
+            const journalCode = finalIsSale ? 'VT' : 'HA';
+            const piecePrefix = finalIsSale ? 'VEN' : 'ACH';
 
             // 1. Détermination du Fournisseur / Client (Plan Tiers)
-            let tierCode = isSale ? '3421' : '4411';
-            let tierName = isSale ? 'Clients' : 'Fournisseurs';
+            let tierCode = finalIsSale ? '3421' : '4411';
+            let tierName = finalIsSale ? 'Clients' : 'Fournisseurs';
 
             const extractedName = doc.extracted_data?.merchant_name || doc.extracted_data?.supplier || null;
             if (extractedName && extractedName.trim() !== '') {
@@ -276,7 +287,7 @@ export default function ComptabiliteModule() {
 
                     await supabase.from('tiers').insert({
                         user_id: user.id,
-                        type: isSale ? 'client' : 'fournisseur',
+                        type: finalIsSale ? 'client' : 'fournisseur',
                         name: tierName,
                         account_code_aux: tierCode,
                         adresse: doc.extracted_data?.tier_address || null,
