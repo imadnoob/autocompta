@@ -75,24 +75,28 @@ export async function POST(req: NextRequest) {
             console.error("RAG steps failed, proceeding without context:", ragError);
         }
 
-        // 5. Final Prompt for Gemini (Direct Semantic Classification V3)
+        // 5. Final Prompt for Gemini (Robust Semantic V4)
         const prompt = `
       Tu es un expert comptable marocain. Analyse ce document.
       
-      CONTEXTE CRITIQUE :
-      - Pour l'entreprise : "${userCompanyName}" (ICE : ${userIce}).
-      - Question : Est-ce que cette facture est un ACHAT ou une VENTE pour cette entreprise ?
+      CONTEXTE DE L'UTILISATEUR :
+      - Votre client actuel est l'entreprise : "${userCompanyName}"
+      - Son ICE est : ${userIce}
       
-      RÈGLES DE DÉCISION :
-      1. Si "${userCompanyName}" ou ICE "${userIce}" est l'ÉMETTEUR (En-tête, Logo, RIB en bas), alors document_nature = "VENTE".
-         DANS CE CAS, category_code DOIT obligatoirement commencer par 7 (ex: 7111).
-      2. Si "${userCompanyName}" ou ICE "${userIce}" est le CLIENT (near 'Client', 'Facturé à', 'Doit'), alors document_nature = "ACHAT".
-         DANS CE CAS, category_code DOIT commencer par 6 (charges), 2 (immobilisations) ou 3 (stocks).
+      OBJECTIF : Déterminer si ce document est une VENTE (émise par "${userCompanyName}") ou un ACHAT (reçue par "${userCompanyName}").
+      
+      LOGIQUE DE DÉCISION (Sois intelligent face aux erreurs d'OCR) :
+      1. Identifie l'ÉMETTEUR (le vendeur/fournisseur) du document (souvent en haut, avec le logo et les coordonnées bancaires).
+      2. Compare l'émetteur avec "${userCompanyName}" et l'ICE ${userIce} :
+         - Si l'émetteur est "${userCompanyName}" (ou un nom très proche) OU si l'ICE émetteur est ${userIce} -> C'est une VENTE.
+         - Si l'émetteur est une AUTRE entreprise -> C'est un ACHAT.
+      3. Vérifie le destinataire (Client) :
+         - Si "${userCompanyName}" est listé comme client/destinataire -> C'est un ACHAT.
       
       Extract in strict JSON format:
       {
         "date": "YYYY-MM-DD",
-        "supplier": "string",
+        "supplier": "string (Nom de l'émetteur trouvé sur le document)",
         "total_amount": number,
         "amount_ht": number,
         "tva_amount": number,
@@ -102,13 +106,11 @@ export async function POST(req: NextRequest) {
         "type": "invoice",
         "category_code": "string",
         "category_name": "string",
-        "document_nature": "ACHAT" | "VENTE" | "INCONNU",
-        "reasoning": "string" (Explain why in French, e.g. 'ICE trouvé dans l'en-tête'),
-        "tier_ice": "string or null (ICE of the other party)"
+        "document_nature": "ACHAT" | "VENTE",
+        "reasoning": "string (Exemple: 'L'émetteur est différent de ${userCompanyName}, donc c'est un achat')",
+        "tier_ice": "string or null (ICE de l'autre partie)"
       }
-      Strictly conform to the Plan Comptable Marocain.
-      
-      ${pcmContext ? `--- CONTEXTE RAG ---\n${pcmContext}\n--------------------\nPrivilégiez l'un des "category_code" suggérés.` : ''}
+      Strictly conform to the Plan Comptable Marocain. (Classe 7 pour Vente, Classe 6 pour Achat).
     `;
 
         // 6. Call Gemini for extraction

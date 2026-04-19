@@ -10,11 +10,15 @@ export interface ClassificationResult {
 }
 
 export function classifyDocument(extractedData: any): ClassificationResult {
-    const { document_nature, reasoning } = extractedData;
+    const rawNature = extractedData.document_nature || '';
+    const reasoning = extractedData.reasoning;
 
-    console.log(`[DEBUG] ClassificationHelper - Nature IA: ${document_nature}`);
+    // Normalisation pour robustesse (Majuscules + Suppression espaces)
+    const document_nature = rawNature.toUpperCase().trim();
 
-    if (document_nature === 'VENTE') {
+    console.log(`[DEBUG] ClassificationHelper - Nature brute: "${rawNature}", Normalisée: "${document_nature}"`);
+
+    if (document_nature.includes('VENTE')) {
         console.log(`[DEBUG] ClassificationHelper - Choix final: VENTE (VT)`);
         return {
             scoreAchat: 0,
@@ -25,7 +29,7 @@ export function classifyDocument(extractedData: any): ClassificationResult {
         };
     }
 
-    if (document_nature === 'ACHAT') {
+    if (document_nature.includes('ACHAT')) {
         console.log(`[DEBUG] ClassificationHelper - Choix final: ACHAT (HA)`);
         return {
             scoreAchat: 100,
