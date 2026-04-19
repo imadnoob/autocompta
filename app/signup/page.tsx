@@ -155,7 +155,7 @@ export default function SignupPage() {
                                     type="text"
                                     value={companyName}
                                     onChange={(e) => setCompanyName(e.target.value)}
-                                    placeholder="Ex: Ma Société SARL"
+                                    placeholder=""
                                     required
                                     className="w-full bg-slate-50 py-3.5 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all shadow-sm pl-12"
                                 />
