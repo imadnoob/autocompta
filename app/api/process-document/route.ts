@@ -73,15 +73,17 @@ export async function POST(req: NextRequest) {
             console.error("RAG steps failed, proceeding without context:", ragError);
         }
 
-        // 5. Final Prompt for Gemini (Incorporating Scoring Rules)
+        // 5. Final Prompt for Gemini (Semantic Reasoning Approach)
         const prompt = `
       You are an expert Moroccan accountant. Analyze this document (likely an invoice or receipt).
       
       CONTEXT FOR YOUR ANALYSIS:
-      - The owner of this application (YOUR CLIENT) is: "${userCompanyName}" (ICE: ${userIce}).
-      - If this entity appears as a CUSTOMER (near words like 'Client', 'Facturé à', 'Doit'), this is a PURCHASE (HA) for your client.
-      - IMPORTANT: If this entity ("${userCompanyName}") is the ISSUER/MERCHANT (Top/Header, Footer, Logo area), this is a SALE (VT) for your client. 
-      - If it is a SALE, YOU MUST use a Moroccan Chart of Accounts "category_code" starting with 7 (e.g., 7111).
+      - The owner of this accounting application is: "${userCompanyName}" (ICE: ${userIce}).
+      - Objective: Determine if "${userCompanyName}" is ISSUING or RECEIVING this invoice.
+      
+      RULES TO DECIDE:
+      1. If "${userCompanyName}" or its ICE "${userIce}" matches the main brand, is at the top (header), bottom (footer), or near the bank details for payment, they are the ISSUER -> Return "ISSUER".
+      2. If "${userCompanyName}" or its ICE "${userIce}" is listed as the recipient, customer, near phrases like 'Client', 'Facturé à', 'Doit', or 'À l'attention de', they are the CUSTOMER -> Return "CUSTOMER".
       
       Extract the following information in strict JSON format:
       {
@@ -97,11 +99,9 @@ export async function POST(req: NextRequest) {
         "category_code": "string",
         "category_name": "string",
         "payment_method": "string",
-        "ice_position_y": number | null, (Vertical position of USER'S ICE ${userIce} from 0 to 1),
-        "anchors": {
-          "is_near_client_anchor": boolean, (Is user's name/ICE near keywords like 'Client' or 'Facturé à'?),
-          "is_near_vendor_anchor": boolean (Is user's name/ICE near 'Émetteur' or in the main brand header?)
-        },
+        "detected_user_role": "ISSUER" | "CUSTOMER" | "UNKNOWN",
+        "confidence_score": number, (0 to 100),
+        "reasoning": "string", (Brief explanation of why you chose this role based on the layout),
         "tier_ice": "string or null (ICE of the other party)"
       }
       Strictly conform to the Plan Comptable Marocain.
