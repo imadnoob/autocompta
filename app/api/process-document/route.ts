@@ -36,8 +36,10 @@ export async function POST(req: NextRequest) {
         if (docError || !docInfo) throw new Error('Document non trouvé');
 
         const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(docInfo.user_id);
-        const userIce = user?.user_metadata?.ice || '';
-        const userCompanyName = user?.user_metadata?.company_name || '';
+        const userCompanyName = user?.user_metadata?.company_name || "Unknown Company";
+        const userIce = user?.user_metadata?.ice || "Unknown ICE";
+
+        console.log(`[DEBUG] Extraction pour l'entreprise: "${userCompanyName}" (ICE: ${userIce})`);
 
         // 4. Step A: Get a brief description to search in vector DB
         const descriptionPrompt = "Analyse brièvement ce document et donne moi une seule phrase décrivant la nature de la transaction (ex: 'Achat de matériel informatique', 'Facture d'électricité', 'Vente de services de conseil').";
@@ -121,6 +123,9 @@ export async function POST(req: NextRequest) {
         // Clean up markdown code blocks if present
         const cleanText = text.replace(/```json\n?|```\n?/g, '').trim();
         const extractedData = JSON.parse(cleanText);
+
+        console.log(`[DEBUG] Réponse Gemini - Nature détectée: ${extractedData.document_nature}`);
+        console.log(`[DEBUG] Réponse Gemini - Raisonnement: ${extractedData.reasoning}`);
 
         // 5. Update Database (internal_ref is managed by DB trigger, not in extracted_data)
         const { error: updateError } = await supabaseAdmin
