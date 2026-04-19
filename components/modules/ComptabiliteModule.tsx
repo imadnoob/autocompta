@@ -237,7 +237,7 @@ export default function ComptabiliteModule() {
             });
             const result = await resp.json();
             if (result.success) {
-                await fetchDocuments(); // Refresh docs
+                await fetchDocs(); // Refresh docs
             } else {
                 alert(`Erreur de ré-analyse: ${result.error}`);
             }
@@ -262,12 +262,8 @@ export default function ComptabiliteModule() {
         for (const doc of docsToProcess) {
             loopIndex++;
             
-            // 0. Scoring Classification (Spatial + Anchors + Rule 0)
-            const userContext = {
-                companyName: user.user_metadata?.company_name,
-                ice: user.user_metadata?.ice
-            };
-            const classification = classifyDocument(doc.extracted_data || {}, userContext);
+            // 0. Scoring Classification (Semantic Reasoning)
+            const classification = classifyDocument(doc.extracted_data || {});
             const isSale = classification.suggestedJournal === 'VT';
             
             // Fallback to category code if scores are neutral
