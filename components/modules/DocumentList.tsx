@@ -326,35 +326,61 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                         return (
                             <div
                                 key={doc.id}
-                                className={`flex flex-col md:flex-row md:items-center justify-between px-6 py-4 transition-all group gap-4 ${isProcessing ? 'animate-pulse bg-teal-50/5' : 'hover:bg-teal-50/10'}`}
+                                className={`flex items-center justify-between px-6 py-4 transition-all group ${isProcessing ? 'animate-pulse bg-teal-50/5' : 'hover:bg-teal-50/10'}`}
                             >
-                                {/* 1. Document Info (Left Column) */}
+                                {/* Document info — clickable */}
                                 <div
                                     onClick={() => router.push(`/dashboard/documents/${doc.id}`)}
-                                    className="flex items-center gap-4 min-w-0 md:flex-[2] cursor-pointer"
+                                    className="flex items-center gap-4 min-w-0 flex-1 cursor-pointer"
                                 >
                                     <div className="w-10 h-10 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-teal-50 transition-colors">
                                         <FileText className="w-5 h-5" />
                                     </div>
                                     <div className="min-w-0 flex-1">
-                                        <div 
-                                            className="overflow-hidden whitespace-nowrap group/title" 
-                                            style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
-                                            title={getDisplayName(doc)}
-                                        >
-                                            <p className="font-semibold inline-block transition-none group-hover/title:transition-transform group-hover/title:duration-[6s] group-hover/title:ease-linear group-hover/title:-translate-x-[50%]">
-                                                <span className="group-hover:underline underline-offset-2">{getDisplayName(doc)}</span>
-                                            </p>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-400 mt-1 font-mono">
-                                            <span>{new Date(doc.created_at).toLocaleDateString('fr-MA')}</span>
-                                            {data.date && <span className="text-slate-300">• {data.date}</span>}
-                                        </div>
+                                        {isProcessing ? (
+                                            <>
+                                                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                                                <div className="flex items-center gap-2 mt-1">
+                                                    <div className="h-3 bg-gray-100 rounded w-24"></div>
+                                                    <span className="text-[10px] font-semibold text-yellow-600 flex items-center gap-1">
+                                                        <Clock className="w-3 h-3 animate-spin" />
+                                                        Traitement IA en cours...
+                                                    </span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <div 
+                                                    className="overflow-hidden whitespace-nowrap group/title" 
+                                                    style={{ maskImage: 'linear-gradient(to right, black 85%, transparent 100%)', WebkitMaskImage: 'linear-gradient(to right, black 85%, transparent 100%)' }}
+                                                    title={getDisplayName(doc)}
+                                                >
+                                                    <p className="font-semibold inline-block transition-none group-hover/title:transition-transform group-hover/title:duration-[6s] group-hover/title:ease-linear group-hover/title:-translate-x-[50%]">
+                                                        <span className="group-hover:underline underline-offset-2">{getDisplayName(doc)}</span>
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1 font-mono flex-wrap">
+                                                    <span>{new Date(doc.created_at).toLocaleDateString('fr-MA')}</span>
+                                                    {data.supplier && (
+                                                        <>
+                                                            <span>•</span>
+                                                            <span className="flex items-center gap-0.5"><Building2 className="w-3 h-3" />{data.supplier}</span>
+                                                        </>
+                                                    )}
+                                                    {data.total_amount != null && (
+                                                        <>
+                                                            <span>•</span>
+                                                            <span className="font-semibold text-slate-800">{data.total_amount.toLocaleString()} {data.currency || 'MAD'}</span>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
-                                {/* 3. Badges & Actions (Right Column) */}
-                                <div className="flex items-center gap-2 shrink-0 md:flex-1 justify-end">
+                                {/* Badges & Actions */}
+                                <div className="flex items-center gap-2 shrink-0 ml-4">
                                     {/* Duplicate badge */}
                                     {(() => {
                                         const ext = doc.extracted_data;

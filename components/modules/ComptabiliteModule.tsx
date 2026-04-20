@@ -1218,7 +1218,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                     <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                                     <input
                                         type="text"
-                                        placeholder="Rechercher fournisseur, réf, n° facture…"
+                                        placeholder="Rechercher tiers, réf, n° facture…"
                                         value={pendingSearch}
                                         onChange={e => setPendingSearch(e.target.value)}
                                         className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 bg-white"
@@ -1247,7 +1247,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                     className="px-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-indigo-300 bg-white cursor-pointer"
                                 >
                                     <option value="date">Trier par date</option>
-                                    <option value="supplier">Trier par fournisseur</option>
+                                    <option value="supplier">Trier par tiers</option>
                                     <option value="amount">Trier par montant</option>
                                     <option value="ref">Trier par réf.</option>
                                 </select>
@@ -1351,7 +1351,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                             </th>
                                             <th className="text-left px-4 py-3">Réf.</th>
                                             <th className="text-left px-4 py-3">Date</th>
-                                            <th className="text-left px-4 py-3">Fournisseur</th>
+                                            <th className="text-left px-4 py-3">Tiers</th>
                                              
                                             <th className="text-right px-4 py-3">HT</th>
                                             <th className="text-right px-4 py-3">TVA</th>
