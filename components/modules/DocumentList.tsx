@@ -353,23 +353,6 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                     </div>
                                 </div>
 
-                                {/* 2. AI Reasoning (Middle Column - Hidden on mobile if empty) */}
-                                <div className="min-w-0 md:flex-[2] flex flex-col justify-center">
-                                    {isProcessing ? (
-                                        <div className="flex items-center gap-2 text-[10px] font-semibold text-yellow-600 animate-pulse">
-                                            <Clock className="w-3 h-3 animate-spin" />
-                                            Analyse en cours...
-                                        </div>
-                                    ) : data.reasoning ? (
-                                        <div className="px-2 py-1 bg-indigo-50/50 border border-indigo-100 rounded text-[10px] text-slate-500 font-mono line-clamp-2 md:line-clamp-3" title={data.reasoning}>
-                                            <span className="font-bold text-indigo-500 mr-2 uppercase text-[9px]">Log IA</span>
-                                            {data.reasoning}
-                                        </div>
-                                    ) : (
-                                        <div className="text-[10px] text-slate-300 italic font-mono">Aucun log disponible</div>
-                                    )}
-                                </div>
-
                                 {/* 3. Badges & Actions (Right Column) */}
                                 <div className="flex items-center gap-2 shrink-0 md:flex-1 justify-end">
                                     {/* Duplicate badge */}
