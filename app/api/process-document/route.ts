@@ -86,31 +86,35 @@ export async function POST(req: NextRequest) {
 
         // 5. Final Prompt for Gemini (Robust Semantic V4)
         const prompt = `
-      Tu es un expert comptable marocain. Analyse ce document.
+      Tu es un expert comptable marocain spécialisé dans la classification automatique de documents. Ton rôle est d'analyser ce document avec une précision absolue.
       
-      CONTEXTE DE L'UTILISATEUR :
-      - Votre client actuel est l'entreprise : "${userCompanyName}"
-      - Son ICE est : ${userIce}
-      - Son secteur d'activité est : ${userSector}
+      INFOS DE VOTRE CLIENT (L'UTILISATEUR) :
+      - Nom de l'entreprise : "${userCompanyName}"
+      - ICE : ${userIce}
+      - Secteur d'activité : ${userSector}
       
-      IMPORTANT (Règle Métier) :
-      - Si le secteur est "HOTELLERIE_RESTAURATION", utilisez les comptes spécialisés comme 71241 (Nuitées), 71242 (Restauration), 445262 (Taxe de séjour), 3111 (Stocks alimentaires), etc.
-      - Pour TOUS les autres secteurs, utilisez UNIQUEMENT les comptes généraux du Plan Comptable Marocain standard (ex: 7111 pour ventes marchandises, 7124 pour services généraux, 6111 pour achats).
+      RÈGLES DE CLASSIFICATION (Vente vs Achat) :
+      1. ANALYSE DE L'ÉMETTEUR (Le vendeur) :
+         - Regarde le nom et l'ICE en haut du document (souvent près du logo).
+         - Si l'émetteur est "${userCompanyName}" ou s'il y a une ressemblance forte (ignore les suffixes SARL, SA, etc.), c'est une VENTE.
+         - TOLÉRANCE OCR : Si l'ICE émetteur ressemble à ${userIce} (ex: un '1' lu comme 'I', un '0' comme 'O'), considère que c'est une correspondance.
+         
+      2. ANALYSE DU DESTINATAIRE (Le client) :
+         - Cherche les mentions "Client", "Facturé à", "Destinataire", "Bon de livraison pour".
+         - Si "${userCompanyName}" ou ${userIce} apparaît dans cette zone, c'est obligatoirement un ACHAT.
+         
+      3. LOGIQUE GLOBALE :
+         - S'il n'est pas possible de prouver que l'émetteur est "${userCompanyName}", alors considère par défaut que c'est un ACHAT.
+         - Une VENTE doit impérativement utiliser un compte de Classe 7.
+         - Un ACHAT doit impérativement utiliser un compte de Classe 6 (ou 2 pour immo).
       
-      OBJECTIF : Déterminer si ce document est une VENTE (émise par "${userCompanyName}") ou un ACHAT (reçue par "${userCompanyName}").
-      
-      LOGIQUE DE DÉCISION (Sois intelligent face aux erreurs d'OCR) :
-      1. Identifie l'ÉMETTEUR (le vendeur/fournisseur) du document (souvent en haut, avec le logo et les coordonnées bancaires).
-      2. Compare l'émetteur avec "${userCompanyName}" et l'ICE ${userIce} :
-         - Si l'émetteur est "${userCompanyName}" (ou un nom très proche) OU si l'ICE émetteur est ${userIce} -> C'est une VENTE.
-         - Si l'émetteur est une AUTRE entreprise -> C'est un ACHAT.
-      3. Vérifie le destinataire (Client) :
-         - Si "${userCompanyName}" est listé comme client/destinataire -> C'est un ACHAT.
+      VÉRIFICATION DES COMPTES SPÉCIFIQUES :
+      - Si le secteur est "HOTELLERIE_RESTAURATION", utilise les comptes 71241, 71242, 445262, 3111 si besoin.
       
       Extract in strict JSON format:
       {
         "date": "YYYY-MM-DD",
-        "supplier": "string (Nom de l'émetteur trouvé sur le document)",
+        "supplier": "string (Nom de l'émetteur/vendeur)",
         "total_amount": number,
         "amount_ht": number,
         "tva_amount": number,
@@ -121,10 +125,9 @@ export async function POST(req: NextRequest) {
         "category_code": "string",
         "category_name": "string",
         "document_nature": "ACHAT" | "VENTE",
-        "reasoning": "string (Exemple: 'L'émetteur est différent de ${userCompanyName}, donc c'est un achat')",
+        "reasoning": "string (Explique ton choix en citant les éléments trouvés, ex: 'L'émetteur a l'ICE ${userIce} qui correspond au client, donc Vente.')",
         "tier_ice": "string or null (ICE de l'autre partie)"
       }
-      Strictly conform to the Plan Comptable Marocain. (Classe 7 pour Vente, Classe 6 pour Achat).
     `;
 
         // 6. Call Gemini for extraction
