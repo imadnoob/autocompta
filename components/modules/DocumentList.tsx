@@ -361,7 +361,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                                         <span className="group-hover:underline underline-offset-2">{getDisplayName(doc)}</span>
                                                     </p>
                                                 </div>
-                                                <div className="flex items-center gap-2 text-xs text-gray-500 mt-1 font-mono flex-wrap">
+                                                <div className="flex items-center gap-2 text-xs text-gray-400 mt-1 font-mono flex-wrap">
                                                     <span>{new Date(doc.created_at).toLocaleDateString('fr-MA')}</span>
                                                     {data.date && (
                                                         <>
@@ -382,6 +382,12 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                                         </>
                                                     )}
                                                 </div>
+                                                {data.reasoning && (
+                                                    <div className="mt-2 px-2 py-1 bg-slate-50 border border-slate-100 rounded text-[10px] text-slate-500 font-mono inline-block max-w-full truncate" title={data.reasoning}>
+                                                        <span className="font-bold text-indigo-500 mr-1">LOG IA:</span>
+                                                        {data.reasoning}
+                                                    </div>
+                                                )}
                                             </>
                                         )}
                                     </div>
