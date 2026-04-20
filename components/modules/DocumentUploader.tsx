@@ -19,9 +19,10 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
             const user = (await supabase.auth.getUser()).data.user;
             if (!user) throw new Error('Utilisateur non authentifié');
 
-            for (const file of acceptedFiles) {
+            // Process all files in parallel for better UX
+            await Promise.all(acceptedFiles.map(async (file) => {
                 const fileExt = file.name.split('.').pop();
-                const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+                const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
                 const filePath = `${fileName}`;
 
                 const { error: uploadError } = await supabase.storage
@@ -43,6 +44,7 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
 
                 if (dbError) throw dbError;
 
+                // Trigger AI processing without waiting for it
                 fetch('/api/pipeline-entries', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -52,7 +54,7 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
                         fileType: file.type
                     })
                 }).catch(err => console.error('Processing request failed:', err));
-            }
+            }));
 
             setSuccess(true);
             if (onUploadComplete) onUploadComplete();
@@ -70,7 +72,7 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
             'image/*': ['.png', '.jpg', '.jpeg'],
             'application/pdf': ['.pdf']
         },
-        maxFiles: 5
+        maxFiles: 10
     });
 
     return (
@@ -102,8 +104,8 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
                         <div className="w-14 h-14 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-center">
                             <CheckCircle className="w-6 h-6 text-emerald-600" />
                         </div>
-                        <p className="font-semibold text-emerald-700">Document envoyé !</p>
-                        <p className="text-sm text-slate-500">Glissez un autre fichier pour continuer</p>
+                        <p className="font-semibold text-emerald-700">Documents envoyés !</p>
+                        <p className="text-sm text-slate-500">Glissez d'autres fichiers pour continuer</p>
                     </div>
                 ) : (
                     <div className="flex flex-col items-center gap-3">
@@ -112,10 +114,10 @@ export default function DocumentUploader({ onUploadComplete }: { onUploadComplet
                         </div>
                         <div>
                             <p className="font-semibold text-lg text-slate-800">
-                                {isDragActive ? 'Déposez le fichier ici' : 'Cliquez ou glissez un fichier'}
+                                {isDragActive ? 'Déposez les fichiers ici' : 'Cliquez ou glissez vos fichiers'}
                             </p>
                             <p className="text-sm text-slate-500 mt-1">
-                                PDF, PNG, JPG — Max 10 Mo
+                                PDF, PNG, JPG — Max 10 documents
                             </p>
                         </div>
                     </div>
