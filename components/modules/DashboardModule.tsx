@@ -119,7 +119,10 @@ export default function DashboardModule() {
 
         docs.forEach((doc: any) => {
             const createdDate = new Date(doc.created_at);
-            if (createdDate.getMonth() === currentMonth && createdDate.getFullYear() === currentYear) docCountThisMonth++;
+            const isAccountingDone = doc.accounting_status === 'saisi' || doc.accounting_status === 'lettre';
+            if (isAccountingDone && createdDate.getMonth() === currentMonth && createdDate.getFullYear() === currentYear) {
+                docCountThisMonth++;
+            }
             if (doc.status === 'pending' || doc.status === 'processing') pendingDocsCount++;
         });
 
