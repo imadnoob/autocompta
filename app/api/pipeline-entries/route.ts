@@ -297,6 +297,13 @@ Retourne UNIQUEMENT un JSON :
         };
 
         // Si Document Mode, on update la base
+        // IMPORTANT : On injecte les données corrigées dans extracted_data
+        // pour que comptaHelpers.ts puisse lire le bon category_code
+        extractedData.category_code = finalClassif.main_account_code;
+        extractedData.category_name = finalClassif.main_account_name;
+        extractedData.document_nature = forcedNature;
+        extractedData.journal_code = finalClassif.journal_code;
+
         if (documentId) {
             await supabaseAdmin.from('documents').update({
                 extracted_data: extractedData,
