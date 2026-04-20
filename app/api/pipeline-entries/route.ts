@@ -216,74 +216,75 @@ Retourne UNIQUEMENT un JSON :
         const text2 = (await res2.response).text().replace(/```json\n?|```\n?/g, '').trim();
         let classification = JSON.parse(text2);
 
+        // ==========================================
+        // ETAPE 2.5 : SÉCURITÉ DÉTERMINISTE (OVERRIDE)
+        // ==========================================
+        // On ne fait plus confiance à l'IA pour les choix critiques de nature
+        if (forcedNature === 'VENTE') {
+            classification.journal_code = 'VT';
+            classification.tier_account_code = '3421';
+            classification.tva_account_code = extractedData.tva_amount > 0 ? '4455' : null;
+            // Si l'IA a mis une charge (6), on force un produit (7)
+            if (classification.main_account_code.startsWith('6')) {
+                classification.main_account_code = '7' + classification.main_account_code.substring(1);
+            } else if (!classification.main_account_code.startsWith('7')) {
+                classification.main_account_code = '7111'; // Par défaut : Ventes de marchandises
+            }
+        } else {
+            classification.journal_code = 'HA';
+            classification.tier_account_code = '4411';
+            classification.tva_account_code = extractedData.tva_amount > 0 ? '34552' : null;
+            // Si l'IA a mis un produit (7) pour un achat, on force une charge (6)
+            if (classification.main_account_code.startsWith('7')) {
+                classification.main_account_code = '6' + classification.main_account_code.substring(1);
+            } else if (!classification.main_account_code.startsWith('6') && !classification.main_account_code.startsWith('2')) {
+                classification.main_account_code = '6111'; // Par défaut : Achats de marchandises
+            }
+        }
 
         // ==========================================
-        // ETAPE 3 : VERIFICATION (SENSE CHECK)
+        // ETAPE 3 : VERIFICATION (SENSE CHECK IA)
         // ==========================================
-        const prompt3 = `
-Tu es un Réviseur Comptable strict. Vérifie la cohérence comptable entre l'extraction et la classification :
-Extraction : ${JSON.stringify(extractedData)}
-Classification : ${JSON.stringify(classification)}
-
-Règles impératives :
-1. Si c'est un Achat (journal HA), le compte principal doit commencer par 6 ou 2. (Et Tiers = 4).
-2. Si c'est une Vente (journal VT), le compte principal doit commencer par 7. (Et Tiers = 3).
-3. S'il y a de la TVA (tva_amount > 0) dans l'Extraction, un 'tva_account_code' DOIT être présent dans la Classification.
-4. Les montants doivent être positifs.
-
-Retourne un JSON strict :
-{
-  "status": "VALID" ou "ERROR",
-  "fixed_classification": { le même objet classification mais corrigé si 'status' est 'ERROR' }
-}
-        `;
-
-        const res3 = await model.generateContent(prompt3);
-        const text3 = (await res3.response).text().replace(/```json\n?|```\n?/g, '').trim();
-        const verification = JSON.parse(text3);
-
-        const finalClassif = verification.status === "VALID" ? classification : verification.fixed_classification;
+        // On simplifie la vérification IA car on a forcé la logique JS
+        const finalClassif = classification;
 
         // ==========================================
-        // ETAPE 4 : ASSEMBLEUR MATHEMATIQUE (CODE NATIF)
+        // ETAPE 4 : ASSEMBLEUR MATHÉMATIQUE (FORÇAGE STRICT)
         // ==========================================
-        // Génère le brouillard équilibré sans utiliser l'IA pour les maths.
         const lines = [];
-        const isAchat = finalClassif.journal_code === 'HA';
-        const isVente = finalClassif.journal_code === 'VT';
-        const isTresorerie = finalClassif.journal_code === 'BQ' || finalClassif.journal_code === 'CA';
+        const isVente = forcedNature === 'VENTE';
+        const isAchat = forcedNature === 'ACHAT';
 
-        // Ligne de Charge / Produit (HT)
+        // 1. Ligne de Charge (6) ou Produit (7) -> HT
         if (extractedData.amount_ht > 0) {
             lines.push({
                 account: finalClassif.main_account_code,
-                account_name: finalClassif.main_account_name, // Ex: "Achats de fournitures..."
-                label: extractedData.description,             // Ex: "Achat de 4 boissons"
-                debit: isAchat ? extractedData.amount_ht : 0,
-                credit: isVente ? extractedData.amount_ht : (isTresorerie ? 0 : 0) // Simplify for Tresorerie later if needed
+                account_name: finalClassif.main_account_name,
+                label: extractedData.description,
+                debit: isAchat ? extractedData.amount_ht : 0,  // ACHAT : Charge au Débit
+                credit: isVente ? extractedData.amount_ht : 0  // VENTE : Produit au Crédit
             });
         }
 
-        // Ligne de TVA
+        // 2. Ligne de TVA
         if (extractedData.tva_amount > 0 && finalClassif.tva_account_code) {
             lines.push({
                 account: finalClassif.tva_account_code,
-                account_name: 'TVA',
+                account_name: isVente ? 'TVA Facturée' : 'TVA Récupérable',
                 label: `TVA sur ${extractedData.description}`,
-                debit: isAchat ? extractedData.tva_amount : 0,
-                credit: isVente ? extractedData.tva_amount : 0
+                debit: isAchat ? extractedData.tva_amount : 0,  // ACHAT : TVA Débit
+                credit: isVente ? extractedData.tva_amount : 0  // VENTE : TVA Crédit
             });
         }
 
-        // Ligne de Tiers ou Trésorerie (TTC)
+        // 3. Ligne de Tiers (Client/Fournisseur) -> TTC
         if (extractedData.total_amount > 0) {
-            const defaultTierCode = isTresorerie ? '5141' : (isVente ? '3421' : '4411');
             lines.push({
-                account: finalClassif.tier_account_code || defaultTierCode,
-                account_name: extractedData.supplier || (isVente ? 'Client' : 'Fournisseur'),
+                account: finalClassif.tier_account_code,
+                account_name: isVente ? (extractedData.supplier || 'Client') : (extractedData.supplier || 'Fournisseur'),
                 label: extractedData.description,
-                debit: isVente || isTresorerie ? extractedData.total_amount : 0,  // Vente: Client Debit.
-                credit: isAchat ? extractedData.total_amount : 0  // Achat: Fournisseur Credit.
+                debit: isVente ? extractedData.total_amount : 0,  // VENTE : Client au Débit
+                credit: isAchat ? extractedData.total_amount : 0  // ACHAT : Fournisseur au Crédit
             });
         }
 
