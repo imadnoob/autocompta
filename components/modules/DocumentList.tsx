@@ -398,7 +398,6 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
                                         <StatusIcon className="w-3.5 h-3.5" />
                                         {status.label}
                                     </div>
-                 </div>
 
                                     {/* Delete button */}
                                     {confirmDelete === doc.id ? (
