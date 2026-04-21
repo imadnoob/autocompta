@@ -203,7 +203,6 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
     useEffect(() => { fetchEntries(); fetchTiers(); }, [fetchEntries, fetchTiers]);
 
     const filteredEntries = useMemo(() => {
-        // Tri comptable : entry_date DESC, created_at DESC, debit DESC, account DESC
         return allEntries.filter((e: JournalEntry) => {
             if (journalFilter !== 'tous' && e.journal !== journalFilter) return false;
             if (searchQuery) {
@@ -212,6 +211,17 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
             }
             if (dateFilter && !e.entry_date.startsWith(dateFilter)) return false;
             return true;
+        }).sort((a, b) => {
+            // 1. Date décroissante
+            const dateComp = b.entry_date.localeCompare(a.entry_date);
+            if (dateComp !== 0) return dateComp;
+            // 2. Pièce décroissante (regroupe les lignes d'une même pièce)
+            const pieceA = a.piece_num || '';
+            const pieceB = b.piece_num || '';
+            const pieceComp = pieceB.localeCompare(pieceA);
+            if (pieceComp !== 0) return pieceComp;
+            // 3. Au sein d'une pièce : compte croissant (3421 → 4455 → 7124)
+            return a.account.localeCompare(b.account);
         });
     }, [allEntries, searchQuery, dateFilter, journalFilter]);
 
