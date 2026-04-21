@@ -173,7 +173,7 @@ export default function DashboardModule() {
 
         const monthlyTrend = Object.values(monthlyMap).sort((a, b) => a.timestamp - b.timestamp);
         const expenseByCategory = Object.entries(categoryMap)
-            .map(([name, value]) => ({ name: name.length > 25 ? name.substring(0, 25) + '...' : name, value }))
+            .map(([name, value]) => ({ name, value }))
             .sort((a, b) => b.value - a.value)
             .slice(0, 5);
         if (expenseByCategory.length === 0) expenseByCategory.push({ name: 'Aucune donnée', value: 1 });
