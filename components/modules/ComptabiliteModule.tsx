@@ -220,7 +220,10 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
             const pieceB = b.piece_num || '';
             const pieceComp = pieceB.localeCompare(pieceA);
             if (pieceComp !== 0) return pieceComp;
-            // 3. Au sein d'une pièce : compte croissant (3421 → 4455 → 7124)
+            // 3. Au sein d'une pièce : débit décroissant (lignes débitées en premier)
+            const debitComp = b.debit - a.debit;
+            if (debitComp !== 0) return debitComp;
+            // 4. Puis compte croissant pour les lignes créditées
             return a.account.localeCompare(b.account);
         });
     }, [allEntries, searchQuery, dateFilter, journalFilter]);
