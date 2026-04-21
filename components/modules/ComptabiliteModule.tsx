@@ -1744,7 +1744,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                                         </td>
                                                         <td className="px-3 py-2.5">
                                                             <div className="flex items-center gap-1.5 justify-center">
-                                                                {isFirstOfGroup && doc && entry.journal === 'HA' && (
+                                                                {isFirstOfGroup && doc && (entry.journal === 'HA' || entry.journal === 'VT') && (
                                                                     <>
                                                                         {doc.accounting_status === 'saisi' && (
                                                                             <button
