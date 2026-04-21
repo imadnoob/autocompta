@@ -6,6 +6,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
     PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
+import { getAccountName, COMPTES_COLLECTIFS, getCompteCollectifParent } from './comptaHelpers';
 import { FileText, TrendingUp, DollarSign, Clock, Activity, PieChart as PieChartIcon, BarChart3, ArrowUpRight, ArrowDownRight, CalendarDays, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function DashboardModule() {
@@ -107,7 +108,10 @@ export default function DashboardModule() {
             monthlyMap[`${year}-${m}`] = { name: MONTH_LABELS[m], timestamp: d.getTime(), Dépenses: 0, Revenus: 0 };
         }
 
+        // categoryMap groups by parent account code (4 digits)
+        // subAccountMap tracks individual sub-account breakdowns
         const categoryMap: Record<string, number> = {};
+        const subAccountMap: Record<string, { name: string; value: number }[]> = {};
 
         let docCountThisMonth = 0;
         let pendingDocsCount = 0;
@@ -148,8 +152,16 @@ export default function DashboardModule() {
                 if (isExpense) {
                     const netAmount = debit - credit;
                     totalExpYear += netAmount;
-                    const catKey = accountName.trim() === '' ? 'Dépense Diverse' : accountName;
+                    // Group by parent account (e.g. 61251 -> 6125)
+                    const parentCode = getCompteCollectifParent(account) || account.substring(0, 4);
+                    const parentName = COMPTES_COLLECTIFS[parentCode] || getAccountName(parentCode) || accountName || 'Dépense Diverse';
+                    const catKey = `${parentCode}|${parentName}`;
                     categoryMap[catKey] = (categoryMap[catKey] || 0) + netAmount;
+                    // Track sub-account breakdown
+                    if (!subAccountMap[catKey]) subAccountMap[catKey] = [];
+                    const subEntry = subAccountMap[catKey].find(s => s.name === accountName);
+                    if (subEntry) subEntry.value += netAmount;
+                    else subAccountMap[catKey].push({ name: accountName || account, value: netAmount });
 
                     const monthKey = `${year}-${historicDate.getMonth()}`;
                     if (monthlyMap[monthKey]) {
@@ -173,10 +185,14 @@ export default function DashboardModule() {
 
         const monthlyTrend = Object.values(monthlyMap).sort((a, b) => a.timestamp - b.timestamp);
         const expenseByCategory = Object.entries(categoryMap)
-            .map(([name, value]) => ({ name, value }))
+            .map(([key, value]) => {
+                const [code, name] = key.split('|');
+                const subs = (subAccountMap[key] || []).sort((a, b) => b.value - a.value);
+                return { code, name, value, subs };
+            })
             .sort((a, b) => b.value - a.value)
             .slice(0, 5);
-        if (expenseByCategory.length === 0) expenseByCategory.push({ name: 'Aucune donnée', value: 1 });
+        if (expenseByCategory.length === 0) expenseByCategory.push({ code: '', name: 'Aucune donnée', value: 1, subs: [] });
         setChartData({ monthlyTrend, expenseByCategory });
     };
 
@@ -184,7 +200,7 @@ export default function DashboardModule() {
         return new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(val);
     };
 
-    // Custom Tooltip for Recharts to match SaaS Style
+    // Custom Tooltip for bar chart
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             return (
@@ -195,6 +211,28 @@ export default function DashboardModule() {
                             <span>{entry.name}:</span>
                             <span className="font-semibold">{formatCurrency(entry.value)}</span>
                         </p>
+                    ))}
+                </div>
+            );
+        }
+        return null;
+    };
+
+    // Custom Tooltip for Pie chart — shows account code + sub-account breakdown
+    const PieTooltip = ({ active, payload }: any) => {
+        if (active && payload && payload.length) {
+            const data = payload[0].payload;
+            return (
+                <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-lg min-w-[200px]">
+                    <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-2 mb-2">
+                        <span className="font-bold text-slate-800 text-sm">{data.code} — {data.name}</span>
+                        <span className="font-bold text-slate-900 text-sm whitespace-nowrap">{formatCurrency(data.value)}</span>
+                    </div>
+                    {data.subs && data.subs.length > 1 && data.subs.map((sub: any, i: number) => (
+                        <div key={i} className="flex justify-between gap-4 text-xs text-slate-600 py-0.5">
+                            <span>{sub.name}</span>
+                            <span className="font-mono font-medium">{formatCurrency(sub.value)}</span>
+                        </div>
                     ))}
                 </div>
             );
@@ -362,7 +400,7 @@ export default function DashboardModule() {
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <RechartsTooltip content={<CustomTooltip />} />
+                                <RechartsTooltip content={<PieTooltip />} />
                             </PieChart>
                         </ResponsiveContainer>
                         {/* Center Text inside Donut */}
@@ -378,14 +416,29 @@ export default function DashboardModule() {
                         </div>
                     </div>
 
-                    <div className="mt-8 space-y-3">
+                    <div className="mt-8 space-y-4">
                         {chartData.expenseByCategory.map((entry: any, index: number) => (
-                            <div key={index} className="flex justify-between items-center text-sm gap-2">
-                                <div className="flex items-center gap-3 min-w-0">
-                                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                    <span className="font-medium text-slate-700 break-words" title={entry.name}>{entry.name}</span>
+                            <div key={index}>
+                                <div className="flex justify-between items-center text-sm gap-2">
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                                        <span className="font-semibold text-slate-800" title={`${entry.code} — ${entry.name}`}>
+                                            <span className="font-mono text-xs text-slate-400 mr-1.5">{entry.code}</span>
+                                            {entry.name}
+                                        </span>
+                                    </div>
+                                    <span className="font-bold text-slate-900 whitespace-nowrap flex-shrink-0">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(entry.value)}</span>
                                 </div>
-                                <span className="font-bold text-slate-900 whitespace-nowrap flex-shrink-0">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(entry.value)}</span>
+                                {entry.subs && entry.subs.length > 1 && (
+                                    <div className="ml-8 mt-1 space-y-0.5">
+                                        {entry.subs.map((sub: any, si: number) => (
+                                            <div key={si} className="flex justify-between text-xs text-slate-500 gap-2">
+                                                <span className="truncate" title={sub.name}>↳ {sub.name}</span>
+                                                <span className="font-mono whitespace-nowrap">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(sub.value)}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         ))}
                     </div>
