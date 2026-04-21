@@ -118,7 +118,7 @@ export default function HeroSection() {
                                         {[
                                             { name: 'Dashboard', desc: 'Vue d\'ensemble', bg: 'bg-emerald-50 border-emerald-500', icon: 'LayoutDashboard', active: true, iconClass: 'text-emerald-700' },
                                             { name: 'Documents', desc: 'Archivage & Classification', bg: 'bg-white border-transparent', icon: 'FileText', iconClass: 'text-slate-400' },
-                                            { name: 'Comptabilité', desc: 'Saisie & Lettrage', bg: 'bg-white border-transparent', icon: 'BookOpen', iconClass: 'text-slate-400' },
+                                            { name: 'Comptabilité', desc: 'Saisie & Suivi', bg: 'bg-white border-transparent', icon: 'BookOpen', iconClass: 'text-slate-400' },
                                             { name: 'Agent IA', desc: 'Assistant Intelligent', bg: 'bg-white border-transparent', icon: 'Sparkles', iconClass: 'text-slate-400' },
                                         ].map((tab, i) => (
                                             <div key={i} className={`border ${tab.bg} p-4 rounded-xl shadow-sm transition-all ${tab.active ? 'ring-1 ring-emerald-500' : 'hover:border-slate-300'} relative overflow-hidden`}>
