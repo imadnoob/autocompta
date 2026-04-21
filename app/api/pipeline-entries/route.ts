@@ -207,13 +207,13 @@ RÈGLES STRICTES :
    ATTENTION : N'utilise JAMAIS le compte 71243. Si tu penses à 71243, utilise obligatoirement 71241.
    N'utilise le compte parent (4 chiffres) QUE si aucun sous-compte ne correspond à l'opération.
 
-Retourne UNIQUEMENT un JSON :
+Retourne UNIQUEMENT un JSON avec ce format exact :
 {
   "journal_code": "${forcedNature === 'VENTE' ? 'VT' : 'HA'}",
-  "main_account_code": "Code le plus précis possible (sous-compte si disponible dans le RAG, sinon compte parent)",
-  "main_account_name": "Nom du compte",
+  "main_account_code": "ex: 61251 ou 71241 (privilégier les sous-comptes)",
+  "main_account_name": "Nom officiel du compte",
   "tier_account_code": "${forcedNature === 'VENTE' ? '3421' : '4411'}",
-  "tva_account_code": "34552 (Achat) ou 4455 (Vente) ou null"
+  "tva_account_code": "34552 ou 4455 ou null"
 }
         `;
 
