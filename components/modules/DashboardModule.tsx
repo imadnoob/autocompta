@@ -380,12 +380,12 @@ export default function DashboardModule() {
 
                     <div className="mt-8 space-y-3">
                         {chartData.expenseByCategory.map((entry: any, index: number) => (
-                            <div key={index} className="flex justify-between items-center text-sm">
-                                <div className="flex items-center gap-3 overflow-hidden">
+                            <div key={index} className="flex justify-between items-center text-sm gap-2">
+                                <div className="flex items-center gap-3 min-w-0">
                                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                    <span className="font-medium text-slate-700 truncate">{entry.name}</span>
+                                    <span className="font-medium text-slate-700 break-words" title={entry.name}>{entry.name}</span>
                                 </div>
-                                <span className="font-bold text-slate-900 ml-2">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(entry.value)}</span>
+                                <span className="font-bold text-slate-900 whitespace-nowrap flex-shrink-0">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(entry.value)}</span>
                             </div>
                         ))}
                     </div>
