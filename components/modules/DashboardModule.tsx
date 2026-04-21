@@ -418,27 +418,15 @@ export default function DashboardModule() {
 
                     <div className="mt-8 space-y-4">
                         {chartData.expenseByCategory.map((entry: any, index: number) => (
-                            <div key={index}>
-                                <div className="flex justify-between items-center text-sm gap-2">
-                                    <div className="flex items-center gap-3 min-w-0">
-                                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                        <span className="font-semibold text-slate-800" title={`${entry.code} — ${entry.name}`}>
-                                            <span className="font-mono text-xs text-slate-400 mr-1.5">{entry.code}</span>
-                                            {entry.name}
-                                        </span>
-                                    </div>
-                                    <span className="font-bold text-slate-900 whitespace-nowrap flex-shrink-0">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(entry.value)}</span>
+                            <div key={index} className="flex justify-between items-center text-sm gap-2">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                                    <span className="font-semibold text-slate-800" title={`${entry.code} — ${entry.name}`}>
+                                        <span className="font-mono text-xs text-slate-400 mr-1.5">{entry.code}</span>
+                                        {entry.name}
+                                    </span>
                                 </div>
-                                {entry.subs && entry.subs.length > 1 && (
-                                    <div className="ml-8 mt-1 space-y-0.5">
-                                        {entry.subs.map((sub: any, si: number) => (
-                                            <div key={si} className="flex justify-between text-xs text-slate-500 gap-2">
-                                                <span className="truncate" title={sub.name}>↳ {sub.name}</span>
-                                                <span className="font-mono whitespace-nowrap">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(sub.value)}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
+                                <span className="font-bold text-slate-900 whitespace-nowrap flex-shrink-0">{new Intl.NumberFormat('fr-MA', { style: 'currency', currency: 'MAD', maximumFractionDigits: 0 }).format(entry.value)}</span>
                             </div>
                         ))}
                     </div>
