@@ -201,19 +201,15 @@ DÉTERMINE LES CODES COMPTABLES (Plan Comptable Marocain) appropriés.
 RÈGLES STRICTES :
 1. Si c'est une VENTE, utilise obligatoirement un compte de CLASSE 7. Journal = VT. Tiers = 3421.
 2. Si c'est un ACHAT, utilise obligatoirement un compte de CLASSE 6 ou 2. Journal = HA. Tiers = 4411.
-3. TOUJOURS PRIVILÉGIER LE SOUS-COMPTE LE PLUS DÉTAILLÉ ET PRÉCIS du contexte RAG/PCM. 
-   Exemple : utiliser 61251 (eau, électricité) plutôt que 6125 (achats non stockés) si l'opération concerne l'eau/électricité.
-   Exemple : utiliser 71241 (hébergement) ou 71242 (restauration) plutôt que 7124 (services).
-   ATTENTION : N'utilise JAMAIS le compte 71243. Si tu penses à 71243, utilise obligatoirement 71241.
-   N'utilise le compte parent (4 chiffres) QUE si aucun sous-compte ne correspond à l'opération.
+3. Utilise le compte PCM le plus précis possible. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251, 71241), utilise-le plutôt que le compte général (ex: 6125, 7124).
 
-Retourne UNIQUEMENT un JSON avec ce format exact :
+Retourne UNIQUEMENT un JSON avec ce format :
 {
   "journal_code": "${forcedNature === 'VENTE' ? 'VT' : 'HA'}",
-  "main_account_code": "ex: 61251 ou 71241 (privilégier les sous-comptes)",
+  "main_account_code": "Code compte",
   "main_account_name": "Nom officiel du compte",
   "tier_account_code": "${forcedNature === 'VENTE' ? '3421' : '4411'}",
-  "tva_account_code": "34552 ou 4455 ou null"
+  "tva_account_code": "34552 (Achat), 4455 (Vente) ou null"
 }
         `;
 

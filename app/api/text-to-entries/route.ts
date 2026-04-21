@@ -94,7 +94,7 @@ Format de base de CHAQUE objet opération :
 RÈGLES VITALES :
 - Les montants doivent être de type Number (pas de strings). N'utilise jamais de virgule (,) ni d'espaces. Ex: 120000 ou 120000.50
 - Privilégie FORCEMENT les comptes suggérés dans le "CONTEXTE RAG" s'ils correspondent à l'opération.
-- TOUJOURS PRIVILÉGIER LE SOUS-COMPTE LE PLUS DÉTAILLÉ ET PRÉCIS. Exemple : utiliser 61251 (eau, électricité) plutôt que 6125 si l'opération concerne l'eau ou l'électricité. Utiliser 71241 (hébergement) plutôt que 7124. N'utilise JAMAIS 71243, utilise obligatoirement 71241 à la place. N'utilise le compte parent QUE si aucun sous-compte ne correspond.
+- Utilise le compte PCM le plus précis. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251 plutôt que 6125), utilise-le. Sinon, garde le compte PCM standard.
 - Ton JSON doit être parfait et ne contenir que les données.
 `;
 
