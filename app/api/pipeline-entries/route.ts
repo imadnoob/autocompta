@@ -203,7 +203,8 @@ RÈGLES STRICTES :
 2. Si c'est un ACHAT, utilise obligatoirement un compte de CLASSE 6 ou 2. Journal = HA. Tiers = 4411.
 3. TOUJOURS PRIVILÉGIER LE SOUS-COMPTE LE PLUS DÉTAILLÉ ET PRÉCIS du contexte RAG/PCM. 
    Exemple : utiliser 61251 (eau, électricité) plutôt que 6125 (achats non stockés) si l'opération concerne l'eau/électricité.
-   Exemple : utiliser 71241 (hébergement) plutôt que 7124 (services) si c'est de l'hébergement.
+   Exemple : utiliser 71241 (hébergement) ou 71242 (restauration) plutôt que 7124 (services).
+   ATTENTION : N'utilise JAMAIS le compte 71243. Si tu penses à 71243, utilise obligatoirement 71241.
    N'utilise le compte parent (4 chiffres) QUE si aucun sous-compte ne correspond à l'opération.
 
 Retourne UNIQUEMENT un JSON :
@@ -233,6 +234,10 @@ Retourne UNIQUEMENT un JSON :
                 classification.main_account_code = '7' + classification.main_account_code.substring(1);
             } else if (!classification.main_account_code.startsWith('7')) {
                 classification.main_account_code = '7111'; // Par défaut : Ventes de marchandises
+            }
+            // Sécurité additionnelle : on remplace le 71243 par 71241
+            if (classification.main_account_code === '71243') {
+                classification.main_account_code = '71241';
             }
         } else {
             classification.journal_code = 'HA';
