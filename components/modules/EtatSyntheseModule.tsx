@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Scale, BarChart3, TrendingUp, TrendingDown, ChevronLeft, ChevronRight, CalendarDays, Plus, X, Save } from 'lucide-react';
 import {
-    JournalEntry, getAccountName, fmt, buildBilan, buildCPC,
+    JournalEntry, getAccountName, fmt, buildBilan, buildCPC, getCompteCollectifParent,
 } from './comptaHelpers';
 
 type SyntheseTab = 'bilan' | 'cpc';
@@ -79,7 +79,7 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
         return Array.from(map.values()).sort((a, b) => a.account.localeCompare(b.account));
     }, [allEntries, adjustments, selectedYear]);
 
-    // CPC: only entries from the selected year
+    // CPC: only entries from the selected year, with sub-account consolidation
     const cpcAccountsList = useMemo(() => {
         const startDate = new Date(selectedYear, 0, 1);
         const endDate = new Date(selectedYear, 11, 31, 23, 59, 59);
@@ -89,10 +89,18 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
         });
         const map = new Map<string, { account: string; name: string; debit: number; credit: number }>();
         for (const e of filtered) {
-            const existing = map.get(e.account) || { account: e.account, name: e.account_name, debit: 0, credit: 0 };
+            // Consolidate sub-accounts (e.g. 71241 -> 7124) for CPC display
+            let accountKey = e.account;
+            let accountName = e.account_name;
+            const parentCode = getCompteCollectifParent(e.account);
+            if (parentCode && (parentCode.startsWith('6') || parentCode.startsWith('7'))) {
+                accountKey = parentCode;
+                accountName = getAccountName(parentCode);
+            }
+            const existing = map.get(accountKey) || { account: accountKey, name: accountName, debit: 0, credit: 0 };
             existing.debit += e.debit;
             existing.credit += e.credit;
-            map.set(e.account, existing);
+            map.set(accountKey, existing);
         }
         return Array.from(map.values()).sort((a, b) => a.account.localeCompare(b.account));
     }, [allEntries, selectedYear]);
@@ -512,18 +520,18 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     I. Exploitation
                                 </td>
                             </tr>
-                            {cpcData.exploitation.charges.map(l => (
-                                <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
-                                    <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
-                                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
-                                </tr>
-                            ))}
                             {cpcData.exploitation.produits.map(l => (
                                 <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
                                     <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(l.solde)}</td>
+                                </tr>
+                            ))}
+                            {cpcData.exploitation.charges.map(l => (
+                                <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
+                                    <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
+                                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
                             <tr className="border-b border-gray-200 bg-gray-50">
@@ -539,18 +547,18 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     II. Financier
                                 </td>
                             </tr>
-                            {cpcData.financier.charges.map(l => (
-                                <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
-                                    <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
-                                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
-                                </tr>
-                            ))}
                             {cpcData.financier.produits.map(l => (
                                 <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
                                     <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(l.solde)}</td>
+                                </tr>
+                            ))}
+                            {cpcData.financier.charges.map(l => (
+                                <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
+                                    <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
+                                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
                             <tr className="border-b border-gray-200 bg-gray-50">
@@ -576,18 +584,18 @@ export default function EtatSyntheseModule({ toolbarContent }: { toolbarContent?
                                     IV. Non Courant
                                 </td>
                             </tr>
-                            {cpcData.nonCourant.charges.map(l => (
-                                <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
-                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
-                                    <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
-                                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
-                                </tr>
-                            ))}
                             {cpcData.nonCourant.produits.map(l => (
                                 <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
                                     <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
                                     <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
                                     <td className="px-4 py-2.5 text-right font-mono font-semibold text-green-700">{fmt(l.solde)}</td>
+                                </tr>
+                            ))}
+                            {cpcData.nonCourant.charges.map(l => (
+                                <tr key={l.account} className="border-b border-gray-100 hover:bg-gray-50">
+                                    <td className="px-4 py-2.5 font-mono text-xs text-gray-500">{l.account}</td>
+                                    <td className="px-4 py-2.5 text-gray-700">{l.name}</td>
+                                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">{fmt(l.solde)}</td>
                                 </tr>
                             ))}
                             <tr className="border-b border-gray-200 bg-gray-50">

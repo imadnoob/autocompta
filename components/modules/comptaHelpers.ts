@@ -656,11 +656,24 @@ export function buildCPC(accounts: { account: string; name: string; debit: numbe
 }
 
 // ─── Comptes Collectifs ──────────────────────────────────────
+// Comptes qui peuvent avoir des sous-comptes auxiliaires
+// Ex: 71241 est un sous-compte de 7124, comme 34210001 est un sous-compte de 3421
 export const COMPTES_COLLECTIFS: Record<string, string> = {
+    // Tiers
     '4411': 'Fournisseurs',
     '3421': 'Clients',
     '4441': 'Organismes sociaux',
     '4452': 'État — Impôts et taxes',
+    // Produits (Classe 7)
+    '7111': 'Ventes de marchandises',
+    '7124': 'Ventes de services produits',
+    '7126': 'Redevances pour brevets, marques...',
+    '7127': 'Locations et charges récupérées',
+    '7128': 'Autres produits accessoires',
+    // Charges (Classe 6) - les plus courantes
+    '6111': 'Achats de marchandises',
+    '6121': 'Achats de matières premières',
+    '6125': 'Achats non stockés',
 };
 
 export function isCompteCollectif(account: string): boolean {
