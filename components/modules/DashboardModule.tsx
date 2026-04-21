@@ -225,7 +225,7 @@ export default function DashboardModule() {
             return (
                 <div className="bg-white border border-slate-200 rounded-xl p-3 shadow-lg min-w-[200px]">
                     <div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-2 mb-2">
-                        <span className="font-bold text-slate-800 text-sm">{data.code} — {data.name}</span>
+                        <span className="font-bold text-slate-800 text-sm">{data.name}</span>
                         <span className="font-bold text-slate-900 text-sm whitespace-nowrap">{formatCurrency(data.value)}</span>
                     </div>
                     {data.subs && data.subs.length > 1 && data.subs.map((sub: any, i: number) => (
@@ -421,8 +421,7 @@ export default function DashboardModule() {
                             <div key={index} className="flex justify-between items-center text-sm gap-2">
                                 <div className="flex items-center gap-3 min-w-0">
                                     <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                                    <span className="font-semibold text-slate-800" title={`${entry.code} — ${entry.name}`}>
-                                        <span className="font-mono text-xs text-slate-400 mr-1.5">{entry.code}</span>
+                                    <span className="font-semibold text-slate-800" title={entry.name}>
                                         {entry.name}
                                     </span>
                                 </div>
