@@ -16,7 +16,7 @@ type ModuleKey = 'dashboard' | 'documents' | 'comptabilite' | 'agentia';
 const modules: { key: ModuleKey; label: string; icon: any; iconBg: string; iconColor: string; description: string }[] = [
     { key: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', description: 'Vue d\'ensemble' },
     { key: 'documents', label: 'Documents', icon: FileText, iconBg: 'bg-blue-100', iconColor: 'text-blue-600', description: 'Archivage & Classification' },
-    { key: 'comptabilite', label: 'Comptabilité', icon: BookOpen, iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600', description: 'Saisie & Lettrage' },
+    { key: 'comptabilite', label: 'Comptabilité', icon: BookOpen, iconBg: 'bg-indigo-100', iconColor: 'text-indigo-600', description: 'Saisie & Suivi' },
     { key: 'agentia', label: 'Agent IA', icon: Sparkles, iconBg: 'bg-violet-100', iconColor: 'text-violet-600', description: 'Assistant Intelligent' },
 ];
 
