@@ -2774,26 +2774,9 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
 
                                 {/* Table */}
                                 <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl overflow-hidden">
-                                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-                                        <h2 className="font-bold text-lg flex items-center gap-2">
-                                            <Calculator className="w-5 h-5" />
-                                            État de la TVA par Période
-                                        </h2>
-                                        <select
-                                            value={tvaPeriod}
-                                            onChange={e => setTvaPeriod(e.target.value)}
-                                            className="px-3 py-1.5 text-sm border border-slate-200 rounded-xl font-mono bg-white cursor-pointer hover:bg-gray-50 transition-colors"
-                                        >
-                                            <option value="">Toutes les périodes</option>
-                                            <option value={`${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`}>📅 Mois en cours</option>
-                                            {(() => {
-                                                const now = new Date();
-                                                const q = Math.floor(now.getMonth() / 3);
-                                                const qMonths = [q * 3, q * 3 + 1, q * 3 + 2].map(m => `${now.getFullYear()}-${String(m + 1).padStart(2, '0')}`);
-                                                return <option value={qMonths.join(',')}>📊 Trimestre en cours (T{q + 1})</option>;
-                                            })()}
-                                            {years.map(y => <option key={y} value={y}>📆 Année {y}</option>)}
-                                        </select>
+                                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50 flex items-center gap-2">
+                                        <Calculator className="w-5 h-5" />
+                                        <h2 className="font-bold text-lg">État de la TVA par Période</h2>
                                     </div>
 
                                     <div className="overflow-x-auto">
@@ -2801,10 +2784,10 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                             <thead>
                                                 <tr className="bg-gray-50 border-b border-slate-200 font-semibold text-xs uppercase tracking-wider text-gray-600">
                                                     <th className="text-left px-4 py-3 border-r border-gray-200">Période</th>
-                                                    <th className="text-right px-4 py-3 bg-blue-50/50 w-36">Base HT Ventes</th>
-                                                    <th className="text-right px-4 py-3 bg-blue-50/50 font-bold border-r border-gray-200 w-32">TVA Facturée</th>
-                                                    <th className="text-right px-4 py-3 bg-green-50/50 w-36">Base HT Achats</th>
-                                                    <th className="text-right px-4 py-3 bg-green-50/50 font-bold border-r border-gray-200 w-32">TVA Récup.</th>
+                                                    <th className="text-right px-4 py-3 bg-indigo-50/50 w-36">Base HT Ventes</th>
+                                                    <th className="text-right px-4 py-3 bg-indigo-50/50 font-bold border-r border-gray-200 w-32">TVA Facturée</th>
+                                                    <th className="text-right px-4 py-3 bg-teal-50/50 w-36">Base HT Achats</th>
+                                                    <th className="text-right px-4 py-3 bg-teal-50/50 font-bold border-r border-gray-200 w-32">TVA Récup.</th>
                                                     <th className="text-right px-4 py-3 w-40">TVA Nette (Due)</th>
                                                 </tr>
                                             </thead>
@@ -2823,8 +2806,8 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                                             <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(data.baseHTVentes) || '—'}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-indigo-600 border-r border-gray-100 font-medium">{fmt(data.tvaVentes) || '—'}</td>
                                                             <td className="px-4 py-3 text-right font-mono text-gray-700">{fmt(data.baseHTAchats) || '—'}</td>
-                                                            <td className="px-4 py-3 text-right font-mono text-green-600 border-r border-gray-100 font-medium">{fmt(data.tvaAchats) || '—'}</td>
-                                                            <td className={`px-4 py-3 text-right font-mono font-bold whitespace-nowrap ${tvaDue > 0 ? 'text-red-600' : 'text-green-700'}`}>
+                                                            <td className="px-4 py-3 text-right font-mono text-teal-600 border-r border-gray-100 font-medium">{fmt(data.tvaAchats) || '—'}</td>
+                                                            <td className={`px-4 py-3 text-right font-mono font-bold whitespace-nowrap ${tvaDue > 0 ? 'text-red-600' : 'text-emerald-700'}`}>
                                                                 {tvaDue === 0 ? '—' : fmt(Math.abs(tvaDue))} {tvaDue < 0 && <span className="text-[10px] uppercase ml-1 opacity-70">Crédit</span>}
                                                             </td>
                                                         </tr>
@@ -2836,10 +2819,10 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                                     <tr className="bg-slate-900 text-white font-bold">
                                                         <td className="px-4 py-3 uppercase text-xs tracking-wider border-r border-gray-700">Total</td>
                                                         <td className="px-4 py-3 text-right font-mono">{fmt(tvaRows.reduce((s, [, v]) => s + v.baseHTVentes, 0)) || '—'}</td>
-                                                        <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-indigo-600">{fmt(totalTvaFacturee) || '—'}</td>
+                                                        <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-indigo-300">{fmt(totalTvaFacturee) || '—'}</td>
                                                         <td className="px-4 py-3 text-right font-mono">{fmt(tvaRows.reduce((s, [, v]) => s + v.baseHTAchats, 0)) || '—'}</td>
-                                                        <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-green-400">{fmt(totalTvaRecuperable) || '—'}</td>
-                                                        <td className={`px-4 py-3 text-right font-mono whitespace-nowrap ${totalTvaDue > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                                                        <td className="px-4 py-3 text-right font-mono border-r border-gray-700 text-teal-300">{fmt(totalTvaRecuperable) || '—'}</td>
+                                                        <td className={`px-4 py-3 text-right font-mono whitespace-nowrap ${totalTvaDue > 0 ? 'text-red-400' : 'text-emerald-400'}`}>
                                                             {totalTvaDue === 0 ? '—' : fmt(Math.abs(totalTvaDue))} {totalTvaDue < 0 ? '(Crédit)' : totalTvaDue > 0 ? '(À Payer)' : ''}
                                                         </td>
                                                     </tr>
