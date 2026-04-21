@@ -658,22 +658,45 @@ export function buildCPC(accounts: { account: string; name: string; debit: numbe
 // ─── Comptes Collectifs ──────────────────────────────────────
 // Comptes qui peuvent avoir des sous-comptes auxiliaires
 // Ex: 71241 est un sous-compte de 7124, comme 34210001 est un sous-compte de 3421
+// Tous les comptes parents du RAG/PCM sont listés ici
 export const COMPTES_COLLECTIFS: Record<string, string> = {
-    // Tiers
-    '4411': 'Fournisseurs',
+    // ── Classe 2 : Immobilisations ──
+    '2332': 'Matériel et outillage',
+    // ── Classe 3 : Actif circulant ──
+    '3111': 'Marchandises',
+    '3122': 'Matières et fournitures consommables',
     '3421': 'Clients',
+    '3455': 'État — TVA récupérable',
+    // ── Classe 4 : Passif circulant ──
+    '4411': 'Fournisseurs',
     '4441': 'Organismes sociaux',
     '4452': 'État — Impôts et taxes',
-    // Produits (Classe 7)
+    '4455': 'État — TVA facturée',
+    // ── Classe 5 : Trésorerie ──
+    '5141': 'Banques',
+    '5161': 'Caisse',
+    // ── Classe 6 : Charges ──
+    '6111': 'Achats de marchandises',
+    '6121': 'Achats de matières premières',
+    '6122': 'Achats de matières et fournitures consommables',
+    '6125': 'Achats non stockés de mat. et fournitures',
+    '6131': 'Locations et charges locatives',
+    '6134': 'Primes d\'assurance',
+    '6141': 'Études, recherches et documentation',
+    '6142': 'Transports',
+    '6144': 'Publicité et relations publiques',
+    '6145': 'Frais postaux et de télécommunications',
+    '6147': 'Services bancaires',
+    '6161': 'Impôts et taxes directs',
+    '6167': 'Impôts et taxes indirects',
+    '6171': 'Rémunérations du personnel',
+    '6174': 'Charges sociales',
+    // ── Classe 7 : Produits ──
     '7111': 'Ventes de marchandises',
     '7124': 'Ventes de services produits',
     '7126': 'Redevances pour brevets, marques...',
-    '7127': 'Locations et charges récupérées',
+    '7127': 'Ventes et produits accessoires',
     '7128': 'Autres produits accessoires',
-    // Charges (Classe 6) - les plus courantes
-    '6111': 'Achats de marchandises',
-    '6121': 'Achats de matières premières',
-    '6125': 'Achats non stockés',
 };
 
 export function isCompteCollectif(account: string): boolean {
