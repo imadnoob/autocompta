@@ -522,7 +522,7 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
                 const res = await fetch(`${origin}/api/text-to-entries`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ text })
+                    body: JSON.stringify({ text, userId })
                 });
                 const result = await res.json();
                 if (!res.ok || result.error) return { error: result.error || 'Conversion échouée.' };

@@ -10,10 +10,38 @@ const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
 
 export async function POST(req: NextRequest) {
   try {
-    const { text } = await req.json();
+    const { text, userId } = await req.json();
 
     if (!text || text.trim().length === 0) {
       return NextResponse.json({ error: 'Texte vide' }, { status: 400 });
+    }
+
+    let userCompanyName = "Unknown Company";
+    let userSector = "INCONNU";
+    let historyContext = "";
+
+    if (userId) {
+        const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
+        if (!userError && user) {
+            userCompanyName = user.user_metadata?.company_name || "Unknown Company";
+            userSector = user.user_metadata?.sector || "INCONNU";
+        }
+
+        try {
+            const { data: pastEntries } = await supabaseAdmin
+                .from('accounting_entries')
+                .select('description, main_account_code, main_account_name')
+                .eq('user_id', userId)
+                .order('created_at', { ascending: false })
+                .limit(5);
+            
+            if (pastEntries && pastEntries.length > 0) {
+                historyContext = "MÉMOIRE HISTORIQUE - Voici des exemples tirés de TA PROPRE comptabilité récente (imite ce style si similaire) :\n";
+                pastEntries.forEach((e: any) => {
+                    historyContext += `- "${e.description}" => Classée en ${e.main_account_code} (${e.main_account_name})\n`;
+                });
+            }
+        } catch(e) {}
     }
 
     // 1. Generate an embedding for the user's input text to find relevant PCM accounts
@@ -44,6 +72,10 @@ export async function POST(req: NextRequest) {
 Tu es un Expert Comptable Marocain (expert en PCM) travaillant sur le logiciel AutoCompta. 
 Ton rôle est d'analyser le texte soumis (factures, reçus, listes d'opérations) et d'appliquer une méthodologie comptable stricte pour générer les écritures au format JSON.
 
+CONTEXTE DE L'ENTREPRISE :
+- Nom de l'entreprise : ${userCompanyName}
+- Secteur d'activité : ${userSector}
+
 MÉTHODOLOGIE À APPLIQUER OBLIGATOIREMENT :
 1. ANALYSE : Identifie la (ou les) transaction(s) isolée(s) dans le texte (Achats, Ventes, Paiements, Salaires, Dépôts/Retraits).
 2. CATÉGORISATION (Choix structuré du Journal) :
@@ -62,6 +94,8 @@ MÉTHODOLOGIE À APPLIQUER OBLIGATOIREMENT :
 4. ÉQUILIBRE (Partie Double) : Chaque transaction isolée DOIT avoir un Total Débit strictement égal au Total Crédit.
 
 ${pcmContext ? `\n--- CONTEXTE RAG ---\n${pcmContext}\n--------------------\n` : ''}
+
+${historyContext ? `\n--- ${historyContext}\n--------------------\n` : ''}
 
 TEXTE À ANALYSER :
 """

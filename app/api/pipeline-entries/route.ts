@@ -42,11 +42,13 @@ export async function POST(req: NextRequest) {
         // ==========================================
         let userCompanyName = "Unknown Company";
         let userIce = "Unknown ICE";
+        let userSector = "INCONNU";
         if (userId) {
             const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
             if (!userError && user) {
                 userCompanyName = user.user_metadata?.company_name || "Unknown Company";
                 userIce = user.user_metadata?.ice || "Unknown ICE";
+                userSector = user.user_metadata?.sector || "INCONNU";
             }
         }
 
@@ -184,8 +186,44 @@ L'addition amount_ht + tva_amount DOIT être mathématiquement égale à total_a
             } catch (e) { }
         }
 
+        // RAG 3 : Historique Récent de l'Utilisateur (Mémoire Few-Shot)
+        let historyContext = "";
+        if (userId) {
+            try {
+                let supplierOrClient = extractedData.supplier ? extractedData.supplier.trim() : "";
+                let queryBuilder = supabaseAdmin
+                    .from('accounting_entries')
+                    .select('description, main_account_code, main_account_name')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false });
+
+                if (supplierOrClient.length > 3) {
+                    queryBuilder = queryBuilder.ilike('supplier', `%${supplierOrClient}%`).limit(3);
+                } else {
+                    queryBuilder = queryBuilder.limit(3); 
+                }
+
+                const { data: pastEntries } = await queryBuilder;
+                
+                if (pastEntries && pastEntries.length > 0) {
+                    if (supplierOrClient.length > 3) {
+                        historyContext = "MÉMOIRE HISTORIQUE (IMPORTANT) - Voici comment TU as classé les factures de ce même tiers récemment :\n";
+                    } else {
+                        historyContext = "MÉMOIRE HISTORIQUE - Quelques exemples récents de ta propre comptabilité :\n";
+                    }
+                    pastEntries.forEach((e: any) => {
+                        historyContext += `- "${e.description}" => Compte ${e.main_account_code} (${e.main_account_name})\n`;
+                    });
+                }
+            } catch (e) { }
+        }
+
         const prompt2 = `
 Tu es un Expert Comptable Marocain. Voici les données d'une transaction identifiée comme une **${forcedNature}**.
+
+CONTEXTE ENTREPRISE : 
+- Nom de notre entreprise : ${userCompanyName}
+- Secteur d'activité : ${userSector}
 
 FOURNISSEUR/CLIENT : ${extractedData.supplier}
 DESCRIPTION : ${extractedData.description}
@@ -194,6 +232,8 @@ LOG IA (RAISONNEMENT) : ${reasoning}
 HT : ${extractedData.amount_ht} | TVA : ${extractedData.tva_amount} | TTC : ${extractedData.total_amount}
 
 ${pcmContext}
+
+${historyContext}
 
 ${textbookContext}
 
