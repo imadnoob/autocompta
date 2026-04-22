@@ -192,8 +192,8 @@ L'addition amount_ht + tva_amount DOIT être mathématiquement égale à total_a
             try {
                 let supplierOrClient = extractedData.supplier ? extractedData.supplier.trim() : "";
                 let queryBuilder = supabaseAdmin
-                    .from('accounting_entries')
-                    .select('description, main_account_code, main_account_name')
+                    .from('journal_entries')
+                    .select('label, account, account_name')
                     .eq('user_id', userId)
                     .order('created_at', { ascending: false });
 
@@ -212,7 +212,7 @@ L'addition amount_ht + tva_amount DOIT être mathématiquement égale à total_a
                         historyContext = "MÉMOIRE HISTORIQUE - Quelques exemples récents de ta propre comptabilité :\n";
                     }
                     pastEntries.forEach((e: any) => {
-                        historyContext += `- "${e.description}" => Compte ${e.main_account_code} (${e.main_account_name})\n`;
+                        historyContext += `- "${e.label}" => Compte ${e.account} (${e.account_name})\n`;
                     });
                 }
             } catch (e) { }
@@ -242,8 +242,7 @@ RÈGLES STRICTES :
 1. Si c'est une VENTE, utilise obligatoirement un compte de CLASSE 7. Journal = VT. Tiers = 3421.
 2. Si c'est un ACHAT, utilise obligatoirement un compte de CLASSE 6 ou 2. Journal = HA. Tiers = 4411.
 3. Règle métier : Pour toute réservation, nuitée ou hébergement, utilise OBLIGATOIREMENT le compte 71241 (Ventes hébergement). N'utilise pas 71244.
-4. Règle métier : Pour l'hôtellerie/restauration, les achats d'alimentation, boissons ou provisions (supermarchés, etc.) vont obligatoirement en 61211 (Matières premières), JAMAIS en 6111.
-5. Utilise le compte PCM le plus précis possible. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251, 71241), utilise-le plutôt que le compte général (ex: 6125, 7124).
+4. Utilise le compte PCM le plus précis possible. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251, 71241), utilise-le plutôt que le compte général (ex: 6125, 7124).
 
 Retourne UNIQUEMENT un JSON avec ce format :
 {
