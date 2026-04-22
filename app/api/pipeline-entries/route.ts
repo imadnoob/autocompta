@@ -242,7 +242,7 @@ RÈGLES STRICTES :
 1. Si c'est une VENTE, utilise obligatoirement un compte de CLASSE 7. Journal = VT. Tiers = 3421.
 2. Si c'est un ACHAT, utilise obligatoirement un compte de CLASSE 6 ou 2. Journal = HA. Tiers = 4411.
 3. Règle métier : Pour toute réservation, nuitée ou hébergement, utilise OBLIGATOIREMENT le compte 71241 (Ventes hébergement). N'utilise pas 71244.
-4. Utilise le compte PCM le plus précis possible. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251, 71241), utilise-le plutôt que le compte général (ex: 6125, 7124).
+4. Règle absolue de précision : N'utilise JAMAIS un compte parent à 4 chiffres (ex: 6121, 6125) s'il existe une version à 5 chiffres plus précise dans le RAG (ex: 61211, 61251). Tu DOIS utiliser la version à 5 chiffres.
 
 Retourne UNIQUEMENT un JSON avec ce format :
 {
