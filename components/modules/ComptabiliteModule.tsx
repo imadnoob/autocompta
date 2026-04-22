@@ -246,20 +246,34 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
     const totalDebit = filteredEntries.reduce((s: number, e: JournalEntry) => s + e.debit, 0);
     const totalCredit = filteredEntries.reduce((s: number, e: JournalEntry) => s + e.credit, 0);
 
-    // ─── Comptabiliser: persist entries to DB ────────────────
+    // ─── Comptabiliser: persist entries to DB (Séquentiel en arrière-plan) ────────────────
     const handleComptabiliser = async () => {
         if (selectedDocs.size === 0) return;
-        setComptabilising(true);
         const ids = Array.from(selectedDocs);
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) { setComptabilising(false); return; }
+        if (!user) return;
 
         const docsToProcess = documents.filter(d => ids.includes(d.id));
-        const rows: any[] = [];
 
-        let loopIndex = 0;
+        // 1. Libérer l'UI immédiatement et basculer sur le journal
+        setSelectedDocs(new Set());
+        setComptabilising(true);
+        setActiveTab('journal');
+
+        // 2. Lancer le traitement asynchrone sans "await" pour ne pas bloquer l'UI
+        processDocsInBackground(docsToProcess, user).then(() => {
+            setComptabilising(false);
+            fetchDocs();
+            fetchEntries();
+        }).catch((e) => {
+            console.error("Erreur background comptabilisation:", e);
+            setComptabilising(false);
+        });
+    };
+
+    const processDocsInBackground = async (docsToProcess: any[], user: any) => {
         for (const doc of docsToProcess) {
-            loopIndex++;
+            const rows: any[] = [];
             
             // 0. Scoring Classification (Semantic Reasoning)
             const classification = classifyDocument(doc.extracted_data || {});
@@ -319,48 +333,36 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                 }
             }
 
-            // 2. Génération du Numéro de Pièce
+            // 2. Génération du Numéro de Pièce (réévalué à chaque itération car insertion unique)
             const { count } = await supabase
                 .from('journal_entries')
                 .select('*', { count: 'exact', head: true })
                 .eq('user_id', user.id)
                 .eq('journal', journalCode);
 
-            const pieceNum = `${piecePrefix}-${String((count || 0) + loopIndex).padStart(4, '0')}`;
+            const pieceNum = `${piecePrefix}-${String((count || 0) + 1).padStart(4, '0')}`;
 
-            // 3. Construction des écritures
+            // 3. Construction des écritures pour ce document
             const entries = buildEntriesFromDoc(doc, tierCode, tierName);
             for (const e of entries) {
                 rows.push({ ...e, user_id: user.id, piece_num: pieceNum, journal: journalCode });
             }
-        }
 
-        // Try to insert journal entries (non-blocking for status update)
-        if (rows.length > 0) {
-            const { error: insertErr } = await supabase.from('journal_entries').insert(rows);
-            if (insertErr) {
-                console.warn('Erreur insertion écritures (table manquante?):', insertErr.message);
+            // 4. Insertion en DB pour cette unique facture
+            if (rows.length > 0) {
+                const { error: insertErr } = await supabase.from('journal_entries').insert(rows);
+                if (insertErr) {
+                    console.warn('Erreur insertion écritures:', insertErr.message);
+                } else {
+                    // Mettre à jour le statut du document
+                    await supabase.from('documents').update({ accounting_status: 'saisi' }).eq('id', doc.id);
+                }
             }
+            
+            // Rafraîchissement léger de l'UI pour voir les lignes apparaître une par une
+            fetchEntries();
+            fetchDocs();
         }
-
-        // Always update the document status
-        const { data: updateData, error } = await supabase
-            .from('documents')
-            .update({ accounting_status: 'saisi' })
-            .in('id', ids)
-            .select();
-
-        console.log('[Comptabiliser] Update result:', { ids, updateData, error });
-
-        if (error) {
-            alert(`Erreur mise à jour statut: ${error.message}\n\nCode: ${error.code}\nDetails: ${error.details}\nHint: ${error.hint}`);
-        }
-
-        setSelectedDocs(new Set());
-        await fetchDocs();
-        await fetchEntries();
-        setActiveTab('journal');
-        setComptabilising(false);
     };
 
     // ─── Delete entry ─────────────────────────────────────────
