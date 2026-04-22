@@ -201,7 +201,8 @@ DÉTERMINE LES CODES COMPTABLES (Plan Comptable Marocain) appropriés.
 RÈGLES STRICTES :
 1. Si c'est une VENTE, utilise obligatoirement un compte de CLASSE 7. Journal = VT. Tiers = 3421.
 2. Si c'est un ACHAT, utilise obligatoirement un compte de CLASSE 6 ou 2. Journal = HA. Tiers = 4411.
-3. Utilise le compte PCM le plus précis possible. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251, 71241), utilise-le plutôt que le compte général (ex: 6125, 7124).
+3. Règle métier : Pour toute réservation, nuitée ou hébergement, utilise OBLIGATOIREMENT le compte 71241 (Ventes hébergement). N'utilise pas 71244.
+4. Utilise le compte PCM le plus précis possible. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251, 71241), utilise-le plutôt que le compte général (ex: 6125, 7124).
 
 Retourne UNIQUEMENT un JSON avec ce format :
 {

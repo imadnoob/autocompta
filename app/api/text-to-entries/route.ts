@@ -94,6 +94,7 @@ Format de base de CHAQUE objet opération :
 RÈGLES VITALES :
 - Les montants doivent être de type Number (pas de strings). N'utilise jamais de virgule (,) ni d'espaces. Ex: 120000 ou 120000.50
 - Privilégie FORCEMENT les comptes suggérés dans le "CONTEXTE RAG" s'ils correspondent à l'opération.
+- Règle métier : Pour toute réservation, nuitée ou hébergement, utilise OBLIGATOIREMENT le compte 71241. N'utilise pas 71244.
 - Utilise le compte PCM le plus précis. Si un sous-compte détaillé du RAG correspond parfaitement (ex: 61251 plutôt que 6125), utilise-le. Sinon, garde le compte PCM standard.
 - Ton JSON doit être parfait et ne contenir que les données.
 `;
