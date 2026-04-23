@@ -238,8 +238,8 @@ export function buildEntriesFromDoc(
     if (isSale) {
         // --- VENTES (SALES) ---
         const journal = 'VT';
-        const clientAcc = '3421';
-        const clientName = 'Clients';
+        const clientAcc = fallbackSupplierAccount || '3421';
+        const clientName = fallbackSupplierName || 'Clients';
 
         // Produit (Class 7) -> Normalement Crédit
         entries.push({
@@ -344,7 +344,7 @@ export function buildPaymentEntries(
             },
             {
                 doc_id: doc.id, entry_date: date, ref, journal: payJournal,
-                account: '3421', account_name: 'Clients', label, // Client
+                account: fallbackAccount || '3421', account_name: fallbackAccName || 'Clients', label, // Client
                 debit: isAvoir ? totalTTC : 0, credit: isAvoir ? 0 : totalTTC,
                 supplier: originalSupplierOrClient, lettre_code: null, is_contrepassation: false,
             },
