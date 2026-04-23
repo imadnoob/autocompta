@@ -2494,7 +2494,12 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                     <Users className="w-5 h-5" />
                                     Plan Tiers
                                 </h2>
-                                <span className="text-xs font-mono text-gray-500">{tiers.length} Tiers</span>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-xs font-mono text-gray-500">{tiers.length} Tiers</span>
+                                    <button onClick={() => { setEditingTier('new'); setTierEditForm({ name: '', account_code_aux: '', telephone: '', email: '', adresse: '', rc: '', identifiant_fiscal: '', ice: '', delai_reglement_jours: 30, mode_reglement: 'virement', condition_reglement: 'net', jour_tombee: 0 }); }} className="text-xs bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded flex items-center gap-1 transition-colors">
+                                        <PlusCircle className="w-3.5 h-3.5" /> Nouveau
+                                    </button>
+                                </div>
                             </div>
                             <div className="overflow-x-auto">
                                 <table className="w-full text-sm">
@@ -2537,7 +2542,13 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                                     <td className="px-4 py-3 text-center">
                                                         <span className="text-xs font-mono">{t.delai_reglement_jours || 30}j {t.condition_reglement === 'fin_mois' ? 'FM' : t.condition_reglement === 'fin_mois_le' ? `FM le ${t.jour_tombee || '?'}` : 'Net'}</span>
                                                     </td>
-                                                    
+                                                    <td className="px-4 py-3 text-center">
+                                                        <button 
+                                                            onClick={() => { setEditingTier(t); setTierEditForm(t); }} 
+                                                            className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors" title="Modifier le Tiers">
+                                                            <Pencil className="w-4 h-4" />
+                                                        </button>
+                                                    </td>
                                                 </tr>
                                             ))
                                         )}
@@ -2851,6 +2862,73 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                     })()
                 }
             </div >
+
+            {/* ─── Tiers Modal ─────────────────────────── */}
+            {editingTier && (
+                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
+                        <button onClick={() => setEditingTier(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
+                        <h3 className="font-bold text-lg mb-4 text-gray-800 flex items-center gap-2">
+                            <Users className="w-5 h-5 text-indigo-500" />
+                            {editingTier === 'new' ? 'Nouveau Tiers' : 'Modifier le Tiers'}
+                        </h3>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="col-span-2 sm:col-span-1">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">Nom / Raison sociale</label>
+                                <input type="text" value={tierEditForm.name} onChange={e => setTierEditForm({...tierEditForm, name: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">Compte auxiliaire</label>
+                                <input type="text" value={tierEditForm.account_code_aux} onChange={e => setTierEditForm({...tierEditForm, account_code_aux: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono" placeholder="Ex: 44110001" />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">Téléphone</label>
+                                <input type="text" value={tierEditForm.telephone || ''} onChange={e => setTierEditForm({...tierEditForm, telephone: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono" />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">Email</label>
+                                <input type="email" value={tierEditForm.email || ''} onChange={e => setTierEditForm({...tierEditForm, email: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                            </div>
+                            <div className="col-span-2">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">ICE (Identifiant Commun d'Entreprise)</label>
+                                <input type="text" value={tierEditForm.ice || ''} onChange={e => setTierEditForm({...tierEditForm, ice: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono" />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">Délai (jours)</label>
+                                <input type="number" value={tierEditForm.delai_reglement_jours || 30} onChange={e => setTierEditForm({...tierEditForm, delai_reglement_jours: parseInt(e.target.value)})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
+                            </div>
+                            <div className="col-span-2 sm:col-span-1">
+                                <label className="block text-xs font-semibold text-gray-500 mb-1">Condition de règlement</label>
+                                <select value={tierEditForm.condition_reglement || 'net'} onChange={e => setTierEditForm({...tierEditForm, condition_reglement: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="net">Net</option>
+                                    <option value="fin_mois">Fin de mois</option>
+                                    <option value="fin_mois_le">Fin de mois le X</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                            <button onClick={() => setEditingTier(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium">Annuler</button>
+                            <button onClick={async () => {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                if(!user) return;
+                                if (editingTier === 'new') {
+                                    // Default type from account code
+                                    const type = tierEditForm.account_code_aux.startsWith('342') ? 'client' : 'fournisseur';
+                                    await supabase.from('tiers').insert({ ...tierEditForm, user_id: user.id, type });
+                                } else {
+                                    await supabase.from('tiers').update(tierEditForm).eq('id', editingTier.id);
+                                }
+                                setEditingTier(null);
+                                fetchEntries(); // which fetches tiers too
+                            }} className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg shadow-sm hover:bg-indigo-700 hover:shadow flex items-center gap-2">
+                                <Save className="w-4 h-4" /> Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* ─── Sage Export Popup Modal ─────────────────────────── */}
             {showSagePopup && (
