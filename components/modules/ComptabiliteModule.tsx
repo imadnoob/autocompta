@@ -638,7 +638,10 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
 
     const handleSaveTier = async () => {
         if (!editingTier) return;
-        const { error } = await supabase.from('tiers').update({
+        const { data: { user } } = await supabase.auth.getUser();
+        if(!user) return;
+        
+        const payload = {
             name: tierEditForm.name,
             account_code_aux: tierEditForm.account_code_aux,
             telephone: tierEditForm.telephone || null,
@@ -651,12 +654,17 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
             mode_reglement: tierEditForm.mode_reglement,
             condition_reglement: tierEditForm.condition_reglement,
             jour_tombee: tierEditForm.jour_tombee || null,
-        }).eq('id', editingTier.id);
+        };
 
-        if (error) {
-            alert(`Erreur: ${error.message}`);
-            return;
+        if (editingTier === 'new') {
+            const type = tierEditForm.account_code_aux.startsWith('342') ? 'client' : 'fournisseur';
+            const { error } = await supabase.from('tiers').insert({ ...payload, user_id: user.id, type });
+            if (error) { alert(`Erreur: ${error.message}`); return; }
+        } else {
+            const { error } = await supabase.from('tiers').update(payload).eq('id', editingTier.id);
+            if (error) { alert(`Erreur: ${error.message}`); return; }
         }
+
         setEditingTier(null);
         await fetchTiers();
     };
@@ -2566,7 +2574,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                             <div className="bg-white border border-slate-200 rounded-xl shadow-sm rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
                                 <div className="px-6 py-3 border-b border-slate-200 bg-indigo-50/20 flex items-center justify-between sticky top-0 z-10">
                                     <h3 className="font-bold flex items-center gap-2">
-                                        <Users className="w-4 h-4" /> Fiche Tiers — {editingTier.name}
+                                        <Users className="w-4 h-4" /> {editingTier === 'new' ? 'Nouveau Tiers' : `Fiche Tiers — ${editingTier.name}`}
                                     </h3>
                                     <button onClick={() => setEditingTier(null)} className="p-1 hover:bg-red-100 transition-colors">
                                         <X className="w-4 h-4" />
@@ -2658,12 +2666,14 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                     </div>
 
                                     <div className="flex gap-3 mt-4">
-                                        <button type="button" onClick={handleDeleteTier}
-                                            className="w-1/3 px-4 py-3 font-bold text-sm border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 shadow-md hover:shadow-md-lg transition-all flex items-center justify-center">
-                                            <Trash2 className="w-4 h-4 mr-2" />Supprimer
-                                        </button>
+                                        {editingTier !== 'new' && (
+                                            <button type="button" onClick={handleDeleteTier}
+                                                className="w-1/3 px-4 py-3 font-bold text-sm border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 shadow-md hover:shadow-md-lg transition-all flex items-center justify-center">
+                                                <Trash2 className="w-4 h-4 mr-2" />Supprimer
+                                            </button>
+                                        )}
                                         <button type="button" onClick={handleSaveTier}
-                                            className="w-2/3 px-4 py-3 font-bold text-sm border border-slate-200 rounded-xl bg-indigo-50 text-white hover:bg-indigo-50/80 shadow-md hover:shadow-md-lg transition-all flex items-center justify-center">
+                                            className={`${editingTier === 'new' ? 'w-full' : 'w-2/3'} px-4 py-3 font-bold text-sm border border-slate-200 rounded-xl bg-indigo-50 text-white hover:bg-indigo-50/80 shadow-md hover:shadow-md-lg transition-all flex items-center justify-center`}>
                                             <Save className="w-4 h-4 mr-2" />Enregistrer
                                         </button>
                                     </div>
@@ -2863,72 +2873,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                 }
             </div >
 
-            {/* ─── Tiers Modal ─────────────────────────── */}
-            {editingTier && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 relative max-h-[90vh] overflow-y-auto">
-                        <button onClick={() => setEditingTier(null)} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
-                        <h3 className="font-bold text-lg mb-4 text-gray-800 flex items-center gap-2">
-                            <Users className="w-5 h-5 text-indigo-500" />
-                            {editingTier === 'new' ? 'Nouveau Tiers' : 'Modifier le Tiers'}
-                        </h3>
-                        
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">Nom / Raison sociale</label>
-                                <input type="text" value={tierEditForm.name} onChange={e => setTierEditForm({...tierEditForm, name: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">Compte auxiliaire</label>
-                                <input type="text" value={tierEditForm.account_code_aux} onChange={e => setTierEditForm({...tierEditForm, account_code_aux: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono" placeholder="Ex: 44110001" />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">Téléphone</label>
-                                <input type="text" value={tierEditForm.telephone || ''} onChange={e => setTierEditForm({...tierEditForm, telephone: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono" />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">Email</label>
-                                <input type="email" value={tierEditForm.email || ''} onChange={e => setTierEditForm({...tierEditForm, email: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                            </div>
-                            <div className="col-span-2">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">ICE (Identifiant Commun d'Entreprise)</label>
-                                <input type="text" value={tierEditForm.ice || ''} onChange={e => setTierEditForm({...tierEditForm, ice: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono" />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">Délai (jours)</label>
-                                <input type="number" value={tierEditForm.delai_reglement_jours || 30} onChange={e => setTierEditForm({...tierEditForm, delai_reglement_jours: parseInt(e.target.value)})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" />
-                            </div>
-                            <div className="col-span-2 sm:col-span-1">
-                                <label className="block text-xs font-semibold text-gray-500 mb-1">Condition de règlement</label>
-                                <select value={tierEditForm.condition_reglement || 'net'} onChange={e => setTierEditForm({...tierEditForm, condition_reglement: e.target.value})} className="w-full text-sm border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="net">Net</option>
-                                    <option value="fin_mois">Fin de mois</option>
-                                    <option value="fin_mois_le">Fin de mois le X</option>
-                                </select>
-                            </div>
-                        </div>
 
-                        <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
-                            <button onClick={() => setEditingTier(null)} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 font-medium">Annuler</button>
-                            <button onClick={async () => {
-                                const { data: { user } } = await supabase.auth.getUser();
-                                if(!user) return;
-                                if (editingTier === 'new') {
-                                    // Default type from account code
-                                    const type = tierEditForm.account_code_aux.startsWith('342') ? 'client' : 'fournisseur';
-                                    await supabase.from('tiers').insert({ ...tierEditForm, user_id: user.id, type });
-                                } else {
-                                    await supabase.from('tiers').update(tierEditForm).eq('id', editingTier.id);
-                                }
-                                setEditingTier(null);
-                                fetchEntries(); // which fetches tiers too
-                            }} className="px-4 py-2 bg-indigo-600 text-white text-sm font-bold rounded-lg shadow-sm hover:bg-indigo-700 hover:shadow flex items-center gap-2">
-                                <Save className="w-4 h-4" /> Enregistrer
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {/* ─── Sage Export Popup Modal ─────────────────────────── */}
             {showSagePopup && (
