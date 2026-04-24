@@ -34,26 +34,39 @@ interface Artifact {
 
 // Simple Chart Component to render structured data from Agent
 const ChartRenderer = ({ data, type = 'bar' }: { data: any[], type?: string }) => {
-    if (!data || data.length === 0) return null;
+    if (!data || !Array.isArray(data) || data.length === 0) return null;
+
+    // Detect keys and ensure numeric values (resilience against LLM variations)
+    const processedData = data.map(item => {
+        // Look for any key that sounds like a value
+        const valKey = Object.keys(item).find(k => 
+            ['value', 'total', 'solde', 'montant', 'amount', 'ratio', 'count'].includes(k.toLowerCase())
+        ) || 'value';
+        
+        return {
+            name: item.name || item.label || item.month || item.date || '?',
+            value: Number(item[valKey]) || 0
+        };
+    });
 
     return (
-        <div className="h-72 w-full bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+        <div className="h-64 w-full bg-slate-50/30 backdrop-blur-sm rounded-xl p-2 animate-in fade-in zoom-in duration-500">
             <ResponsiveContainer width="100%" height="100%">
                 {type === 'line' ? (
-                    <LineChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                        <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} />
-                        <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                        <Line type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1', strokeWidth: 2, stroke: '#fff' }} />
+                    <LineChart data={processedData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? (v/1000).toFixed(1)+'k' : v} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }} />
+                        <Line type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
                     </LineChart>
                 ) : (
-                    <BarChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                        <XAxis dataKey="name" tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} dy={10} />
-                        <YAxis tick={{ fill: '#64748b', fontSize: 12 }} axisLine={false} tickLine={false} dx={-10} />
-                        <Tooltip cursor={{ fill: '#f8fafc' }} contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                        <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                    <BarChart data={processedData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+                        <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} />
+                        <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? (v/1000).toFixed(1)+'k' : v} />
+                        <Tooltip cursor={{ fill: '#f1f5f9', radius: 4 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }} />
+                        <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={30} />
                     </BarChart>
                 )}
             </ResponsiveContainer>
