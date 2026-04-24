@@ -280,48 +280,76 @@ NE GÉNÈRE AUCUN JSON. Pas de blabla.`;
 // Called on chat startup to show proactive alerts
 export async function GET(req: NextRequest) {
     try {
+        const { searchParams } = new URL(req.url);
+        const userId = searchParams.get('userId');
+        if (!userId) return NextResponse.json({ alerts: [] });
+
         const alerts: string[] = [];
         const today = new Date();
         const sevenDaysAgo = new Date(today); sevenDaysAgo.setDate(today.getDate() - 7);
-        const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
 
         // Alert 1: Pending documents older than 7 days
         const { data: pending } = await supabaseAdmin
             .from('documents')
             .select('id, original_name, created_at')
+            .eq('user_id', userId)
             .eq('status', 'pending')
             .lte('created_at', sevenDaysAgo.toISOString());
+        
         if (pending && pending.length > 0) {
-            alerts.push(`📋 **${pending.length} document(s) en attente** depuis plus de 7 jours (non comptabilisé${pending.length > 1 ? 's' : ''})`);
+            alerts.push(`📋 **${pending.length} justificatif(s)** en attente de traitement depuis plus de 7 jours.`);
         }
 
-        // Alert 2: Check TVA balance
-        const { data: tvaEntries } = await supabaseAdmin
+        // Alert 2: Payment delays based on Plan Tier conditions
+        // Fetch tiers for payment conditions
+        const { data: tiers } = await supabaseAdmin
+            .from('tiers')
+            .select('account_code_aux, name, delai_reglement_jours')
+            .eq('user_id', userId);
+
+        // Fetch unpaid (not matched/lettrées) invoice entries
+        const { data: unpaid } = await supabaseAdmin
             .from('journal_entries')
-            .select('account, debit, credit');
-        if (tvaEntries) {
-            let tvaCollectee = 0, tvaDeductible = 0;
-            tvaEntries.forEach((e: any) => {
-                if (e.account === '4455') tvaCollectee += (Number(e.credit) || 0) - (Number(e.debit) || 0);
-                if (e.account?.startsWith('3455')) tvaDeductible += (Number(e.debit) || 0) - (Number(e.credit) || 0);
+            .select('account, entry_date, debit, credit, label')
+            .eq('user_id', userId)
+            .is('lettre_code', null)
+            .or('account.ilike.4411%,account.ilike.3421%');
+
+        if (tiers && unpaid && unpaid.length > 0) {
+            let delayCount = 0;
+            
+            unpaid.forEach(entry => {
+                const tier = tiers.find(t => t.account_code_aux === entry.account);
+                const delayLimit = tier?.delai_reglement_jours || 30; // Default 30 days if not set
+                
+                const entryDate = new Date(entry.entry_date);
+                const diffTime = today.getTime() - entryDate.getTime();
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays > delayLimit) {
+                    delayCount++;
+                }
             });
-            const tvaAPayer = tvaCollectee - tvaDeductible;
-            if (tvaAPayer > 500) {
-                alerts.push(`💰 **TVA à payer estimée: ${tvaAPayer.toFixed(2)} MAD** — pensez à provisionner`);
+
+            if (delayCount > 0) {
+                alerts.push(`⚠️ **Retard de règlement** : ${delayCount} facture(s) fournisseur ou client dépasse(nt) le délai de règlement autorisé.`);
             }
         }
 
-        // Alert 3: Recent journal activity summary
+        // Alert 3: Activity Summary
         const { data: recentEntries } = await supabaseAdmin
             .from('journal_entries')
             .select('id')
-            .gte('created_at', sevenDaysAgoStr);
+            .eq('user_id', userId)
+            .gte('created_at', sevenDaysAgo.toISOString());
+        
         if (recentEntries && recentEntries.length > 0) {
-            alerts.push(`📊 **${recentEntries.length} écriture(s)** saisies cette semaine`);
+            alerts.push(`📈 **Résumé hebdo** : ${recentEntries.length} écritures intégrées au système cette semaine.`);
         }
 
         return NextResponse.json({ alerts });
-    } catch (error: any) {
+    } catch (error) {
+        console.error("Alerts error:", error);
         return NextResponse.json({ alerts: [] });
     }
 }

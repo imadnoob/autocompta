@@ -82,7 +82,7 @@ export default function AgentIAModule() {
         supabase.auth.getUser().then(({ data }: { data: { user: any } }) => {
             if (data.user) {
                 setUserId(data.user.id);
-                fetch('/api/agent').then(r => r.json()).then(d => {
+                fetch(`/api/agent?userId=${data.user.id}`).then(r => r.json()).then(d => {
                     if (d.alerts && d.alerts.length > 0) setAlerts(d.alerts);
                 }).catch(() => { });
             }
@@ -260,6 +260,25 @@ export default function AgentIAModule() {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto px-4 sm:px-8 pt-8 pb-32 custom-scrollbar">
                     <div className="max-w-3xl mx-auto space-y-8">
+                        {/* Proactive Agent Alerts */}
+                        {alerts.length > 0 && (
+                            <div className="space-y-3 mb-6">
+                                {alerts.map((alert, idx) => (
+                                    <div key={idx} className="flex items-center gap-3 p-4 bg-indigo-50/50 border border-indigo-100/50 rounded-2xl text-indigo-900 text-[13px] shadow-sm animate-in slide-in-from-top-4 duration-700">
+                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                                            <Bot className="w-4 h-4 text-indigo-600" />
+                                        </div>
+                                        <div className="flex-1 prose-sm">
+                                            <ReactMarkdown components={{ p: ({node, ...props}) => <p className="m-0" {...props} /> }}>{alert}</ReactMarkdown>
+                                        </div>
+                                        <button onClick={() => setAlerts(prev => prev.filter((_, i) => i !== idx))} className="text-indigo-300 hover:text-indigo-600">
+                                            <X className="w-3.5 h-3.5" />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
                         {sessions.length === 0 || !activeSession ? (
                             <div className="flex flex-col items-center justify-center text-center mt-20 space-y-5 animate-in fade-in zoom-in duration-500">
                                 <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white flex items-center justify-center shadow-md overflow-hidden">
