@@ -322,7 +322,7 @@ export async function GET(req: NextRequest) {
 
         if (tiers && unpaid) {
             unpaid.forEach((entry: any) => {
-                const tier = tiers.find(t => t.account_code_aux === entry.account);
+                const tier = tiers.find((t: any) => t.account_code_aux === entry.account);
                 const delayLimit = tier?.delai_reglement_jours || 30;
                 
                 const entryDate = new Date(entry.entry_date);
