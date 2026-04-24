@@ -473,6 +473,25 @@ export default function AgentIAModule() {
                                                             );
                                                         }
                                                         return <a className="text-violet-600 underline decoration-violet-300 underline-offset-2 hover:text-violet-800 transition-colors" {...props} />;
+                                                    },
+                                                    code({ node, inline, className, children, ...props }: any) {
+                                                        const match = /language-(\w+)/.exec(className || '');
+                                                        const lang = match ? match[1] : '';
+                                                        
+                                                        if (!inline && lang === 'chart') {
+                                                            try {
+                                                                const chartData = JSON.parse(String(children).replace(/\n/g, ''));
+                                                                return (
+                                                                    <div className="my-6 animate-in zoom-in-95 duration-300">
+                                                                        <ChartRenderer data={chartData.data} type={chartData.type} />
+                                                                    </div>
+                                                                );
+                                                            } catch (e) {
+                                                                return <code className={className} {...props}>{children}</code>;
+                                                            }
+                                                        }
+                                                        
+                                                        return <code className={className} {...props}>{children}</code>;
                                                     }
                                                 }}
                                             >
