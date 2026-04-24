@@ -267,7 +267,8 @@ Si l'action a réussi (ex: facture comptabilisée), dis simplement que c'est fai
 NE DONNE AUCUN DÉTAIL TECHNIQUE OU TABLEAU DE CHIFFRES sauf si explicitement demandé.
 OBLIGATOIRE : Si c'est lié à un document, ajoute le lien vers le document sous la forme: [display_name](id) (Utilise la propriété display_name du document).
 INTERDIT: N'utilise JAMAIS de listes à puces (- ou *) pour lister les documents. Mets les simplement à la ligne.
-NE GÉNÈRE AUCUN JSON. Pas de blabla.`;
+GRAPHIQUES : Si l'utilisateur demande un graphique ou une évolution, et que tu as des données numériques, génère SYSTEMATIQUEMENT le bloc \`\`\`chart {"type":"bar/line","data":[...]} \`\`\`.
+NE GÉNÈRE AUCUN JSON en dehors des blocs \`\`\`chart. Pas de blabla.`;
 
         const step3Result = await model.generateContent(step3Prompt);
         const finalResponse = step3Result.response.text();
