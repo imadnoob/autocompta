@@ -356,6 +356,31 @@ export async function GET(req: NextRequest) {
             });
         }
 
+        // Alert 4: TVA Analysis (Point de situation)
+        const { data: tvaData } = await supabaseAdmin
+            .from('journal_entries')
+            .select('account, debit, credit')
+            .eq('user_id', userId);
+            
+        if (tvaData && tvaData.length > 0) {
+            let tvaCollectee = 0;
+            let tvaDeductible = 0;
+            tvaData.forEach((e: any) => {
+                const acc = e.account || '';
+                if (acc === '4455') tvaCollectee += (Number(e.credit) || 0) - (Number(e.debit) || 0);
+                if (acc.startsWith('3455')) tvaDeductible += (Number(e.debit) || 0) - (Number(e.credit) || 0);
+            });
+            
+            const tvaAPayer = tvaCollectee - tvaDeductible;
+            
+            alerts.push({
+                id: 'summary-tva',
+                type: 'summary',
+                date: today.toISOString(),
+                message: `💰 **Point TVA** : Facturée: **${Math.max(0, tvaCollectee).toLocaleString('fr-FR')} MAD** | Récupérable: **${Math.max(0, tvaDeductible).toLocaleString('fr-FR')} MAD** | ${tvaAPayer > 0 ? `À payer: **${tvaAPayer.toLocaleString('fr-FR')} MAD**` : `Crédit: **${Math.abs(tvaAPayer).toLocaleString('fr-FR')} MAD**`}`
+            });
+        }
+
         return NextResponse.json({ alerts });
     } catch (error) {
         console.error("Alerts error:", error);
