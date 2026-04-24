@@ -284,7 +284,7 @@ export async function GET(req: NextRequest) {
         const userId = searchParams.get('userId');
         if (!userId) return NextResponse.json({ alerts: [] });
 
-        const alerts: string[] = [];
+        const alerts: any[] = [];
         const today = new Date();
         const sevenDaysAgo = new Date(today); sevenDaysAgo.setDate(today.getDate() - 7);
 
@@ -296,47 +296,51 @@ export async function GET(req: NextRequest) {
             .eq('status', 'pending')
             .lte('created_at', sevenDaysAgo.toISOString());
         
-        if (pending && pending.length > 0) {
-            alerts.push(`📋 **${pending.length} justificatif(s)** en attente de traitement depuis plus de 7 jours.`);
+        if (pending) {
+            pending.forEach(p => {
+                alerts.push({
+                    id: `doc-${p.id}`,
+                    type: 'pending_doc',
+                    date: p.created_at,
+                    message: `Justificatif **${p.original_name}** en attente de traitement depuis plus de 7 jours.`
+                });
+            });
         }
 
-        // Alert 2: Payment delays based on Plan Tier conditions
-        // Fetch tiers for payment conditions
+        // Alert 2: Payment delays
         const { data: tiers } = await supabaseAdmin
             .from('tiers')
             .select('account_code_aux, name, delai_reglement_jours')
             .eq('user_id', userId);
 
-        // Fetch unpaid (not matched/lettrées) invoice entries
         const { data: unpaid } = await supabaseAdmin
             .from('journal_entries')
-            .select('account, entry_date, debit, credit, label')
+            .select('id, account, entry_date, debit, credit, label')
             .eq('user_id', userId)
             .is('lettre_code', null)
             .or('account.ilike.4411%,account.ilike.3421%');
 
-        if (tiers && unpaid && unpaid.length > 0) {
-            let delayCount = 0;
-            
+        if (tiers && unpaid) {
             unpaid.forEach(entry => {
                 const tier = tiers.find(t => t.account_code_aux === entry.account);
-                const delayLimit = tier?.delai_reglement_jours || 30; // Default 30 days if not set
+                const delayLimit = tier?.delai_reglement_jours || 30;
                 
                 const entryDate = new Date(entry.entry_date);
                 const diffTime = today.getTime() - entryDate.getTime();
                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
                 
                 if (diffDays > delayLimit) {
-                    delayCount++;
+                    alerts.push({
+                        id: `pay-${entry.id}`,
+                        type: 'payment_delay',
+                        date: entry.entry_date,
+                        message: `**Retard règlement** : La facture ${entry.label} (${tier?.name || 'Inconnu'}) dépasse le délai de ${delayLimit} jours.`
+                    });
                 }
             });
-
-            if (delayCount > 0) {
-                alerts.push(`⚠️ **Retard de règlement** : ${delayCount} facture(s) fournisseur ou client dépasse(nt) le délai de règlement autorisé.`);
-            }
         }
 
-        // Alert 3: Activity Summary
+        // Alert 3: Weekly Activity (Summary)
         const { data: recentEntries } = await supabaseAdmin
             .from('journal_entries')
             .select('id')
@@ -344,7 +348,12 @@ export async function GET(req: NextRequest) {
             .gte('created_at', sevenDaysAgo.toISOString());
         
         if (recentEntries && recentEntries.length > 0) {
-            alerts.push(`📈 **Résumé hebdo** : ${recentEntries.length} écritures intégrées au système cette semaine.`);
+            alerts.push({
+                id: 'summary-weekly',
+                type: 'summary',
+                date: today.toISOString(),
+                message: `📈 **Résumé hebdo** : ${recentEntries.length} écritures intégrées au système cette semaine.`
+            });
         }
 
         return NextResponse.json({ alerts });

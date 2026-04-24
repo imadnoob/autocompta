@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Sparkles, Send, Loader2, Bot, User, History, MessageSquare, Trash2, PlusCircle, BarChart2, ExternalLink, FileText as FileIcon, Paperclip, X, ArrowRight } from 'lucide-react';
+import { Sparkles, Send, Loader2, Bot, User, History, MessageSquare, Trash2, PlusCircle, BarChart2, ExternalLink, FileText as FileIcon, Paperclip, X, ArrowRight, Bell, ShieldAlert, ListChecks, Calendar, CheckCircle2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabase } from '@/lib/supabase';
@@ -68,8 +68,9 @@ export default function AgentIAModule() {
     const [loading, setLoading] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [userId, setUserId] = useState<string | undefined>(undefined);
-    const [alerts, setAlerts] = useState<string[]>([]);
+    const [alerts, setAlerts] = useState<any[]>([]);
     const [activeArtifact, setActiveArtifact] = useState<Artifact | null>(null);
+    const [activeView, setActiveView] = useState<'chat' | 'alerts'>('chat');
 
     // File staging (Claude-style pills)
     const [stagedFiles, setStagedFiles] = useState<File[]>([]);
@@ -230,18 +231,33 @@ export default function AgentIAModule() {
 
             {/* Sidebar - History */}
             <div className="hidden lg:flex w-64 flex-col bg-slate-50/50 border-r border-slate-200">
-                <div className="p-4 border-b border-slate-200/50">
-                    <button onClick={startNewChat} className="w-full py-2.5 px-4 bg-white border border-slate-200 text-slate-700 rounded-lg shadow-sm hover:border-violet-300 hover:text-violet-700 transition-all font-medium flex items-center gap-2 text-sm justify-center group">
+                <div className="p-4 border-b border-slate-200/50 space-y-3">
+                    {/* Alerts/Proactive Button */}
+                    <button 
+                        onClick={() => setActiveView('alerts')}
+                        className={`w-full py-2.5 px-4 rounded-xl transition-all font-medium flex items-center gap-3 text-sm relative group ${activeView === 'alerts' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white border border-slate-200 text-slate-700 hover:border-indigo-300 hover:text-indigo-700 shadow-sm'}`}
+                    >
+                        <ShieldAlert className={`w-4 h-4 ${activeView === 'alerts' ? 'text-white' : 'text-indigo-500'}`} />
+                        <span>Sentinelle IA</span>
+                        {alerts.length > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white animate-pulse">
+                                {alerts.length}
+                            </span>
+                        )}
+                    </button>
+
+                    <button onClick={() => { setActiveView('chat'); startNewChat(); }} className={`w-full py-2.5 px-4 border border-slate-200 text-slate-700 rounded-lg shadow-sm hover:border-violet-300 hover:text-violet-700 transition-all font-medium flex items-center gap-2 text-sm justify-center group ${activeView === 'chat' ? 'bg-white' : 'bg-slate-100/50'}`}>
                         <PlusCircle className="w-4 h-4 text-violet-500 group-hover:rotate-90 transition-transform" />
                         Nouveau Chat
                     </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-2 mb-2">Historique</div>
                     {sessions.map(session => (
-                        <button key={session.id} onClick={() => setActiveSessionId(session.id)} className={`w-full text-left p-2.5 rounded-lg transition-all flex items-center justify-between group text-sm ${activeSessionId === session.id ? 'bg-violet-50 text-violet-800 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}>
+                        <button key={session.id} onClick={() => { setActiveView('chat'); setActiveSessionId(session.id); }} className={`w-full text-left p-2.5 rounded-lg transition-all flex items-center justify-between group text-sm ${activeView === 'chat' && activeSessionId === session.id ? 'bg-violet-50 text-violet-800 font-medium' : 'text-slate-600 hover:bg-slate-100'}`}>
                             <div className="flex items-center gap-2.5 overflow-hidden">
-                                <MessageSquare className={`w-4 h-4 shrink-0 ${activeSessionId === session.id ? 'text-violet-500' : 'text-slate-400'}`} />
+                                <MessageSquare className={`w-4 h-4 shrink-0 ${activeView === 'chat' && activeSessionId === session.id ? 'text-violet-500' : 'text-slate-400'}`} />
                                 <span className="truncate">{session.title}</span>
                             </div>
                             <Trash2 className="w-3.5 h-3.5 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => deleteSession(e, session.id)} />
@@ -260,25 +276,71 @@ export default function AgentIAModule() {
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto px-4 sm:px-8 pt-8 pb-32 custom-scrollbar">
                     <div className="max-w-3xl mx-auto space-y-8">
-                        {/* Proactive Agent Alerts */}
-                        {alerts.length > 0 && (
-                            <div className="space-y-3 mb-6">
-                                {alerts.map((alert, idx) => (
-                                    <div key={idx} className="flex items-center gap-3 p-4 bg-indigo-50/50 border border-indigo-100/50 rounded-2xl text-indigo-900 text-[13px] shadow-sm animate-in slide-in-from-top-4 duration-700">
-                                        <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
-                                            <Bot className="w-4 h-4 text-indigo-600" />
-                                        </div>
-                                        <div className="flex-1 prose-sm">
-                                            <ReactMarkdown components={{ p: ({node, ...props}) => <p className="m-0" {...props} /> }}>{alert}</ReactMarkdown>
-                                        </div>
-                                        <button onClick={() => setAlerts(prev => prev.filter((_, i) => i !== idx))} className="text-indigo-300 hover:text-indigo-600">
-                                            <X className="w-3.5 h-3.5" />
-                                        </button>
+                        {activeView === 'alerts' ? (
+                            <div className="animate-in fade-in slide-in-from-right-8 duration-500 pb-10">
+                                <div className="flex items-center gap-3 mb-8 border-b border-slate-100 pb-5">
+                                    <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-200">
+                                        <Bot className="w-6 h-6" />
                                     </div>
-                                ))}
-                            </div>
-                        )}
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-slate-800">Sentinelle IA</h2>
+                                        <p className="text-slate-500 text-sm">Surveillance proactive de votre santé financière</p>
+                                    </div>
+                                </div>
 
+                                {alerts.length === 0 ? (
+                                    <div className="flex flex-col items-center justify-center py-20 text-center">
+                                        <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-4">
+                                            <CheckCircle2 className="w-10 h-10 text-emerald-500" />
+                                        </div>
+                                        <h3 className="text-slate-800 font-semibold text-lg">Tout est sous contrôle !</h3>
+                                        <p className="text-slate-500 max-w-xs mt-2">Aucune anomalie ou retard n'a été détecté par l'agent à ce jour.</p>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-10">
+                                        {/* Grouping by Date */}
+                                        {Array.from(new Set(alerts.map(a => new Date(a.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })))).sort((a,b) => b.localeCompare(a)).map(dateGroup => (
+                                            <div key={dateGroup} className="space-y-4">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="h-px flex-1 bg-slate-100"></div>
+                                                    <span className="text-[12px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full border border-slate-200/50 flex items-center gap-2">
+                                                        <Calendar className="w-3 h-3" />
+                                                        {dateGroup === new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) ? "Aujourd'hui" : dateGroup}
+                                                    </span>
+                                                    <div className="h-px flex-1 bg-slate-100"></div>
+                                                </div>
+                                                
+                                                <div className="space-y-3">
+                                                    {alerts.filter(a => new Date(a.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) === dateGroup).map((alert, idx) => (
+                                                        <div key={alert.id || idx} className="group relative flex items-start gap-4 p-5 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-md transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                                            <button 
+                                                                onClick={() => setAlerts(prev => prev.filter(a => a.id !== alert.id))}
+                                                                className="mt-1 w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-500 transition-all shrink-0"
+                                                            >
+                                                                <ListChecks className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-600" />
+                                                            </button>
+                                                            <div className="flex-1">
+                                                                <div className="prose prose-sm max-w-none">
+                                                                    <ReactMarkdown components={{ p: ({node, ...props}) => <p className="m-0 text-slate-700 leading-relaxed" {...props} /> }}>{alert.message}</ReactMarkdown>
+                                                                </div>
+                                                                <div className="mt-2 text-[10px] font-semibold text-slate-400 flex items-center gap-2">
+                                                                    <span className={`px-1.5 py-0.5 rounded-md ${alert.type === 'payment_delay' ? 'bg-red-50 text-red-600' : alert.type === 'pending_doc' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
+                                                                        {alert.type === 'payment_delay' ? 'Règlement' : alert.type === 'pending_doc' ? 'Justificatif' : 'Activité'}
+                                                                    </span>
+                                                                    <span>•</span>
+                                                                    <span>Cité à {new Date(alert.date).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <>
                         {sessions.length === 0 || !activeSession ? (
                             <div className="flex flex-col items-center justify-center text-center mt-20 space-y-5 animate-in fade-in zoom-in duration-500">
                                 <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white flex items-center justify-center shadow-md overflow-hidden">
@@ -415,7 +477,7 @@ export default function AgentIAModule() {
                                             </ReactMarkdown>
                                         </div>
                                     </div>
-                                </div>
+                                                    </div>
                             ))
                         )}
                         {loading && (
@@ -433,60 +495,64 @@ export default function AgentIAModule() {
                             </div>
                         )}
                         <div ref={scrollRef} />
+                        </>
+                        )}
                     </div>
-                </div>
+                </div>              </div>
 
-                {/* Input Area (Claude Style Floating Box) */}
-                <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white to-transparent pt-10 pb-6 px-4 sm:px-8 pointer-events-none">
-                    <div className="max-w-3xl mx-auto md:w-full pointer-events-auto">
-                        <div className="bg-[#f4f4f5] border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-violet-500/20 focus-within:border-violet-400 focus-within:bg-white transition-all duration-300">
+                {/* Input Area (Claude Style Floating Box) - ONLY IN CHAT VIEW */}
+                {activeView === 'chat' && (
+                    <div className="absolute bottom-0 left-0 w-full bg-gradient-to-t from-white via-white to-transparent pt-10 pb-6 px-4 sm:px-8 pointer-events-none">
+                        <div className="max-w-3xl mx-auto md:w-full pointer-events-auto">
+                            <div className="bg-[#f4f4f5] border border-slate-200/60 rounded-2xl shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-violet-500/20 focus-within:border-violet-400 focus-within:bg-white transition-all duration-300">
 
-                            {/* Staged files area */}
-                            {stagedFiles.length > 0 && (
-                                <div className="px-3 pt-3 flex flex-wrap gap-2">
-                                    {stagedFiles.map((file, idx) => (
-                                        <div key={idx} className="flex items-center gap-2 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 shadow-sm animate-in zoom-in-95 duration-200">
-                                            <FileIcon className="w-3.5 h-3.5 text-violet-500" />
-                                            <span className="truncate max-w-[120px]">{file.name}</span>
-                                            <button type="button" onClick={() => removeStagedFile(idx)} className="text-slate-400 hover:text-red-500 ml-1">
-                                                <X className="w-3.5 h-3.5" />
-                                            </button>
-                                        </div>
-                                    ))}
-                                    {uploading && (
-                                        <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-500">
-                                            <Loader2 className="w-3.5 h-3.5 animate-spin" /> Transfert...
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                {/* Staged files area */}
+                                {stagedFiles.length > 0 && (
+                                    <div className="px-3 pt-3 flex flex-wrap gap-2">
+                                        {stagedFiles.map((file, idx) => (
+                                            <div key={idx} className="flex items-center gap-2 px-2 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-700 shadow-sm animate-in zoom-in-95 duration-200">
+                                                <FileIcon className="w-3.5 h-3.5 text-violet-500" />
+                                                <span className="truncate max-w-[120px]">{file.name}</span>
+                                                <button type="button" onClick={() => removeStagedFile(idx)} className="text-slate-400 hover:text-red-500 ml-1">
+                                                    <X className="w-3.5 h-3.5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        {uploading && (
+                                            <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium text-slate-500">
+                                                <Loader2 className="w-3.5 h-3.5 animate-spin" /> Transfert...
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-                            <form onSubmit={handleSubmit} className="flex relative">
-                                <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple accept=".pdf,.png,.jpg,.jpeg" />
-                                <button type="button" onClick={() => fileInputRef.current?.click()} disabled={loading || uploading} className="absolute left-3 bottom-3 p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors z-10" title="Ajouter un document">
-                                    <Paperclip className="w-5 h-5" />
-                                </button>
+                                <form onSubmit={handleSubmit} className="flex relative">
+                                    <input type="file" ref={fileInputRef} onChange={handleFileSelect} className="hidden" multiple accept=".pdf,.png,.jpg,.jpeg" />
+                                    <button type="button" onClick={() => fileInputRef.current?.click()} disabled={loading || uploading} className="absolute left-3 bottom-3 p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-200 rounded-lg transition-colors z-10" title="Ajouter un document">
+                                        <Paperclip className="w-5 h-5" />
+                                    </button>
 
-                                <textarea
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(e as any); }
-                                    }}
-                                    placeholder="Posez une question à votre expert comptable..."
-                                    className="w-full py-4 pl-12 pr-14 bg-transparent outline-none resize-none text-[15px] placeholder:text-slate-400 min-h-[58px] max-h-40 overflow-y-auto custom-scrollbar"
-                                    disabled={loading}
-                                    rows={1}
-                                />
+                                    <textarea
+                                        value={query}
+                                        onChange={(e) => setQuery(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(e as any); }
+                                        }}
+                                        placeholder="Posez une question à votre expert comptable..."
+                                        className="w-full py-4 pl-12 pr-14 bg-transparent outline-none resize-none text-[15px] placeholder:text-slate-400 min-h-[58px] max-h-40 overflow-y-auto custom-scrollbar"
+                                        disabled={loading}
+                                        rows={1}
+                                    />
 
-                                <button type="submit" disabled={(!query.trim() && stagedFiles.length === 0) || loading} className={`absolute right-3 bottom-2.5 p-2 rounded-xl transition-all duration-200 flex items-center justify-center ${(!query.trim() && stagedFiles.length === 0) || loading ? 'bg-slate-200 text-slate-400' : 'bg-[#e56b46] text-white shadow-sm hover:bg-[#d4603e]'}`}>
-                                    {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                                </button>
-                            </form>
+                                    <button type="submit" disabled={(!query.trim() && stagedFiles.length === 0) || loading} className={`absolute right-3 bottom-2.5 p-2 rounded-xl transition-all duration-200 flex items-center justify-center ${(!query.trim() && stagedFiles.length === 0) || loading ? 'bg-slate-200 text-slate-400' : 'bg-[#e56b46] text-white shadow-sm hover:bg-[#d4603e]'}`}>
+                                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                                    </button>
+                                </form>
+                            </div>
+                            <div className="text-center mt-3 text-[11px] text-slate-400 font-medium">L'Agent IA peut commettre des erreurs. Vérifiez les écritures.</div>
                         </div>
-                        <div className="text-center mt-3 text-[11px] text-slate-400 font-medium">L'Agent IA peut commettre des erreurs. Vérifiez les écritures.</div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Right Pane: Artifacts (Claude Style) */}
