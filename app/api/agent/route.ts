@@ -297,7 +297,7 @@ export async function GET(req: NextRequest) {
             .lte('created_at', sevenDaysAgo.toISOString());
         
         if (pending) {
-            pending.forEach(p => {
+            pending.forEach((p: any) => {
                 alerts.push({
                     id: `doc-${p.id}`,
                     type: 'pending_doc',
