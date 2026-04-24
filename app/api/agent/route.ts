@@ -207,6 +207,7 @@ FORMAT DE RÉPONSE - RÈGLE ABSOLUE:
 - Si tu dois appeler UN outil: {"tool": "nom_outil", "args": {...}}
 - Si tu as assez d'info pour répondre DIRECTEMENT: réponds en Markdown français SANS JSON.
 - NE JAMAIS inventer d'IDs ou de données. S'il n'y a pas de données, dis-le clairement.
+- FORMAT DES DATES: Utilise TOUJOURS le format YYYY-MM-DD (ex: 2026-03-01). Pour un mois entier, spécifie bien le premier et le dernier jour.
 - Utilise des tableaux Markdown pour les données tabulaires.
 - Pour les graphiques: \`\`\`chart {"type":"bar","labels":[...],"datasets":[{"label":"...","data":[...]}]} \`\`\`
 
@@ -235,8 +236,11 @@ export async function POST(req: NextRequest) {
         const userSector = user?.user_metadata?.sector || "COMMERCE";
         const sectorContext = `\nSECTEUR D'ACTIVITÉ DE L'UTILISATEUR: ${userSector}\n(Si le secteur est HOTELLERIE_RESTAURATION, tu peux utiliser les comptes hôteliers spécifiques comme 71241, 71242, 445262, 3111, etc. Sinon, reste sur le plan comptable général.)\n`;
 
+        const todayStr = new Date().toISOString().split('T')[0];
+        const dateContext = `\nDATE ACTUELLE: ${todayStr}\nL'utilisateur peut parler de "ce mois", "le mois dernier", ou de mois spécifiques. Utilise cette date pour calculer les périodes au format YYYY-MM-DD.\n`;
+
         // Step 1: Ask Gemini to select a tool or answer directly
-        const step1Prompt = `${TOOL_DEFINITIONS}${historyContext}${sectorContext}Requête utilisateur: "${query}"`;
+        const step1Prompt = `${TOOL_DEFINITIONS}${historyContext}${sectorContext}${dateContext}Requête utilisateur: "${query}"`;
         const step1Result = await model.generateContent(step1Prompt);
         const step1Text = step1Result.response.text().trim();
 
@@ -388,9 +392,24 @@ export async function GET(req: NextRequest) {
     }
 }
 
+// ─── Helper: Date Normalization ──────────────────────────────
+function normalizeDate(dateStr: string | undefined, isEnd: boolean): string | undefined {
+    if (!dateStr) return undefined;
+    if (dateStr.length === 7) { // YYYY-MM
+        return isEnd ? `${dateStr}-31` : `${dateStr}-01`;
+    }
+    if (dateStr.length === 4) { // YYYY
+        return isEnd ? `${dateStr}-12-31` : `${dateStr}-01-01`;
+    }
+    return dateStr;
+}
+
 // ─── Tool Executor ─────────────────────────────────────────────
 async function executeTool(toolName: string, args: any, userId: string | undefined, req: NextRequest): Promise<any> {
     if (!userId) return { error: 'Utilisateur non identifié.' };
+
+    const date_from = normalizeDate(args.date_from, false);
+    const date_to = normalizeDate(args.date_to, true);
 
     try {
         switch (toolName) {
@@ -632,7 +651,7 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
 
             // ── 9. get_journal ──
             case 'get_journal': {
-                const { journal_code, limit = 50, date_from, date_to } = args;
+                const { journal_code, limit = 50 } = args;
                 let q = supabaseAdmin.from('journal_entries').select('*').eq('user_id', userId).order('entry_date', { ascending: false }).limit(limit);
                 if (journal_code) q = q.eq('journal', journal_code);
                 if (date_from) q = q.gte('entry_date', date_from);
@@ -644,14 +663,12 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
 
             // ── 10. get_accounts_summary ──
             case 'get_accounts_summary': {
-                const { date_from, date_to } = args;
                 const summary = await buildAccountsSummary(userId, date_from, date_to);
                 return { accounts: summary };
             }
 
             // ── 11. get_bilan ──
             case 'get_bilan': {
-                const { date_from, date_to } = args;
                 const accounts = await buildAccountsSummary(userId, date_from, date_to);
                 const bilan = buildBilanFromAccounts(accounts);
                 return { bilan };
@@ -659,7 +676,6 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
 
             // ── 12. get_cpc ──
             case 'get_cpc': {
-                const { date_from, date_to } = args;
                 const accounts = await buildAccountsSummary(userId, date_from, date_to);
                 const cpc = buildCPCFromAccounts(accounts);
                 return { cpc };
@@ -667,7 +683,6 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
 
             // ── 13. get_tva_report ──
             case 'get_tva_report': {
-                const { date_from, date_to } = args;
                 let q = supabaseAdmin.from('journal_entries').select('account, entry_date, debit, credit').eq('user_id', userId);
                 if (date_from) q = q.gte('entry_date', date_from);
                 if (date_to) q = q.lte('entry_date', date_to);
