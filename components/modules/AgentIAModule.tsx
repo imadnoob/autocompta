@@ -313,18 +313,15 @@ export default function AgentIAModule() {
                                                 <div className="space-y-3">
                                                     {alerts.filter(a => new Date(a.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) === dateGroup).map((alert, idx) => (
                                                         <div key={alert.id || idx} className="group relative flex items-start gap-4 p-5 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-md transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
-                                                            {alert.type !== 'summary' ? (
-                                                                <button 
-                                                                    onClick={() => setAlerts(prev => prev.filter(a => a.id !== alert.id))}
-                                                                    className="mt-1 w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-500 transition-all shrink-0"
-                                                                >
-                                                                    <ListChecks className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-600" />
-                                                                </button>
-                                                            ) : (
-                                                                <div className="mt-1 w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
-                                                                    <BarChart2 className="w-3 h-3 text-blue-500" />
-                                                                </div>
-                                                            )}
+                                                            <div className={`mt-1 w-8 h-8 rounded-xl flex items-center justify-center shrink-0 border shadow-sm ${
+                                                                alert.type === 'payment_delay' ? 'bg-red-50 border-red-100 text-red-500' :
+                                                                alert.type === 'pending_doc' ? 'bg-amber-50 border-amber-100 text-amber-500' :
+                                                                'bg-blue-50 border-blue-100 text-blue-500'
+                                                            }`}>
+                                                                {alert.type === 'payment_delay' ? <ShieldAlert className="w-4 h-4" /> :
+                                                                 alert.type === 'pending_doc' ? <FileIcon className="w-4 h-4" /> :
+                                                                 <BarChart2 className="w-4 h-4" />}
+                                                            </div>
                                                             <div className="flex-1">
                                                                 <div className="prose prose-sm max-w-none">
                                                                     <ReactMarkdown components={{ p: ({node, ...props}) => <p className="m-0 text-slate-700 leading-relaxed" {...props} /> }}>{alert.message}</ReactMarkdown>
