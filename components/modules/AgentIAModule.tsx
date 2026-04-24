@@ -238,7 +238,7 @@ export default function AgentIAModule() {
                         className={`w-full py-2.5 px-4 rounded-xl transition-all font-medium flex items-center gap-3 text-sm relative group ${activeView === 'alerts' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white border border-slate-200 text-slate-700 hover:border-indigo-300 hover:text-indigo-700 shadow-sm'}`}
                     >
                         <ShieldAlert className={`w-4 h-4 ${activeView === 'alerts' ? 'text-white' : 'text-indigo-500'}`} />
-                        <span>Sentinelle IA</span>
+                        <span>Alertes</span>
                         {alerts.length > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white animate-pulse">
                                 {alerts.length}
@@ -283,7 +283,7 @@ export default function AgentIAModule() {
                                         <Bot className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h2 className="text-2xl font-bold text-slate-800">Sentinelle IA</h2>
+                                        <h2 className="text-2xl font-bold text-slate-800">Alertes</h2>
                                         <p className="text-slate-500 text-sm">Surveillance proactive de votre santé financière</p>
                                     </div>
                                 </div>
