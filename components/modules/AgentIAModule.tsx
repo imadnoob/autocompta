@@ -498,7 +498,7 @@ export default function AgentIAModule() {
                         </>
                         )}
                     </div>
-                </div>              </div>
+                </div>
 
                 {/* Input Area (Claude Style Floating Box) - ONLY IN CHAT VIEW */}
                 {activeView === 'chat' && (
@@ -576,7 +576,6 @@ export default function AgentIAModule() {
                     </div>
                 </div>
             )}
-
         </div>
     );
 }

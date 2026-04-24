@@ -321,7 +321,7 @@ export async function GET(req: NextRequest) {
             .or('account.ilike.4411%,account.ilike.3421%');
 
         if (tiers && unpaid) {
-            unpaid.forEach(entry => {
+            unpaid.forEach((entry: any) => {
                 const tier = tiers.find(t => t.account_code_aux === entry.account);
                 const delayLimit = tier?.delai_reglement_jours || 30;
                 
