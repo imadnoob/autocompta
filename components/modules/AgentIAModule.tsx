@@ -53,17 +53,34 @@ const ChartRenderer = ({ data, type = 'bar' }: { data: any, type?: string }) => 
     } 
     // 2. Handle array-style format (list of objects) - Standard for Recharts
     else if (Array.isArray(data) && data.length > 0) {
+        // Mots-clés réservés pour l'axe X (ne seront pas traités comme des valeurs Y)
+        const labelKeys = ['name', 'label', 'month', 'date', 'periode', 'id', 'created_at', 'timestamp'];
+        const numericKeys = new Set<string>();
+
         processedData = data.map(item => {
-            const valKey = Object.keys(item).find(k => 
-                ['value', 'total', 'solde', 'montant', 'amount', 'ratio', 'count'].includes(k.toLowerCase())
-            ) || 'value';
+            // Extraction du nom pour l'axe X
+            const nameVal = item.name || item.label || item.month || item.date || item.periode || '?';
+            const entry: any = { name: String(nameVal) };
             
-            return {
-                name: item.name || item.label || item.month || item.date || '?',
-                value: Number(item[valKey]) || 0
-            };
+            // Extraction dynamique de toutes les métriques numériques pour l'axe Y
+            Object.keys(item).forEach(k => {
+                if (!labelKeys.includes(k.toLowerCase())) {
+                    const val = Number(item[k]);
+                    // Si la valeur est un nombre valide, on l'ajoute comme métrique
+                    if (!isNaN(val)) {
+                        numericKeys.add(k);
+                        entry[k] = val;
+                    }
+                }
+            });
+            
+            return entry;
         });
-        keys = ['value'];
+        
+        keys = Array.from(numericKeys);
+        
+        // Fallback de sécurité au cas où aucune valeur numérique n'est trouvée
+        if (keys.length === 0) keys = ['value']; 
     }
 
     if (processedData.length === 0) return null;
