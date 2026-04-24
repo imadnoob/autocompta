@@ -239,9 +239,9 @@ export default function AgentIAModule() {
                     >
                         <ShieldAlert className={`w-4 h-4 ${activeView === 'alerts' ? 'text-white' : 'text-indigo-500'}`} />
                         <span>Alertes</span>
-                        {alerts.length > 0 && (
+                        {alerts.filter(a => a.type !== 'summary').length > 0 && (
                             <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white animate-pulse">
-                                {alerts.length}
+                                {alerts.filter(a => a.type !== 'summary').length}
                             </span>
                         )}
                     </button>
@@ -313,12 +313,18 @@ export default function AgentIAModule() {
                                                 <div className="space-y-3">
                                                     {alerts.filter(a => new Date(a.date).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) === dateGroup).map((alert, idx) => (
                                                         <div key={alert.id || idx} className="group relative flex items-start gap-4 p-5 bg-white border border-slate-200 rounded-2xl hover:border-indigo-300 hover:shadow-md transition-all animate-in fade-in slide-in-from-bottom-4 duration-300">
-                                                            <button 
-                                                                onClick={() => setAlerts(prev => prev.filter(a => a.id !== alert.id))}
-                                                                className="mt-1 w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-500 transition-all shrink-0"
-                                                            >
-                                                                <ListChecks className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-600" />
-                                                            </button>
+                                                            {alert.type !== 'summary' ? (
+                                                                <button 
+                                                                    onClick={() => setAlerts(prev => prev.filter(a => a.id !== alert.id))}
+                                                                    className="mt-1 w-6 h-6 rounded-full border-2 border-slate-200 flex items-center justify-center hover:bg-emerald-50 hover:border-emerald-500 transition-all shrink-0"
+                                                                >
+                                                                    <ListChecks className="w-3 h-3 opacity-0 group-hover:opacity-100 text-emerald-600" />
+                                                                </button>
+                                                            ) : (
+                                                                <div className="mt-1 w-6 h-6 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                                                                    <BarChart2 className="w-3 h-3 text-blue-500" />
+                                                                </div>
+                                                            )}
                                                             <div className="flex-1">
                                                                 <div className="prose prose-sm max-w-none">
                                                                     <ReactMarkdown components={{ p: ({node, ...props}) => <p className="m-0 text-slate-700 leading-relaxed" {...props} /> }}>{alert.message}</ReactMarkdown>
