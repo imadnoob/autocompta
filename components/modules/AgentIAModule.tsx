@@ -390,19 +390,23 @@ export default function AgentIAModule() {
                                                                 const chartData = JSON.parse(String(children).replace(/\n/g, ''));
                                                                 const artifactId = `art-${msg.id}`;
                                                                 return (
-                                                                    <button onClick={() => setActiveArtifact({ id: artifactId, type: 'chart', data: chartData.data, chartType: chartData.type, title: 'Visualisation Graphique' })}
-                                                                        className="flex items-center justify-between w-full max-w-sm p-3 my-2 bg-white border border-slate-200 rounded-xl hover:border-violet-300 hover:shadow-sm transition-all text-sm group">
-                                                                        <div className="flex items-center gap-3">
-                                                                            <div className="w-8 h-8 rounded-lg bg-violet-50 flex items-center justify-center">
-                                                                                <BarChart2 className="w-4 h-4 text-violet-600" />
-                                                                            </div>
-                                                                            <div className="flex flex-col items-start align-baseline leading-tight">
-                                                                                <span className="text-slate-800 font-medium">Graphique généré</span>
-                                                                                <span className="text-slate-500 text-[11px]">Cliquez ici pour ouvrir</span>
-                                                                            </div>
+                                                                    <div className="my-6 space-y-3">
+                                                                        <div className="flex items-center justify-between px-1">
+                                                                            <span className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                                                                                <BarChart2 className="w-4 h-4 text-violet-500" />
+                                                                                Analyse de données
+                                                                            </span>
+                                                                            <button 
+                                                                                onClick={() => setActiveArtifact({ id: artifactId, type: 'chart', data: chartData.data, chartType: chartData.type, title: 'Visualisation Graphique' })}
+                                                                                className="text-[11px] font-medium text-violet-600 hover:text-violet-700 bg-violet-50 px-2 py-0.5 rounded-full transition-colors"
+                                                                            >
+                                                                                Plein écran
+                                                                            </button>
                                                                         </div>
-                                                                        <span className="text-violet-600 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-medium pr-2">Ouvrir</span>
-                                                                    </button>
+                                                                        <div className="bg-slate-50/50 p-2 rounded-2xl border border-slate-100">
+                                                                            <ChartRenderer data={chartData.data} type={chartData.type} />
+                                                                        </div>
+                                                                    </div>
                                                                 );
                                                             } catch (e) {
                                                                 return <code className="block bg-slate-100 p-4 rounded-xl overflow-x-auto text-sm my-4 font-mono text-slate-800" {...props}>{children}</code>;
@@ -473,25 +477,6 @@ export default function AgentIAModule() {
                                                             );
                                                         }
                                                         return <a className="text-violet-600 underline decoration-violet-300 underline-offset-2 hover:text-violet-800 transition-colors" {...props} />;
-                                                    },
-                                                    code({ node, inline, className, children, ...props }: any) {
-                                                        const match = /language-(\w+)/.exec(className || '');
-                                                        const lang = match ? match[1] : '';
-                                                        
-                                                        if (!inline && lang === 'chart') {
-                                                            try {
-                                                                const chartData = JSON.parse(String(children).replace(/\n/g, ''));
-                                                                return (
-                                                                    <div className="my-6 animate-in zoom-in-95 duration-300">
-                                                                        <ChartRenderer data={chartData.data} type={chartData.type} />
-                                                                    </div>
-                                                                );
-                                                            } catch (e) {
-                                                                return <code className={className} {...props}>{children}</code>;
-                                                            }
-                                                        }
-                                                        
-                                                        return <code className={className} {...props}>{children}</code>;
                                                     }
                                                 }}
                                             >
