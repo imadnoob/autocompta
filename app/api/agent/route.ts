@@ -668,18 +668,35 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
             // ── 13. get_tva_report ──
             case 'get_tva_report': {
                 const { date_from, date_to } = args;
-                let q = supabaseAdmin.from('journal_entries').select('account, account_name, debit, credit').eq('user_id', userId);
+                let q = supabaseAdmin.from('journal_entries').select('account, entry_date, debit, credit').eq('user_id', userId);
                 if (date_from) q = q.gte('entry_date', date_from);
                 if (date_to) q = q.lte('entry_date', date_to);
                 const { data: entries, error } = await q;
                 if (error) return { error: error.message };
 
-                let tvaCollectee = 0;    // 4455 — TVA sur ventes (crédit)
-                let tvaDeductible = 0;   // 34551, 34552 — TVA récupérable (débit)
+                let tvaCollectee = 0;    // 4455 — TVA sur ventes
+                let tvaDeductible = 0;   // 3455 — TVA récupérable
+                const monthly: Record<string, { factured: number, deductible: number }> = {};
 
                 entries?.forEach((e: any) => {
-                    if (e.account === '4455') tvaCollectee += (Number(e.credit) || 0) - (Number(e.debit) || 0);
-                    if (e.account.startsWith('3455')) tvaDeductible += (Number(e.debit) || 0) - (Number(e.credit) || 0);
+                    const acc = e.account || '';
+                    const date = e.entry_date || 'Inconnu';
+                    const month = date.substring(0, 7); // YYYY-MM
+                    
+                    if (!monthly[month]) monthly[month] = { factured: 0, deductible: 0 };
+                    
+                    // Facturée (4455)
+                    if (acc.startsWith('4455')) {
+                        const val = (Number(e.credit) || 0) - (Number(e.debit) || 0);
+                        tvaCollectee += val;
+                        monthly[month].factured += val;
+                    }
+                    // Récupérable (3455)
+                    if (acc.startsWith('3455')) {
+                        const val = (Number(e.debit) || 0) - (Number(e.credit) || 0);
+                        tvaDeductible += val;
+                        monthly[month].deductible += val;
+                    }
                 });
 
                 const tvaAPayer = tvaCollectee - tvaDeductible;
@@ -688,6 +705,7 @@ async function executeTool(toolName: string, args: any, userId: string | undefin
                     tva_deductible: Math.max(0, tvaDeductible),
                     tva_a_payer: tvaAPayer,
                     credit_de_tva: tvaAPayer < 0 ? Math.abs(tvaAPayer) : 0,
+                    monthly_breakdown: monthly,
                     periode: { date_from: date_from || 'début', date_to: date_to || 'aujourd\'hui' }
                 };
             }
