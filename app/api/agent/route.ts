@@ -209,7 +209,7 @@ FORMAT DE RÉPONSE - RÈGLE ABSOLUE:
 - NE JAMAIS inventer d'IDs ou de données. S'il n'y a pas de données, dis-le clairement.
 - Les dates fournies aux outils DOIVENT être au format YYYY-MM-DD (ex: 2026-03-01 pour le début de mars, 2026-03-31 pour la fin de mars).
 - Utilise des tableaux Markdown pour les données tabulaires.
-- Pour les graphiques: ```chart {"type":"bar","data":[{"name":"Jan","value":100},{"name":"Feb","value":200}]} ```
+- Pour les graphiques: \`\`\`chart {"type":"bar","data":[{"name":"Jan","value":100},{"name":"Feb","value":200}]} \`\`\`
 
 CONTEXTE COMPTABLE PCM:
 - Achats → Journal HA, comptes 6xxx ou 2xxx + 4411 (Fournisseur) + 34552 (TVA récupérable)
