@@ -292,47 +292,32 @@ export async function GET(req: NextRequest) {
             .eq('status', 'pending')
             .lte('created_at', sevenDaysAgo.toISOString());
         if (pending && pending.length > 0) {
-            alerts.push(`📋 **${pending.length} document(s) en attente** depuis plus de 7 jours (retard de traitement détecté)`);
+            alerts.push(`📋 **${pending.length} document(s) en attente** depuis plus de 7 jours (non comptabilisé${pending.length > 1 ? 's' : ''})`);
         }
 
-        // Alert 2: Check TVA balance and Treasury Health
-        const { data: entries } = await supabaseAdmin
+        // Alert 2: Check TVA balance
+        const { data: tvaEntries } = await supabaseAdmin
             .from('journal_entries')
             .select('account, debit, credit');
-        if (entries) {
+        if (tvaEntries) {
             let tvaCollectee = 0, tvaDeductible = 0;
-            let soldeBanque = 0, soldeCaisse = 0;
-
-            entries.forEach((e: any) => {
+            tvaEntries.forEach((e: any) => {
                 if (e.account === '4455') tvaCollectee += (Number(e.credit) || 0) - (Number(e.debit) || 0);
                 if (e.account?.startsWith('3455')) tvaDeductible += (Number(e.debit) || 0) - (Number(e.credit) || 0);
-                if (e.account?.startsWith('5141')) soldeBanque += (Number(e.debit) || 0) - (Number(e.credit) || 0);
-                if (e.account?.startsWith('5161')) soldeCaisse += (Number(e.debit) || 0) - (Number(e.credit) || 0);
             });
-
             const tvaAPayer = tvaCollectee - tvaDeductible;
             if (tvaAPayer > 500) {
-                alerts.push(`💰 **Provision TVA critique : ${tvaAPayer.toFixed(2)} MAD** — Attention à la provision de taxe à décaisser`);
-            }
-
-            if (soldeBanque < 0 || soldeCaisse < 0) {
-                alerts.push(`⚠️ **Déséquilibre de trésorerie détecté** — Solde ${soldeBanque < 0 ? 'Banque' : 'Caisse'} débiteur, surveillez vos flux`);
+                alerts.push(`💰 **TVA à payer estimée: ${tvaAPayer.toFixed(2)} MAD** — pensez à provisionner`);
             }
         }
 
-        // Alert 3: Weekly Activity Summary
-        const { data: recentDocs } = await supabaseAdmin
-            .from('documents')
-            .select('id')
-            .gte('created_at', sevenDaysAgo.toISOString());
-        
+        // Alert 3: Recent journal activity summary
         const { data: recentEntries } = await supabaseAdmin
             .from('journal_entries')
             .select('id')
-            .gte('created_at', sevenDaysAgo.toISOString());
-
-        if ((recentDocs && recentDocs.length > 0) || (recentEntries && recentEntries.length > 0)) {
-            alerts.push(`📈 **Résumé hebdomadaire** : ${recentDocs?.length || 0} document(s) numérisé(s) et ${recentEntries?.length || 0} écriture(s) intégrées`);
+            .gte('created_at', sevenDaysAgoStr);
+        if (recentEntries && recentEntries.length > 0) {
+            alerts.push(`📊 **${recentEntries.length} écriture(s)** saisies cette semaine`);
         }
 
         return NextResponse.json({ alerts });
