@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm';
 import { supabase } from '@/lib/supabase';
 import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    LineChart, Line
+    LineChart, Line, Legend
 } from 'recharts';
 
 interface Message {
@@ -33,21 +33,42 @@ interface Artifact {
 }
 
 // Simple Chart Component to render structured data from Agent
-const ChartRenderer = ({ data, type = 'bar' }: { data: any[], type?: string }) => {
-    if (!data || !Array.isArray(data) || data.length === 0) return null;
+const ChartRenderer = ({ data, type = 'bar' }: { data: any, type?: string }) => {
+    if (!data) return null;
 
-    // Detect keys and ensure numeric values (resilience against LLM variations)
-    const processedData = data.map(item => {
-        // Look for any key that sounds like a value
-        const valKey = Object.keys(item).find(k => 
-            ['value', 'total', 'solde', 'montant', 'amount', 'ratio', 'count'].includes(k.toLowerCase())
-        ) || 'value';
-        
-        return {
-            name: item.name || item.label || item.month || item.date || '?',
-            value: Number(item[valKey]) || 0
-        };
-    });
+    let processedData: any[] = [];
+    let keys: string[] = ['value']; // default data keys for multi-series
+
+    // 1. Handle object-style format (labels/datasets) - Common for Chart.js
+    if (!Array.isArray(data) && data.labels && Array.isArray(data.datasets)) {
+        processedData = data.labels.map((label: string, index: number) => {
+            const entry: any = { name: label };
+            data.datasets.forEach((ds: any) => {
+                const key = ds.label || 'value';
+                entry[key] = Number(ds.data[index]) || 0;
+            });
+            return entry;
+        });
+        keys = data.datasets.map((ds: any) => ds.label || 'value');
+    } 
+    // 2. Handle array-style format (list of objects) - Standard for Recharts
+    else if (Array.isArray(data) && data.length > 0) {
+        processedData = data.map(item => {
+            const valKey = Object.keys(item).find(k => 
+                ['value', 'total', 'solde', 'montant', 'amount', 'ratio', 'count'].includes(k.toLowerCase())
+            ) || 'value';
+            
+            return {
+                name: item.name || item.label || item.month || item.date || '?',
+                value: Number(item[valKey]) || 0
+            };
+        });
+        keys = ['value'];
+    }
+
+    if (processedData.length === 0) return null;
+
+    const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
     return (
         <div className="h-64 w-full bg-slate-50/30 backdrop-blur-sm rounded-xl p-2 animate-in fade-in zoom-in duration-500">
@@ -57,16 +78,22 @@ const ChartRenderer = ({ data, type = 'bar' }: { data: any[], type?: string }) =
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? (v/1000).toFixed(1)+'k' : v} />
-                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }} />
-                        <Line type="monotone" dataKey="value" stroke="#6366f1" strokeWidth={3} dot={{ r: 4, fill: '#6366f1', strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 6 }} />
+                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }} />
+                        <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                        {keys.map((key, i) => (
+                            <Line key={key} type="monotone" dataKey={key} stroke={colors[i % colors.length]} strokeWidth={3} dot={{ r: 3, strokeWidth: 2, stroke: '#fff' }} activeDot={{ r: 5 }} />
+                        ))}
                     </LineChart>
                 ) : (
                     <BarChart data={processedData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
                         <XAxis dataKey="name" tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} />
                         <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} axisLine={false} tickLine={false} tickFormatter={(v) => v >= 1000 ? (v/1000).toFixed(1)+'k' : v} />
-                        <Tooltip cursor={{ fill: '#f1f5f9', radius: 4 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '12px' }} />
-                        <Bar dataKey="value" fill="#10b981" radius={[4, 4, 0, 0]} maxBarSize={30} />
+                        <Tooltip cursor={{ fill: '#f1f5f9', radius: 4 }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }} />
+                        <Legend iconType="circle" wrapperStyle={{ fontSize: '10px', paddingTop: '10px' }} />
+                        {keys.map((key, i) => (
+                            <Bar key={key} dataKey={key} fill={colors[i % colors.length]} radius={[4, 4, 0, 0]} maxBarSize={30} />
+                        ))}
                     </BarChart>
                 )}
             </ResponsiveContainer>
