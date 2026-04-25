@@ -387,8 +387,8 @@ export async function GET(req: NextRequest) {
                     alerts.push({
                         id: `unbalance-${key}`,
                         type: 'critical',
-                        date: groupings[key].date,
-                        message: `🚨 **Déséquilibre détecté** : La pièce **${key}** (${groupings[key].label}) présente un écart de **${diff.toLocaleString('fr-FR')} MAD**. (Total Débit: ${groupings[key].debit.toLocaleString()} | Total Crédit: ${groupings[key].credit.toLocaleString()})`
+                        date: today.toISOString(),
+                        message: `🚨 **Déséquilibre détecté** (le ${groupings[key].date}) : La pièce **${key}** (${groupings[key].label}) présente un écart de **${diff.toLocaleString('fr-FR')} MAD**. (D: ${groupings[key].debit.toLocaleString()} | C: ${groupings[key].credit.toLocaleString()})`
                     });
                 }
             }
