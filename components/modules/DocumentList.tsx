@@ -77,7 +77,7 @@ function getDisplayName(doc: Document): string {
 
     // 2. Supplier
     if (data.supplier) {
-        parts.push(data.supplier.toUpperCase().substring(0, 25));
+        parts.push(data.supplier.toUpperCase());
     }
 
     // 3. Date

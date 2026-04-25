@@ -32,7 +32,7 @@ function getDisplayName(doc: any): string {
     };
     const parts: string[] = [];
     parts.push(typePrefix[ext.type || ext.document_type || ''] || 'DOC');
-    if (ext.supplier) parts.push(ext.supplier.toUpperCase().substring(0, 25));
+    if (ext.supplier) parts.push(ext.supplier.toUpperCase());
     if (ext.date) parts.push(ext.date);
     if (ext.total_amount != null) parts.push(`${Number(ext.total_amount).toLocaleString('fr-FR')} ${ext.currency || 'MAD'}`);
     const name = parts.length > 1 ? parts.join(' — ') : doc.original_name;
