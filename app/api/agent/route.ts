@@ -339,8 +339,8 @@ export async function GET(req: NextRequest) {
                     alerts.push({
                         id: `pay-${entry.id}`,
                         type: 'payment_delay',
-                        date: entry.entry_date,
-                        message: `**Retard règlement** : La facture ${entry.label} (${tier?.name || 'Inconnu'}) dépasse le délai de ${delayLimit} jours.`
+                        date: today.toISOString(),
+                        message: `**Retard règlement** : La facture ${entry.label} (du ${entry.entry_date}) dépasse le délai de ${delayLimit} jours.`
                     });
                 }
             });
