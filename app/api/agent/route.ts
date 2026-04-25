@@ -357,7 +357,7 @@ export async function GET(req: NextRequest) {
             alerts.push({
                 id: 'summary-weekly',
                 type: 'summary',
-                date: today.toISOString(),
+                date: sevenDaysAgo.toISOString(),
                 message: `📈 **Résumé hebdo** : ${recentEntries.length} écritures intégrées au système cette semaine.`
             });
         }
