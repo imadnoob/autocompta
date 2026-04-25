@@ -44,9 +44,17 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER; -- SECURITY DEFINER ensures it can update document_counters
 
--- 3. Re-link the trigger
+-- 3. Security: Enable RLS on the new counters table
+ALTER TABLE document_counters ENABLE ROW LEVEL SECURITY;
+
+-- Allow users to manage their own counters
+DROP POLICY IF EXISTS "Users control their own counters" ON document_counters;
+CREATE POLICY "Users control their own counters" ON document_counters 
+    FOR ALL USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+
+-- 4. Re-link the trigger
 DROP TRIGGER IF EXISTS trg_generate_internal_ref ON documents;
 CREATE TRIGGER trg_generate_internal_ref
     BEFORE INSERT ON documents
