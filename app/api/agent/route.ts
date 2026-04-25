@@ -362,6 +362,38 @@ export async function GET(req: NextRequest) {
             });
         }
 
+        // Alert 4: Journal Balance Check (Détection de déséquilibre)
+        const { data: allEntries } = await supabaseAdmin
+            .from('journal_entries')
+            .select('piece_num, doc_id, debit, credit, entry_date, label')
+            .eq('user_id', userId);
+
+        if (allEntries && allEntries.length > 0) {
+            const groupings: Record<string, { debit: number, credit: number, date: string, label: string }> = {};
+            
+            allEntries.forEach((e: any) => {
+                // On groupe soit par numéro de pièce, soit par document ID
+                const groupKey = e.piece_num || e.doc_id || `ERR-${e.entry_date}`;
+                if (!groupings[groupKey]) {
+                    groupings[groupKey] = { debit: 0, credit: 0, date: e.entry_date, label: e.label };
+                }
+                groupings[groupKey].debit += Number(e.debit || 0);
+                groupings[groupKey].credit += Number(e.credit || 0);
+            });
+
+            for (const key in groupings) {
+                const diff = Math.abs(groupings[key].debit - groupings[key].credit);
+                if (diff > 0.01) {
+                    alerts.push({
+                        id: `unbalance-${key}`,
+                        type: 'critical',
+                        date: groupings[key].date,
+                        message: `🚨 **Déséquilibre détecté** : La pièce **${key}** (${groupings[key].label}) présente un écart de **${diff.toLocaleString('fr-FR')} MAD**. (Total Débit: ${groupings[key].debit.toLocaleString()} | Total Crédit: ${groupings[key].credit.toLocaleString()})`
+                    });
+                }
+            }
+        }
+
         return NextResponse.json({ alerts });
     } catch (error) {
         console.error("Alerts error:", error);
