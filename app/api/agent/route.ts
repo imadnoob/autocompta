@@ -339,8 +339,8 @@ export async function GET(req: NextRequest) {
                     alerts.push({
                         id: `pay-${entry.id}`,
                         type: 'payment_delay',
-                        date: today.toISOString(),
-                        message: `**Retard règlement** : La facture ${entry.label} (du ${entry.entry_date}) dépasse le délai de ${delayLimit} jours.`
+                        date: entry.entry_date, // Date historique
+                        message: `**Retard règlement** : La facture ${entry.label} dépasse le délai de ${delayLimit} jours.`
                     });
                 }
             });
@@ -357,7 +357,7 @@ export async function GET(req: NextRequest) {
             alerts.push({
                 id: 'summary-weekly',
                 type: 'summary',
-                date: sevenDaysAgo.toISOString(),
+                date: today.toISOString(), // Activité : Aujourd'hui (Tout en haut)
                 message: `📈 **Résumé hebdo** : ${recentEntries.length} écritures intégrées au système cette semaine.`
             });
         }
