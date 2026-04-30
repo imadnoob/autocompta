@@ -1455,7 +1455,7 @@ export default function ComptabiliteModule({ userSector }: { userSector?: string
                                         setTexteResult(null);
                                         try {
                                             const { data: { user } } = await supabase.auth.getUser();
-                                            const res = await fetch('/api/pipeline-entries', {
+                                            const res = await fetch('/api/text-to-entries', {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({ text: texteInput, userId: user?.id }),
