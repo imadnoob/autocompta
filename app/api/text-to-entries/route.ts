@@ -177,24 +177,53 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
         const trName = trAccount === '5161' ? 'Caisse' : 'Banques';
         const trJournal = trAccount === '5161' ? 'CA' : 'BQ';
 
-        // Recherche du compte auxiliaire existant dans le Plan Tiers
+        // Recherche ou Création du compte auxiliaire Tiers
         let existingFournisseurAccount = '4411';
         let existingClientAccount = '3421';
-        if (userId && supplier !== 'Inconnu') {
+        
+        if (userId && supplier !== 'Inconnu' && supplier.trim() !== '') {
             try {
-                // Recherche insensible à la casse
+                const sName = supplier.trim();
                 const { data: tierData } = await supabaseAdmin.from('tiers')
                     .select('account_code_aux, type')
                     .eq('user_id', userId)
-                    .ilike('name', supplier)
+                    .ilike('name', sName)
                     .single();
                 
                 if (tierData) {
                     if (tierData.type === 'fournisseur') existingFournisseurAccount = tierData.account_code_aux;
                     if (tierData.type === 'client') existingClientAccount = tierData.account_code_aux;
+                } else {
+                    // Création du Tier à la volée
+                    const tierType = op.nature === 'VENTE' || op.nature === 'ENCAISSEMENT_RECU' ? 'client' : 'fournisseur';
+                    const baseCode = tierType === 'fournisseur' ? '4411000' : '3421000';
+                    
+                    const { data: maxTiers } = await supabaseAdmin.from('tiers')
+                        .select('account_code_aux')
+                        .eq('user_id', userId)
+                        .like('account_code_aux', `${baseCode}%`)
+                        .order('account_code_aux', { ascending: false })
+                        .limit(1)
+                        .single();
+                        
+                    let nextNum = 1;
+                    if (maxTiers && maxTiers.account_code_aux) {
+                        nextNum = parseInt(maxTiers.account_code_aux.replace(baseCode, '')) + 1;
+                    }
+                    const newAuxAccount = `${baseCode}${nextNum}`;
+                    
+                    await supabaseAdmin.from('tiers').insert({
+                        user_id: userId,
+                        type: tierType,
+                        name: sName,
+                        account_code_aux: newAuxAccount
+                    });
+                    
+                    if (tierType === 'fournisseur') existingFournisseurAccount = newAuxAccount;
+                    if (tierType === 'client') existingClientAccount = newAuxAccount;
                 }
             } catch (e) {
-                // Ignore if not found
+                console.error("Erreur gestion tier:", e);
             }
         }
 
