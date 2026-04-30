@@ -57,7 +57,8 @@ Chaque objet doit respecter STRICTEMENT ce format (utilise des nombres pour les 
     "payment_method": "Virement", "Espèces", "Carte", "Chèque" ou null
   }
 ]
-Règle : amount_ht + tva_amount DOIT être égal à total_amount. Si la TVA n'est pas précisée, suppose qu'elle est de 0 et amount_ht = total_amount.
+Règle : amount_ht + tva_amount DOIT être mathématiquement égal à total_amount. 
+S'il y a un seul montant fourni dans le texte et que la TVA n'est pas précisée, considère ce montant comme le TTC et déduis automatiquement la TVA marocaine standard de 20% (HT = TTC / 1.2).
     `;
 
     const extractResult = await model.generateContent(extractPrompt);
