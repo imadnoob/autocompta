@@ -188,7 +188,7 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
                     .select('account_code_aux, type')
                     .eq('user_id', userId)
                     .ilike('name', sName)
-                    .single();
+                    .maybeSingle();
                 
                 if (tierData) {
                     if (tierData.type === 'fournisseur') existingFournisseurAccount = tierData.account_code_aux;
@@ -204,7 +204,7 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
                         .like('account_code_aux', `${baseCode}%`)
                         .order('account_code_aux', { ascending: false })
                         .limit(1)
-                        .single();
+                        .maybeSingle();
                         
                     let nextNum = 1;
                     if (maxTiers && maxTiers.account_code_aux) {
