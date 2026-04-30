@@ -243,6 +243,7 @@ RÈGLES STRICTES :
 2. Si c'est un ACHAT, utilise obligatoirement un compte de CLASSE 6 ou 2. Journal = HA. Tiers = 4411.
 3. Règle métier : Pour toute réservation, nuitée ou hébergement, utilise OBLIGATOIREMENT le compte 71241 (Ventes hébergement). N'utilise pas 71244.
 4. Règle absolue de précision : N'utilise JAMAIS un compte parent à 4 chiffres (ex: 6121, 6125) s'il existe une version à 5 chiffres plus précise dans le RAG (ex: 61211, 61251). Tu DOIS utiliser la version à 5 chiffres.
+5. En cas d'hésitation entre des comptes similaires (ex: 61211 Matières premières A vs 61212 Matières B), choisis TOUJOURS le premier (terminant par 1) par défaut.
 
 Retourne UNIQUEMENT un JSON avec ce format :
 {

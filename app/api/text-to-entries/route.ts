@@ -137,6 +137,7 @@ Règles Absolues :
 - Si la nature est ACHAT, tu DOIS retourner un compte qui commence par 6 ou 2.
 - Si la nature est VENTE, tu DOIS retourner un compte qui commence par 7.
 - Précision maximum requise (privilégie les comptes à 4 ou 5 chiffres).
+- En cas d'hésitation entre des comptes similaires (ex: 61211 Matières premières A vs 61212 Matières B), choisis TOUJOURS le premier (terminant par 1) par défaut.
 
 Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
 {
