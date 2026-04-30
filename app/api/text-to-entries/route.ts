@@ -177,10 +177,31 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
         const trName = trAccount === '5161' ? 'Caisse' : 'Banques';
         const trJournal = trAccount === '5161' ? 'CA' : 'BQ';
 
+        // Recherche du compte auxiliaire existant dans le Plan Tiers
+        let existingFournisseurAccount = '4411';
+        let existingClientAccount = '3421';
+        if (userId && supplier !== 'Inconnu') {
+            try {
+                // Recherche insensible à la casse
+                const { data: tierData } = await supabaseAdmin.from('tiers')
+                    .select('account_code_aux, type')
+                    .eq('user_id', userId)
+                    .ilike('name', supplier)
+                    .single();
+                
+                if (tierData) {
+                    if (tierData.type === 'fournisseur') existingFournisseurAccount = tierData.account_code_aux;
+                    if (tierData.type === 'client') existingClientAccount = tierData.account_code_aux;
+                }
+            } catch (e) {
+                // Ignore if not found
+            }
+        }
+
         if (op.nature === 'ACHAT') {
             // Si une méthode de paiement est détectée lors de l'achat, c'est un achat au comptant (Caisse/Banque direct)
             journal = op.payment_method ? trJournal : 'HA';
-            const creditAccount = op.payment_method ? trAccount : '4411';
+            const creditAccount = op.payment_method ? trAccount : existingFournisseurAccount;
             const creditName = op.payment_method ? trName : supplier;
 
             if (ht > 0) lines.push({ account: mainAccountCode, account_name: mainAccountName, label: desc, debit: ht, credit: 0 });
@@ -189,7 +210,7 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
         } 
         else if (op.nature === 'VENTE') {
             journal = op.payment_method ? trJournal : 'VT';
-            const debitAccount = op.payment_method ? trAccount : '3421';
+            const debitAccount = op.payment_method ? trAccount : existingClientAccount;
             const debitName = op.payment_method ? trName : supplier;
 
             if (ttc > 0) lines.push({ account: debitAccount, account_name: debitName, label: desc, debit: ttc, credit: 0 });
@@ -199,7 +220,7 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
         else if (op.nature === 'PAIEMENT_EMIS') {
             journal = trJournal;
             if (ttc > 0) {
-                lines.push({ account: '4411', account_name: supplier, label: desc, debit: ttc, credit: 0 });
+                lines.push({ account: existingFournisseurAccount, account_name: supplier, label: desc, debit: ttc, credit: 0 });
                 lines.push({ account: trAccount, account_name: trName, label: desc, debit: 0, credit: ttc });
             }
         }
@@ -207,7 +228,7 @@ Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
             journal = trJournal;
             if (ttc > 0) {
                 lines.push({ account: trAccount, account_name: trName, label: desc, debit: ttc, credit: 0 });
-                lines.push({ account: '3421', account_name: supplier, label: desc, debit: 0, credit: ttc });
+                lines.push({ account: existingClientAccount, account_name: supplier, label: desc, debit: 0, credit: ttc });
             }
         }
         else {
