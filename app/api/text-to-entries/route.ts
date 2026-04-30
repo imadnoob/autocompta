@@ -3,7 +3,6 @@ import { model } from '@/lib/gemini';
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Initialize embedding model
 const geminiApiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY || '';
 const genAI = new GoogleGenerativeAI(geminiApiKey);
 const embedModel = genAI.getGenerativeModel({ model: "gemini-embedding-001" });
@@ -16,9 +15,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Texte vide' }, { status: 400 });
     }
 
+    // ==========================================
+    // ETAPE 0 : RÉCUPÉRATION DU PROFIL UTILISATEUR
+    // ==========================================
     let userCompanyName = "Unknown Company";
     let userSector = "INCONNU";
-    let historyContext = "";
 
     if (userId) {
         const { data: { user }, error: userError } = await supabaseAdmin.auth.admin.getUserById(userId);
@@ -26,135 +27,211 @@ export async function POST(req: NextRequest) {
             userCompanyName = user.user_metadata?.company_name || "Unknown Company";
             userSector = user.user_metadata?.sector || "INCONNU";
         }
-
-        try {
-            const { data: pastEntries } = await supabaseAdmin
-                .from('journal_entries')
-                .select('label, account, account_name')
-                .eq('user_id', userId)
-                .order('created_at', { ascending: false })
-                .limit(5);
-            
-            if (pastEntries && pastEntries.length > 0) {
-                historyContext = "MÉMOIRE HISTORIQUE - Voici des exemples tirés de TA PROPRE comptabilité récente (imite ce style si similaire) :\n";
-                pastEntries.forEach((e: any) => {
-                    historyContext += `- "${e.label}" => Classée en ${e.account} (${e.account_name})\n`;
-                });
-            }
-        } catch(e) {}
     }
 
-    // 1. Generate an embedding for the user's input text to find relevant PCM accounts
-    let pcmContext = "";
-    try {
-      const embedResult = await embedModel.embedContent(text);
-      const queryEmbedding = embedResult.embedding.values;
-
-      // 2. Query Supabase vector database for matches
-      const { data: matchedAccounts, error: matchError } = await supabaseAdmin.rpc('match_pcm_accounts', {
-        query_embedding: queryEmbedding,
-        match_threshold: 0.1, // very low threshold to ensure we get some results
-        match_count: 5 // Get top 5 most relevant accounts
-      });
-
-      if (!matchError && matchedAccounts && matchedAccounts.length > 0) {
-        pcmContext = "COMPTES PCM PERTINENTS SUGGÉRÉS (Utilise-les si approprié, cela provient de notre base officielle) :\n";
-        matchedAccounts.forEach((acc: any) => {
-          pcmContext += `- Compte ${acc.code} : ${acc.name}\n`;
-        });
-      }
-    } catch (embError) {
-      console.error("RAG Embedding/Matching error (ignoring and proceeding with generic PCM):", embError);
-      // We will just proceed without RAG context if it fails
-    }
-
-    const prompt = `
-Tu es un Expert Comptable Marocain (expert en PCM) travaillant sur le logiciel AutoCompta. 
-Ton rôle est d'analyser le texte soumis (factures, reçus, listes d'opérations) et d'appliquer une méthodologie comptable stricte pour générer les écritures au format JSON.
-
-CONTEXTE DE L'ENTREPRISE :
-- Nom de l'entreprise : ${userCompanyName}
-- Secteur d'activité : ${userSector}
-
-MÉTHODOLOGIE À APPLIQUER OBLIGATOIREMENT :
-1. ANALYSE : Identifie la (ou les) transaction(s) isolée(s) dans le texte (Achats, Ventes, Paiements, Salaires, Dépôts/Retraits).
-2. CATÉGORISATION (Choix structuré du Journal) :
-   - Achats fournisseurs -> "HA"
-   - Ventes clients -> "VT"
-   - Opérations bancaires (Chèque, Virement) -> "BQ"
-   - Espèces (Caisse) -> "CA"
-   - Paie, TVA, ou si regroupement complexe -> "OD"
-3. IMPUTATION (Plan Comptable Marocain - PCM) :
-   - Achats : Choisis le compte de Classe 6 ou 2 le plus précis selon le contexte (ex: 6141 Eau/Electricité, 6133 Entretien, 6121 MP).
-   - Ventes : Choisis le compte de Classe 7 le plus précis (ex: 7111, 7124).
-   - TVA : 34552 (TVA récupérable), 4455 (TVA facturée).
-   - Tiers : 4411 (Fournisseurs), 3421 (Clients).
-   - Trésorerie : 5141 (Banque), 5161 (Caisse).
-   - Salaires : 6171 (Rémunérations), 4432 (Rém. dues) ou paiement direct par tréso.
-4. ÉQUILIBRE (Partie Double) : Chaque transaction isolée DOIT avoir un Total Débit strictement égal au Total Crédit.
-
-${pcmContext ? `\n--- CONTEXTE RAG ---\n${pcmContext}\n--------------------\n` : ''}
-
-${historyContext ? `\n--- ${historyContext}\n--------------------\n` : ''}
+    // ==========================================
+    // ETAPE 1 : EXTRACTION STRUCTUREE (Sans comptabilité)
+    // ==========================================
+    const extractPrompt = `
+Tu es un assistant d'extraction de données financières.
+Analyse le texte suivant et extrais UNIQUEMENT les valeurs factuelles.
+NE FAIS PAS DE COMPTABILITÉ (pas de numéros de comptes, pas de débits/crédits).
 
 TEXTE À ANALYSER :
 """
 ${text}
 """
 
-INSTRUCTIONS FORMAT DE SORTIE :
-Tu dois renvoyer l'opération (ou la liste des opérations s'il y en a plusieurs de par leurs dates ou natures) en JSON.
-Si le texte contient clairement plusieurs opérations séparées (ex: une liste datée), retourne un TABLEAU JSON (Array) contenant plusieurs objets.
-Si c'est une seule opération, retourne UN SEUL objet JSON.
+Retourne OBLIGATOIREMENT un tableau JSON contenant la ou les opérations extraites.
+Même s'il n'y a qu'une seule opération, retourne un tableau avec un seul objet.
+Chaque objet doit respecter STRICTEMENT ce format (utilise des nombres pour les montants) :
+[
+  {
+    "nature": "ACHAT", "VENTE", "PAIEMENT_EMIS", "ENCAISSEMENT_RECU" ou "AUTRE",
+    "description": "Bref résumé (ex: Facture électricité mars, Paiement facture internet)",
+    "date": "YYYY-MM-DD (Date mentionnée, sinon date du jour)",
+    "supplier": "Nom du fournisseur ou client, ou vide",
+    "amount_ht": 0.00,
+    "tva_amount": 0.00,
+    "total_amount": 0.00,
+    "payment_method": "Virement", "Espèces", "Carte", "Chèque" ou null
+  }
+]
+Règle : amount_ht + tva_amount DOIT être égal à total_amount. Si la TVA n'est pas précisée, suppose qu'elle est de 0 et amount_ht = total_amount.
+    `;
 
-Format de base de CHAQUE objet opération :
+    const extractResult = await model.generateContent(extractPrompt);
+    const extractText = (await extractResult.response).text().replace(/```json\n?|```\n?/g, '').trim();
+    
+    let operations = [];
+    try {
+        operations = JSON.parse(extractText);
+        if (!Array.isArray(operations)) {
+            operations = [operations];
+        }
+    } catch (e) {
+        throw new Error("Impossible de comprendre l'opération dans le texte.");
+    }
+
+    // ==========================================
+    // ETAPE 2 & 3 : CLASSIFICATION (RAG) ET ASSEMBLAGE DÉTERMINISTE (JS)
+    // ==========================================
+    const finalEntries = [];
+
+    for (const op of operations) {
+        // Normalisation
+        const ht = Number(op.amount_ht) || 0;
+        const tva = Number(op.tva_amount) || 0;
+        const ttc = Number(op.total_amount) || 0;
+        const date = op.date || new Date().toISOString().split('T')[0];
+        const supplier = op.supplier || 'Inconnu';
+        const desc = op.description || 'Opération';
+
+        // ------------------------------------------
+        // Recherche RAG pour le compte principal
+        // ------------------------------------------
+        let mainAccountCode = op.nature === 'VENTE' ? '7111' : '6111'; // Par défaut
+        let mainAccountName = op.nature === 'VENTE' ? 'Ventes de marchandises' : 'Achats de marchandises';
+        
+        if (op.nature === 'ACHAT' || op.nature === 'VENTE' || op.nature === 'AUTRE') {
+            let pcmContext = "";
+            try {
+                const searchDesc = `${supplier} : ${desc}`;
+                const embedResult = await embedModel.embedContent(searchDesc);
+                const { data: matchedAccounts } = await supabaseAdmin.rpc('match_pcm_accounts', {
+                    query_embedding: embedResult.embedding.values,
+                    match_threshold: 0.1,
+                    match_count: 5
+                });
+                if (matchedAccounts && matchedAccounts.length > 0) {
+                    pcmContext = "COMPTES PCM OFFICIELS SUGGÉRÉS:\n" + matchedAccounts.map((a: any) => `- ${a.code} : ${a.name}`).join("\n");
+                }
+            } catch (e) {}
+
+            let historyContext = "";
+            if (userId) {
+                try {
+                    let queryBuilder = supabaseAdmin.from('journal_entries').select('label, account, account_name').eq('user_id', userId).order('created_at', { ascending: false });
+                    if (supplier.length > 3) queryBuilder = queryBuilder.ilike('supplier', `%${supplier}%`).limit(3);
+                    else queryBuilder = queryBuilder.limit(3); 
+                    const { data: pastEntries } = await queryBuilder;
+                    if (pastEntries && pastEntries.length > 0) {
+                        historyContext = "HISTORIQUE RÉCENT DE L'UTILISATEUR (PRIORITÉ) :\n" + pastEntries.map((e: any) => `- "${e.label}" => Classé en Compte ${e.account} (${e.account_name})`).join("\n");
+                    }
+                } catch (e) { }
+            }
+
+            const classifPrompt = `
+Tu es un Expert Comptable Marocain. 
+Trouve LE MEILLEUR compte comptable (Classe 6 ou 7) pour cette opération :
+ENTREPRISE: ${userCompanyName} (${userSector})
+NATURE: ${op.nature}
+DESCRIPTION: ${desc}
+TIERS: ${supplier}
+
+${pcmContext}
+
+${historyContext}
+
+Règles Absolues :
+- Si la nature est ACHAT, tu DOIS retourner un compte qui commence par 6 ou 2.
+- Si la nature est VENTE, tu DOIS retourner un compte qui commence par 7.
+- Précision maximum requise (privilégie les comptes à 4 ou 5 chiffres).
+
+Retourne UNIQUEMENT un JSON structuré (pas de texte avant ou après) :
 {
-  "description": "Description claire de l'opération (ex: Paiement facture Eau, Salaire octobre...)",
-  "date": "YYYY-MM-DD (Date de l'opération, très important de l'extraire du texte si présente. Sinon date du jour)",
-  "supplier": "Nom du tiers (Client, Fournisseur, Employé) ou vide",
-  "journal": "HA" ou "VT" ou "BQ" ou "CA" ou "OD",
-  "entries": [
-    {
-      "account": "Code PCM valide (ex: 6141)",
-      "account_name": "Nom officiel du compte PCM",
-      "label": "Libellé de la ligne précise",
-      "debit": montant_numerique (ou 0),
-      "credit": montant_numerique (ou 0)
-    }
-    // L'addition de tous les "debit" DOIT ETRE EGALE à l'addition des "credit" de cet array !
-  ]
+  "code": "6141",
+  "name": "Eau et électricité"
 }
+            `;
+            
+            try {
+                const classifRes = await model.generateContent(classifPrompt);
+                const classifText = (await classifRes.response).text().replace(/```json\n?|```\n?/g, '').trim();
+                const classifData = JSON.parse(classifText);
+                if (classifData.code) {
+                    mainAccountCode = classifData.code;
+                    mainAccountName = classifData.name;
+                }
+            } catch(e) {
+                console.error("Erreur de classification IA, utilisation des valeurs par défaut.", e);
+            }
+            
+            // ------------------------------------------
+            // Sécurité JS Override (Forçage de la classe)
+            // ------------------------------------------
+            if (op.nature === 'ACHAT' && mainAccountCode.startsWith('7')) mainAccountCode = '6' + mainAccountCode.substring(1);
+            if (op.nature === 'VENTE' && mainAccountCode.startsWith('6')) mainAccountCode = '7' + mainAccountCode.substring(1);
+            // Cas particulier : hébergement
+            if (mainAccountCode === '71243' || mainAccountCode === '71244') mainAccountCode = '71241';
+        }
 
-RÈGLES VITALES :
-- Les montants doivent être de type Number (pas de strings). N'utilise jamais de virgule (,) ni d'espaces. Ex: 120000 ou 120000.50
-- Privilégie FORCEMENT les comptes suggérés dans le "CONTEXTE RAG" s'ils correspondent à l'opération.
-- Règle métier : Pour toute réservation, nuitée ou hébergement, utilise OBLIGATOIREMENT le compte 71241. N'utilise pas 71244.
-- Règle absolue de précision : N'utilise JAMAIS un compte parent à 4 chiffres (ex: 6121, 6125) s'il existe une version à 5 chiffres plus précise dans le RAG (ex: 61211, 61251). Tu DOIS utiliser la version à 5 chiffres.
-- Ton JSON doit être parfait et ne contenir que les données.
-`;
+        // ------------------------------------------
+        // ASSEMBLEUR MATHÉMATIQUE (Débit = Crédit)
+        // ------------------------------------------
+        const lines = [];
+        let journal = 'OD';
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const responseText = response.text();
+        const trAccount = (op.payment_method?.toLowerCase().includes('espèce') || op.payment_method?.toLowerCase().includes('caisse')) ? '5161' : '5141';
+        const trName = trAccount === '5161' ? 'Caisse' : 'Banques';
+        const trJournal = trAccount === '5161' ? 'CA' : 'BQ';
 
-    // Clean up markdown code blocks if present
-    const cleanText = responseText.replace(/```json\n?|```\n?/g, '').trim();
-    let parsed = JSON.parse(cleanText);
+        if (op.nature === 'ACHAT') {
+            // Si une méthode de paiement est détectée lors de l'achat, c'est un achat au comptant (Caisse/Banque direct)
+            journal = op.payment_method ? trJournal : 'HA';
+            const creditAccount = op.payment_method ? trAccount : '4411';
+            const creditName = op.payment_method ? trName : supplier;
 
-    // Normalize if Gemini returned an array of operations
-    if (Array.isArray(parsed)) {
-      const allEntries = parsed.flatMap((p: any) => Array.isArray(p.entries) ? p.entries : []);
-      const description = parsed.length > 1 ? 'Opérations multiples' : (parsed[0]?.description || '');
-      parsed = {
-        description: description,
-        date: parsed[0]?.date || new Date().toISOString().split('T')[0],
-        supplier: parsed[0]?.supplier || '',
-        journal: parsed[0]?.journal || 'OD',
-        entries: allEntries
-      };
+            if (ht > 0) lines.push({ account: mainAccountCode, account_name: mainAccountName, label: desc, debit: ht, credit: 0 });
+            if (tva > 0) lines.push({ account: '34552', account_name: 'TVA Récupérable', label: `TVA sur ${desc}`, debit: tva, credit: 0 });
+            if (ttc > 0) lines.push({ account: creditAccount, account_name: creditName, label: desc, debit: 0, credit: ttc });
+        } 
+        else if (op.nature === 'VENTE') {
+            journal = op.payment_method ? trJournal : 'VT';
+            const debitAccount = op.payment_method ? trAccount : '3421';
+            const debitName = op.payment_method ? trName : supplier;
+
+            if (ttc > 0) lines.push({ account: debitAccount, account_name: debitName, label: desc, debit: ttc, credit: 0 });
+            if (ht > 0) lines.push({ account: mainAccountCode, account_name: mainAccountName, label: desc, debit: 0, credit: ht });
+            if (tva > 0) lines.push({ account: '4455', account_name: 'TVA Facturée', label: `TVA sur ${desc}`, debit: 0, credit: tva });
+        }
+        else if (op.nature === 'PAIEMENT_EMIS') {
+            journal = trJournal;
+            if (ttc > 0) {
+                lines.push({ account: '4411', account_name: supplier, label: desc, debit: ttc, credit: 0 });
+                lines.push({ account: trAccount, account_name: trName, label: desc, debit: 0, credit: ttc });
+            }
+        }
+        else if (op.nature === 'ENCAISSEMENT_RECU') {
+            journal = trJournal;
+            if (ttc > 0) {
+                lines.push({ account: trAccount, account_name: trName, label: desc, debit: ttc, credit: 0 });
+                lines.push({ account: '3421', account_name: supplier, label: desc, debit: 0, credit: ttc });
+            }
+        }
+        else {
+            // AUTRE (Fallback simple)
+            journal = 'OD';
+            if (ht > 0) {
+                lines.push({ account: mainAccountCode, account_name: mainAccountName, label: desc, debit: ht, credit: 0 });
+                lines.push({ account: '4481', account_name: 'Dettes diverses', label: desc, debit: 0, credit: ht });
+            }
+        }
+
+        finalEntries.push({
+            description: desc,
+            date: date,
+            supplier: supplier,
+            journal: journal,
+            entries: lines
+        });
     }
 
-    return NextResponse.json({ success: true, data: parsed });
+    // Le frontend de AutoCompta s'attend à recevoir UN objet (si 1 opération) ou un ARRAY (si multiples).
+    const dataToSend = finalEntries.length === 1 ? finalEntries[0] : finalEntries;
+
+    return NextResponse.json({ success: true, data: dataToSend });
+
   } catch (error: any) {
     console.error('Text-to-entries error:', error);
     return NextResponse.json({ error: error.message || 'Erreur de traitement' }, { status: 500 });
