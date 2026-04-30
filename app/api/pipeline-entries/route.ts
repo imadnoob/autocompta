@@ -290,9 +290,56 @@ Retourne UNIQUEMENT un JSON avec ce format :
         }
 
         // ==========================================
-        // ETAPE 3 : VERIFICATION (SENSE CHECK IA)
+        // ETAPE 3.5 : RECHERCHE OU CRÉATION DU COMPTE AUXILIAIRE TIERS
         // ==========================================
-        // On simplifie la vérification IA car on a forcé la logique JS
+        let finalTierAccount = classification.tier_account_code;
+        const supplierName = extractedData.supplier ? extractedData.supplier.trim() : '';
+
+        if (userId && supplierName !== '' && supplierName.toLowerCase() !== 'inconnu') {
+            try {
+                const { data: tierData } = await supabaseAdmin.from('tiers')
+                    .select('account_code_aux, type')
+                    .eq('user_id', userId)
+                    .ilike('name', supplierName)
+                    .maybeSingle();
+
+                if (tierData) {
+                    finalTierAccount = tierData.account_code_aux;
+                } else {
+                    // Création à la volée
+                    const tierType = forcedNature === 'VENTE' ? 'client' : 'fournisseur';
+                    const baseCode = tierType === 'fournisseur' ? '4411000' : '3421000';
+                    
+                    const { data: maxTiers } = await supabaseAdmin.from('tiers')
+                        .select('account_code_aux')
+                        .eq('user_id', userId)
+                        .like('account_code_aux', `${baseCode}%`)
+                        .order('account_code_aux', { ascending: false })
+                        .limit(1)
+                        .maybeSingle();
+                        
+                    let nextNum = 1;
+                    if (maxTiers && maxTiers.account_code_aux) {
+                        nextNum = parseInt(maxTiers.account_code_aux.replace(baseCode, '')) + 1;
+                    }
+                    const newAuxAccount = `${baseCode}${nextNum}`;
+                    
+                    await supabaseAdmin.from('tiers').insert({
+                        user_id: userId,
+                        type: tierType,
+                        name: supplierName,
+                        account_code_aux: newAuxAccount
+                    });
+                    
+                    finalTierAccount = newAuxAccount;
+                }
+            } catch (e) {
+                console.error("Erreur gestion tier pipeline:", e);
+            }
+        }
+
+        classification.tier_account_code = finalTierAccount;
+
         const finalClassif = classification;
 
         // ==========================================
