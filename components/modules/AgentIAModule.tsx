@@ -147,9 +147,17 @@ export default function AgentIAModule() {
         });
     }, []);
 
-    // Initial session if none exists
+    // Load sessions when userId changes
     useEffect(() => {
-        const stored = localStorage.getItem('autocompta_chats');
+        if (!userId) {
+            setSessions([]);
+            setActiveSessionId(null);
+            return;
+        }
+        
+        const storageKey = `autocompta_chats_${userId}`;
+        const stored = localStorage.getItem(storageKey);
+        
         if (stored) {
             try {
                 const parsed = JSON.parse(stored);
@@ -163,16 +171,23 @@ export default function AgentIAModule() {
             } catch (e) {
                 console.error("Error loading chats", e);
             }
+        } else {
+            setSessions([]);
+            setActiveSessionId(null);
         }
-    }, []);
+    }, [userId]);
 
     const activeSession = sessions.find(s => s.id === activeSessionId) || null;
 
     useEffect(() => {
+        if (!userId) return;
+        const storageKey = `autocompta_chats_${userId}`;
         if (sessions.length > 0) {
-            localStorage.setItem('autocompta_chats', JSON.stringify(sessions));
+            localStorage.setItem(storageKey, JSON.stringify(sessions));
+        } else {
+            localStorage.removeItem(storageKey);
         }
-    }, [sessions]);
+    }, [sessions, userId]);
 
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
