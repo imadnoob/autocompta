@@ -132,6 +132,7 @@ export default function DocumentList({ filters, refreshKey }: DocumentListProps)
             const { data, error } = await supabase
                 .from('documents')
                 .select('*')
+                .order('internal_ref', { ascending: false, nullsFirst: false })
                 .order('created_at', { ascending: false });
             if (error) throw error;
             setDocuments(data || []);
