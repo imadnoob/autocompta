@@ -119,6 +119,7 @@ Tu es un agent d'extraction de données expert. Ce document est IDENTIFIÉ comme
 Analyse ce document ou texte.
 Extrais uniquement les valeurs monétaires, la date et le nom du tiers, SANS FAIRE DE COMPTABILITÉ.
 Il s'agit de documents marocains, cherche bien les montants HT, TVA (souvent 20% ou 14%) et TTC.
+ATTENTION À L'ANNÉE : Toutes les factures traitées concernent l'exercice 2026. Si l'OCR se trompe (ex: 2023, 2024), corrige obligatoirement l'année de la date pour 2026.
 Retourne UNIQUEMENT un JSON structuré exactement comme ceci, avec des nombres (pas de strings pour les montants) :
 {
   "date": "YYYY-MM-DD",
